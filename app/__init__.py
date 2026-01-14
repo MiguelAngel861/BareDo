@@ -1,0 +1,25 @@
+from flask import Flask, render_template
+
+from app.routes import tareas_bp
+from app.extensions import db
+from app.models import Base
+
+def create_app() -> Flask:
+    app: Flask = Flask(__name__)
+    
+    app.config["SQLALCHEMY_ENGINES"] = {
+        "default": "sqlite:///db.sqlite"
+    }
+    
+    db.init_app(app)
+    
+    with app.app_context():
+        Base.metadata.create_all(db.engine)
+
+    app.register_blueprint(tareas_bp, url_prefix="/api")
+    
+    @app.route("/")
+    def index():
+        return render_template("index.html")
+
+    return app

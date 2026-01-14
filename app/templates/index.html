@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestor de Tareas</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Gestor de Tareas</h1>
+    
+    <!-- Formulario para agregar tarea -->
+    <form id="add-task-form">
+        <label for="titulo">Título:</label>
+        <input type="text" id="titulo" required>
+        <label for="descripcion">Descripción:</label>
+        <input type="text" id="descripcion" required>
+        <button type="submit">Agregar Tarea</button>
+    </form>
+    
+    <!-- Lista de tareas -->
+    <ul id="tasks-list"></ul>
+    
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
