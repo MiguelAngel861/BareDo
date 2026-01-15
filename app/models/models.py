@@ -7,7 +7,7 @@ class Base(DeclarativeBase):
 class Tareas(Base):
     __tablename__ = "tareas"
     
-    id_tareas: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    id_tarea: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     titulo: Mapped[str] = mapped_column(nullable=False)
     descripcion: Mapped[str] = mapped_column(nullable=True)
     realizada: Mapped[bool] = mapped_column(nullable=False, default=False)

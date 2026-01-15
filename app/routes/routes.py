@@ -6,7 +6,7 @@ from flask import Blueprint
 
 
 from app.extensions import db
-from app.models import Tareas
+from app.models.models import Tareas
 
 tareas_bp = Blueprint("tareas", __name__)
 
@@ -40,7 +40,7 @@ def anadir_tarea() -> Any:
 def editar_tarea(task_id: int) -> Any:
     request.max_content_length = (1024 * 1024)
     
-    tarea = db.session.execute(select(Tareas).where(Tareas.id_tareas == task_id)).scalar_one()
+    tarea = db.session.execute(select(Tareas).where(Tareas.id_tarea == task_id)).scalar_one()
     if not tarea:
         abort(404, description = "Task not found")
 
@@ -63,7 +63,7 @@ def editar_tarea(task_id: int) -> Any:
 
 @tareas_bp.delete("/tasks/<int:task_id>")
 def eliminar_tarea(task_id: int) -> Any:
-    query = delete(Tareas).where(Tareas.id_tareas == task_id)
+    query = delete(Tareas).where(Tareas.id_tarea == task_id)
     result = db.session.execute(query)
     db.session.commit()
     

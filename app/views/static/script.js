@@ -13,8 +13,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 const li = document.createElement('li');
                 li.innerHTML = `
                     <span>${task.titulo} - ${task.descripcion} (Realizada: ${task.realizada ? 'Sí' : 'No'}) - Creada: ${task.fecha_creacion}</span>
-                    <button onclick="editTask(${task.id_tareas})">Editar</button>
-                    <button onclick="deleteTask(${task.id_tareas})">Eliminar</button>
+                    <button onclick="editTask(${task.id_tarea})">Editar</button>
+                    <button onclick="deleteTask(${task.id_tarea})">Eliminar</button>
                 `;
                 tasksList.appendChild(li);
             });
