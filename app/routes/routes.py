@@ -6,13 +6,13 @@ from flask import Blueprint
 
 
 from app.extensions import db
-from app.models.models import Tareas
+from app.models.tasks import Tasks
 
 tareas_bp = Blueprint("tareas", __name__)
 
 @tareas_bp.get("/tasks")
 def get_tareas() -> Any:
-    query = select(Tareas)
+    query = select(Tasks)
     result = db.session.execute(query).scalars().all()
     return [tarea.to_dict() for tarea in result], 200
 
@@ -26,7 +26,7 @@ def anadir_tarea() -> Any:
     if not data.get("titulo") or not data.get("descripcion"):
         abort(400, description = "Missing required fields: 'titulo' and 'descripcion'")
 
-    query = insert(Tareas).values(titulo = data["titulo"], descripcion = data["descripcion"]).returning(Tareas)
+    query = insert(Tasks).values(titulo = data["titulo"], descripcion = data["descripcion"]).returning(Tasks)
     result = db.session.execute(query)
     
     new_task = result.scalar_one()
@@ -40,7 +40,7 @@ def anadir_tarea() -> Any:
 def editar_tarea(task_id: int) -> Any:
     request.max_content_length = (1024 * 1024)
     
-    tarea = db.session.execute(select(Tareas).where(Tareas.id_tarea == task_id)).scalar_one()
+    tarea = db.session.execute(select(Tasks).where(Tasks.task_id == task_id)).scalar_one()
     if not tarea:
         abort(404, description = "Task not found")
 
@@ -63,7 +63,7 @@ def editar_tarea(task_id: int) -> Any:
 
 @tareas_bp.delete("/tasks/<int:task_id>")
 def eliminar_tarea(task_id: int) -> Any:
-    query = delete(Tareas).where(Tareas.id_tarea == task_id)
+    query = delete(Tasks).where(Tasks.task_id == task_id)
     result = db.session.execute(query)
     db.session.commit()
     

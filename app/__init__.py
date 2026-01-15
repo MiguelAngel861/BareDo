@@ -2,7 +2,7 @@ from flask import Flask, render_template
 
 from app.routes.routes import tareas_bp
 from app.extensions import db
-from app.models.models import Base
+from app.models.tasks import Base
 
 def create_app() -> Flask:
     app: Flask = Flask(__name__, template_folder="views/templates", static_folder="views/static")
