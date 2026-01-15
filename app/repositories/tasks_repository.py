@@ -14,7 +14,7 @@ class TasksRepository:
         return result
     
     @staticmethod
-    def get_task_by_id(task_id: int) -> Tasks | None:
+    def get_by_id(task_id: int) -> Tasks | None:
         return db.session.get(Tasks, task_id)
 
     @staticmethod
@@ -34,7 +34,10 @@ class TasksRepository:
         for field in required_fields:
             if field not in data_dump:
                 raise ValueError(f"The field '{field}' is required for full update.")
-            
+        
+        if not db.session.get(Tasks, task_id):
+            return None
+
         stmt = update(Tasks).where(Tasks.task_id == task_id).values(**data_dump).returning(Tasks)
         result = db.session.execute(stmt).scalar_one()
 
@@ -45,8 +48,11 @@ class TasksRepository:
         if not data.has_changes():
             raise ValueError("No fields provided for update.")
         
-        data_dump: dict = data.model_dump(exclude_unset=True)
-
+        data_dump: dict = data.model_dump(exclude_unset = True)
+        
+        if not db.session.get(Tasks, task_id):
+            return None
+        
         stmt = update(Tasks).where(Tasks.task_id == task_id).values(**data_dump).returning(Tasks)
         result = db.session.execute(stmt).scalar_one()
 

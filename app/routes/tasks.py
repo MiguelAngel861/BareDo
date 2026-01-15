@@ -1,41 +1,35 @@
 from typing import Any
 
-from sqlalchemy import select, insert, delete
 from flask import request, abort
 from flask import Blueprint
 
-
-from app.extensions import db
+from app.services.tasks_service import TasksService
 from app.models.tasks import Tasks
 
-tareas_bp = Blueprint("tareas", __name__)
+tasks_bp = Blueprint("tasks", __name__)
+service = TasksService()
 
-@tareas_bp.get("/tasks")
-def get_tareas() -> Any:
-    query = select(Tasks)
-    result = db.session.execute(query).scalars().all()
-    return [tarea.to_dict() for tarea in result], 200
+@tasks_bp.get("/tasks")
+def get_tasks():
+    result = service.get_all_tasks()
+    tasks =  [task.model_dump() for task in result]
+    
+    return tasks, 200
 
-@tareas_bp.post("/tasks")
-def anadir_tarea() -> Any:
+@tasks_bp.get("/tasks/<int:task_id>")
+def get_task_by_id(task_id: int):
+    stmt = service.get_task_by_id(task_id)
+    if not stmt:
+        abort(404, description = "Task not found")
+
+    return stmt.model_dump(), 200
+
+@tasks_bp.post("/tasks")
+def add_task() -> Any:
     request.max_content_length = (1024 * 1024)
-    if not request.is_json:
-        abort(400, description = "Request must be a JSON")
-    
-    data = request.json
-    if not data.get("titulo") or not data.get("descripcion"):
-        abort(400, description = "Missing required fields: 'titulo' and 'descripcion'")
 
-    query = insert(Tasks).values(titulo = data["titulo"], descripcion = data["descripcion"]).returning(Tasks)
-    result = db.session.execute(query)
-    
-    new_task = result.scalar_one()
-    task_data = new_task.to_dict()
-    
-    db.session.commit()
-    
-    return task_data, 201
 
+'''
 @tareas_bp.put("/tasks/<int:task_id>")
 def editar_tarea(task_id: int) -> Any:
     request.max_content_length = (1024 * 1024)
@@ -60,7 +54,6 @@ def editar_tarea(task_id: int) -> Any:
     task_id_data = tarea.to_dict()
     return task_id_data, 200
 
-
 @tareas_bp.delete("/tasks/<int:task_id>")
 def eliminar_tarea(task_id: int) -> Any:
     query = delete(Tasks).where(Tasks.task_id == task_id)
@@ -71,3 +64,4 @@ def eliminar_tarea(task_id: int) -> Any:
         abort(404, description = "Task not found")
         
     return "", 200
+'''

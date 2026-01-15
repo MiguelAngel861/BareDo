@@ -1,6 +1,6 @@
 from flask import Flask, render_template
 
-from app.routes.routes import tareas_bp
+from app.routes.tasks import tasks_bp
 from app.extensions import db
 from app.models.tasks import Base
 
@@ -16,7 +16,7 @@ def create_app() -> Flask:
     with app.app_context():
         Base.metadata.create_all(db.engine)
 
-    app.register_blueprint(tareas_bp, url_prefix="/api")
+    app.register_blueprint(tasks_bp, url_prefix="/api/v1")
     
     @app.route("/")
     def index():
