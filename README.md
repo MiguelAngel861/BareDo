@@ -30,9 +30,9 @@ La idea es iterar por fases. Cada fase deja el proyecto en un estado “presenta
 - [ ] Normalizar respuestas y errores (JSON consistente):
 	- [ ] `{"error": {"code": "...", "message": "...", "details": ...}}`
 	- [ ] Usar `404` para no encontrado, `400/422` para payload inválido.
-- [ ] Revisar códigos HTTP:
-	- [ ] `POST` devuelve `201`
-	- [ ] `DELETE` idealmente `204 No Content`
+- [x] Revisar códigos HTTP:
+	- [x] `POST` devuelve `201`
+	- [x] `DELETE` idealmente `204 No Content`
 - [ ] Estándares de estilo:
 	- [ ] `ruff` (lint)
 	- [ ] `black` (format)
