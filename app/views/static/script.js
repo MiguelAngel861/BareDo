@@ -1,6 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
     const tasksList = document.getElementById('tasks-list');
     const addForm = document.getElementById('add-task-form');
+    const editForm = document.getElementById('edit-task-form');
+    const editTaskId = document.getElementById('edit-task-id');
+    const editTitle = document.getElementById('edit-title');
+    const editDescription = document.getElementById('edit-description');
+    const editCompleted = document.getElementById('edit-completed');
+    const editCancel = document.getElementById('edit-cancel');
+    let currentEditTask = null;
 
     // Función para cargar y mostrar tareas (GET)
     async function loadTasks() {
@@ -11,11 +18,20 @@ document.addEventListener('DOMContentLoaded', () => {
             tasksList.innerHTML = '';  // Limpia lista
             tasks.forEach(task => {
                 const li = document.createElement('li');
-                li.innerHTML = `
-                    <span>${task.title} - ${task.description} (Completed: ${task.completed ? 'Yes' : 'No'}) - Created: ${task.created_at}</span>
-                    <button onclick="editTask(${task.task_id})">Edit</button>
-                    <button onclick="deleteTask(${task.task_id})">Delete</button>
-                `;
+                const info = document.createElement('span');
+                info.textContent = `${task.title} - ${task.description} (Completed: ${task.completed ? 'Yes' : 'No'}) - Created: ${task.created_at}`;
+
+                const editButton = document.createElement('button');
+                editButton.textContent = 'Edit';
+                editButton.addEventListener('click', () => openEditForm(task));
+
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Delete';
+                deleteButton.addEventListener('click', () => deleteTask(task.task_id));
+
+                li.appendChild(info);
+                li.appendChild(editButton);
+                li.appendChild(deleteButton);
                 tasksList.appendChild(li);
             });
         } catch (error) {
@@ -42,32 +58,63 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Editar tarea (PUT) - Usa prompt simple para demo
-    window.editTask = async (id) => {
-        const newTitle = prompt('New title:');
-        const newDescription = prompt('New description:');
-        const newCompleted = confirm('Mark as completed?');
-        if (newTitle || newDescription || newCompleted !== undefined) {
-            const data = {};
-            if (newTitle) data.title = newTitle;
-            if (newDescription) data.description = newDescription;
-            if (newCompleted !== undefined) data.completed = newCompleted;
-            try {
-                const response = await fetch(`/api/v1/tasks/${id}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-                if (!response.ok) throw new Error('Error editing task');
-                loadTasks();
-            } catch (error) {
-                alert(error.message);
-            }
+    function openEditForm(task) {
+        currentEditTask = task;
+        editTaskId.value = task.task_id;
+        editTitle.value = task.title;
+        editDescription.value = task.description;
+        editCompleted.checked = Boolean(task.completed);
+        editForm.classList.remove('hidden');
+        editTitle.focus();
+    }
+
+    function closeEditForm() {
+        currentEditTask = null;
+        editForm.classList.add('hidden');
+        editForm.reset();
+    }
+
+    // Editar tarea (PUT) con checkbox de completado
+    editForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const id = editTaskId.value;
+        const updated = {
+            title: editTitle.value.trim(),
+            description: editDescription.value.trim(),
+            completed: editCompleted.checked
+        };
+        const changes = {};
+        if (currentEditTask) {
+            if (updated.title !== currentEditTask.title) changes.title = updated.title;
+            if (updated.description !== currentEditTask.description) changes.description = updated.description;
+            if (updated.completed !== Boolean(currentEditTask.completed)) changes.completed = updated.completed;
         }
-    };
+        const changeKeys = Object.keys(changes);
+        if (changeKeys.length === 0) {
+            closeEditForm();
+            return;
+        }
+        const allFieldsChanged = changeKeys.length === 3;
+        const method = allFieldsChanged ? 'PUT' : 'PATCH';
+        const payload = allFieldsChanged ? updated : changes;
+        try {
+            const response = await fetch(`/api/v1/tasks/${id}`, {
+                method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if (!response.ok) throw new Error('Error editing task');
+            closeEditForm();
+            loadTasks();
+        } catch (error) {
+            alert(error.message);
+        }
+    });
+
+    editCancel.addEventListener('click', () => closeEditForm());
 
     // Eliminar tarea (DELETE)
-    window.deleteTask = async (id) => {
+    async function deleteTask(id) {
         if (confirm('Delete task?')) {
             try {
                 const response = await fetch(`/api/v1/tasks/${id}`, { method: 'DELETE' });
@@ -77,7 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert(error.message);
             }
         }
-    };
+    }
 
     // Carga inicial
     loadTasks();

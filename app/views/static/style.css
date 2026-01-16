@@ -11,6 +11,10 @@ form {
     margin-bottom: 20px;
 }
 
+.hidden {
+    display: none;
+}
+
 input {
     margin: 5px;
     padding: 5px;

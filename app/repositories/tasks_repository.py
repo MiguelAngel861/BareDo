@@ -59,6 +59,6 @@ class TasksRepository:
         return result
     
     @staticmethod
-    def delete_task(task_id: int) -> None:
+    def delete_task(task_id: int):
         strmt = delete(Tasks).where(Tasks.task_id == task_id)
-        db.session.execute(strmt).scalar_one()
+        db.session.execute(strmt)
