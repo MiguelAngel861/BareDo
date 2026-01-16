@@ -11,8 +11,39 @@ form {
     margin-bottom: 20px;
 }
 
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 1000;
+}
+
 .hidden {
     display: none;
+}
+
+.modal.hidden {
+    display: none;
+}
+
+.modal-content {
+    background: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    width: 100%;
+    max-width: 480px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.modal-actions {
+    margin-top: 15px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
 }
 
 input {
@@ -20,9 +51,41 @@ input {
     padding: 5px;
 }
 
+textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 12px;
+    margin: 6px 0;
+    font-size: 14px;
+    line-height: 1.4;
+    border: 1px solid rgba(0,0,0,0.12);
+    border-radius: 8px;
+    background: #ffffff;
+    color: #0f172a;
+    min-height: 100px;
+    max-height: 220px;
+    resize: vertical;
+    transition: box-shadow 0.12s ease, border-color 0.12s ease;
+}
+
+textarea:focus {
+    outline: none;
+    border-color: rgba(59,130,246,0.9);
+    box-shadow: 0 4px 14px rgba(59,130,246,0.12);
+}
+
 button {
     padding: 5px 10px;
 }
+
+.add-container {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin: 12px 0 18px 0;
+}
+
+/* No custom styles for Add button - keep native appearance */
 
 ul {
     list-style-type: none;

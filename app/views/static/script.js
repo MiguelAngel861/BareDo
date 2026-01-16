@@ -1,6 +1,10 @@
 document.addEventListener('DOMContentLoaded', () => {
     const tasksList = document.getElementById('tasks-list');
     const addForm = document.getElementById('add-task-form');
+    const addModal = document.getElementById('add-modal');
+    const openAdd = document.getElementById('open-add');
+    const addCancel = document.getElementById('add-cancel');
+    const editModal = document.getElementById('edit-modal');
     const editForm = document.getElementById('edit-task-form');
     const editTaskId = document.getElementById('edit-task-id');
     const editTitle = document.getElementById('edit-title');
@@ -39,6 +43,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Abrir modal de agregar
+    openAdd.addEventListener('click', () => {
+        addModal.classList.remove('hidden');
+        // focus first input
+        const titleInput = document.getElementById('title');
+        if (titleInput) titleInput.focus();
+    });
+
     // Agregar tarea (POST)
     addForm.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -52,9 +64,24 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             if (!response.ok) throw new Error('Error adding task');
             addForm.reset();  // Limpia form
+            addModal.classList.add('hidden');
             loadTasks();  // Recarga lista
         } catch (error) {
             alert(error.message);
+        }
+    });
+
+    // Cancelar y cerrar modal de agregar
+    addCancel.addEventListener('click', () => {
+        addForm.reset();
+        addModal.classList.add('hidden');
+    });
+
+    // Click en overlay cierra modal de agregar
+    addModal.addEventListener('click', (e) => {
+        if (e.target === addModal) {
+            addForm.reset();
+            addModal.classList.add('hidden');
         }
     });
 
@@ -64,13 +91,13 @@ document.addEventListener('DOMContentLoaded', () => {
         editTitle.value = task.title;
         editDescription.value = task.description;
         editCompleted.checked = Boolean(task.completed);
-        editForm.classList.remove('hidden');
+        editModal.classList.remove('hidden');
         editTitle.focus();
     }
 
     function closeEditForm() {
         currentEditTask = null;
-        editForm.classList.add('hidden');
+        editModal.classList.add('hidden');
         editForm.reset();
     }
 
@@ -112,6 +139,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     editCancel.addEventListener('click', () => closeEditForm());
+
+    editModal.addEventListener('click', (e) => {
+        if (e.target === editModal) {
+            closeEditForm();
+        }
+    });
 
     // Eliminar tarea (DELETE)
     async function deleteTask(id) {
