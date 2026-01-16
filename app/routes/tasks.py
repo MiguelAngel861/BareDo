@@ -3,6 +3,7 @@ from typing import Any
 from flask import request, abort
 from flask import Blueprint
 
+from app.schemas.tasks_schemas import TaskCreate
 from app.services.tasks_service import TasksService
 from app.models.tasks import Tasks
 
@@ -27,8 +28,20 @@ def get_task_by_id(task_id: int):
 @tasks_bp.post("/tasks")
 def add_task() -> Any:
     request.max_content_length = (1024 * 1024)
-
-
+    
+    try:
+        task_data = TaskCreate(**request.get_json())
+    
+    except Exception as e:
+        return {"error": str(e)}, 400
+    
+    try:
+        new_task = service.add_new_task(task_data)
+        return new_task.model_dump(), 201
+    
+    except Exception as e:
+        return {"error": str(e)}, 500
+    
 '''
 @tareas_bp.put("/tasks/<int:task_id>")
 def editar_tarea(task_id: int) -> Any:

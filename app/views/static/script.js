@@ -5,16 +5,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // Función para cargar y mostrar tareas (GET)
     async function loadTasks() {
         try {
-            const response = await fetch('/api/tasks');  // Ajusta si url_prefix cambia
-            if (!response.ok) throw new Error('Error al cargar tareas');
+            const response = await fetch('/api/v1/tasks');  // Ajusta si url_prefix cambia
+            if (!response.ok) throw new Error('Error loading tasks');
             const tasks = await response.json();
             tasksList.innerHTML = '';  // Limpia lista
             tasks.forEach(task => {
                 const li = document.createElement('li');
                 li.innerHTML = `
-                    <span>${task.titulo} - ${task.descripcion} (Realizada: ${task.realizada ? 'Sí' : 'No'}) - Creada: ${task.fecha_creacion}</span>
-                    <button onclick="editTask(${task.task_id})">Editar</button>
-                    <button onclick="deleteTask(${task.task_id})">Eliminar</button>
+                    <span>${task.title} - ${task.description} (Completed: ${task.completed ? 'Yes' : 'No'}) - Created: ${task.created_at}</span>
+                    <button onclick="editTask(${task.task_id})">Edit</button>
+                    <button onclick="deleteTask(${task.task_id})">Delete</button>
                 `;
                 tasksList.appendChild(li);
             });
@@ -26,15 +26,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // Agregar tarea (POST)
     addForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const titulo = document.getElementById('titulo').value;
-        const descripcion = document.getElementById('descripcion').value;
+        const title = document.getElementById('title').value;
+        const description = document.getElementById('description').value;
         try {
-            const response = await fetch('/api/tasks', {
+            const response = await fetch('/api/v1/tasks', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ titulo, descripcion })
+                body: JSON.stringify({ title, description })
             });
-            if (!response.ok) throw new Error('Error al agregar tarea');
+            if (!response.ok) throw new Error('Error adding task');
             addForm.reset();  // Limpia form
             loadTasks();  // Recarga lista
         } catch (error) {
@@ -44,21 +44,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Editar tarea (PUT) - Usa prompt simple para demo
     window.editTask = async (id) => {
-        const newTitulo = prompt('Nuevo título:');
-        const newDescripcion = prompt('Nueva descripción:');
-        const newRealizada = confirm('¿Marcar como realizada?');
-        if (newTitulo || newDescripcion || newRealizada !== undefined) {
+        const newTitle = prompt('New title:');
+        const newDescription = prompt('New description:');
+        const newCompleted = confirm('Mark as completed?');
+        if (newTitle || newDescription || newCompleted !== undefined) {
             const data = {};
-            if (newTitulo) data.titulo = newTitulo;
-            if (newDescripcion) data.descripcion = newDescripcion;
-            if (newRealizada !== undefined) data.realizada = newRealizada;
+            if (newTitle) data.title = newTitle;
+            if (newDescription) data.description = newDescription;
+            if (newCompleted !== undefined) data.completed = newCompleted;
             try {
-                const response = await fetch(`/api/tasks/${id}`, {
+                const response = await fetch(`/api/v1/tasks/${id}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
                 });
-                if (!response.ok) throw new Error('Error al editar');
+                if (!response.ok) throw new Error('Error editing task');
                 loadTasks();
             } catch (error) {
                 alert(error.message);
@@ -68,10 +68,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Eliminar tarea (DELETE)
     window.deleteTask = async (id) => {
-        if (confirm('¿Eliminar tarea?')) {
+        if (confirm('Delete task?')) {
             try {
-                const response = await fetch(`/api/tasks/${id}`, { method: 'DELETE' });
-                if (!response.ok) throw new Error('Error al eliminar');
+                const response = await fetch(`/api/v1/tasks/${id}`, { method: 'DELETE' });
+                if (!response.ok) throw new Error('Error deleting task');
                 loadTasks();
             } catch (error) {
                 alert(error.message);

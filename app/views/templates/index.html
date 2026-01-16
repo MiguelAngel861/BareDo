@@ -10,14 +10,14 @@
     
     <!-- Formulario para agregar tarea -->
     <form id="add-task-form">
-        <label for="titulo">Título:</label>
-        <input type="text" id="titulo" required>
-        <label for="descripcion">Descripción:</label>
-        <input type="text" id="descripcion" required>
-        <button type="submit">Agregar Tarea</button>
+        <label for="title">Title:</label>
+        <input type="text" id="title" required>
+        <label for="description">Description:</label>
+        <input type="text" id="description" required>
+        <button type="submit">Add Task</button>
     </form>
     
-    <!-- Lista de tareas -->
+    <!-- Task list -->
     <ul id="tasks-list"></ul>
     
     <script src="{{ url_for('static', filename='script.js') }}"></script>
