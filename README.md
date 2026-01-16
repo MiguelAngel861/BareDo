@@ -1,6 +1,10 @@
 # BareDo
+BareDo es un gestor de tareas construido 
 
-Gestor de tareas **RESTful** construido con **Python + Flask**. Este repositorio está pensado como proyecto de portfolio: prioriza buenas prácticas, calidad de API, testing y despliegue.
+## Screenshots
+
+## License
+[GNU General Public License v3](https://www.gnu.org/licenses/gpl-3.0.html#license-text)
 
 ## Estado actual (MVP)
 
@@ -33,23 +37,23 @@ La idea es iterar por fases. Cada fase deja el proyecto en un estado “presenta
 - [x] Revisar códigos HTTP:
 	- [x] `POST` devuelve `201`
 	- [x] `DELETE` idealmente `204 No Content`
-- [ ] Estándares de estilo:
-	- [ ] `ruff` (lint)
-	- [ ] `black` (format)
+- [x] Estándares de estilo:
+	- [x] lint
+	- [x] format
 
 ### Fase 1 — API REST “de verdad” (2–4 días)
 
-- [ ] Versionado: `GET /api/v1/tasks` (mantener compatibilidad con `/tasks` si quieres).
-- [ ] Mejorar diseño de endpoints:
-	- [ ] `GET /tasks/<id>` (detalle)
-	- [ ] `PATCH /tasks/<id>` (updates parciales)
+- [x] Versionado: `GET /api/v1/tasks` (mantener compatibilidad con `/tasks` si quieres).
+- [x] Mejorar diseño de endpoints:
+	- [x] `GET /tasks/<id>` (detalle)
+	- [x] `PATCH /tasks/<id>` (updates parciales)
 - [ ] Paginación y filtros en `GET /tasks`:
 	- [ ] `?page=1&page_size=20`
 	- [ ] `?realizada=true`
 	- [ ] `?search=...` (por título/descripcion)
 - [ ] Ordenación: `?sort=-fecha_creacion,titulo`
 - [ ] Validación con `flask-pydantic`:
-	- [ ] esquemas de request/response
+	- [x] esquemas de request/response
 	- [ ] respuestas de error detalladas cuando falle validación
 
 ### Fase 2 — Persistencia pro (2–3 días)
@@ -99,7 +103,7 @@ Si quieres subir el nivel, añade autenticación.
 - [ ] Servidor WSGI (gunicorn) y config por entorno.
 - [ ] GitHub Actions:
 	- [ ] lint + tests en cada PR/push
-- [ ] Deploy público (Render/Fly.io/Railway) + URL en este README.
+- [x] Deploy público (Render/Fly.io/Railway) + URL en este README.
 
 ## Instalación (local)
 

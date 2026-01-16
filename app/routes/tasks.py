@@ -1,3 +1,5 @@
+from typing import Any
+
 from flask import Blueprint, abort, request
 
 from app.schemas.tasks_schemas import TaskCreate, TaskUpdate
@@ -93,10 +95,8 @@ def update_task_patch(task_id: int):
 
 
 @tasks_bp.delete("/tasks/<int:task_id>")
-def delete_task(task_id: int):
+def delete_task(task_id: int) -> Any:
     deleted_task = service.delete_task(task_id)
 
     if deleted_task is None:
-        return {"message": "Task deleted successfully"}, 204
-
-    abort(404, description="Task not found")
+        return 204
