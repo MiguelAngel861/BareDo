@@ -37,7 +37,7 @@ class TasksService:
         self, task_id: int, task_data: TaskUpdate
     ) -> TaskResponse | None:
         data_dump: dict = task_data.model_dump(exclude_unset=True)
-        required_fields: list[str] = ["title", "description", "completed"]
+        required_fields: list[str] = ["title", "description", "completed", "priority", "due_date"]
 
         for field in required_fields:
             if field not in data_dump:
