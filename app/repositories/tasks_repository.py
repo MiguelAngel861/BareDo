@@ -30,7 +30,7 @@ class TasksRepository:
 
     @staticmethod
     def put_update_task(task_id: int, data: TaskUpdate) -> Tasks | None:
-        required_fields: list[str] = ["title", "description", "completed"]
+        required_fields: list[str] = ["title", "description", "completed", "priority", "due_date"]
         data_dump: dict = data.model_dump(exclude_unset=True)
 
         for field in required_fields:

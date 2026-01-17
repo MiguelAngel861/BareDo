@@ -96,7 +96,6 @@ def update_task_patch(task_id: int):
 
 @tasks_bp.delete("/tasks/<int:task_id>")
 def delete_task(task_id: int) -> Any:
-    deleted_task = service.delete_task(task_id)
-
-    if deleted_task is None:
-        return 204
+    deleted_task = service.delete_task(task_id)  # noqa: F841
+    
+    return {}, 204
