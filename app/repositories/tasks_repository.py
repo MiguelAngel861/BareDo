@@ -1,76 +1,61 @@
-from typing import Sequence
+from typing import Any, Sequence
 
 from sqlalchemy import delete, insert, select, update
 
 from app.extensions import db
 from app.models.tasks import Tasks
-from app.schemas.tasks_schemas import TaskCreate, TaskUpdate
 
 
 class TasksRepository:
     @staticmethod
     def get_all() -> Sequence[Tasks]:
         stmt = select(Tasks)
-        result: Sequence[Tasks] = db.session.execute(stmt).scalars().all()
+
+        with db.session as session:
+            result: Sequence[Tasks] = session.execute(stmt).scalars().all()
 
         return result
 
     @staticmethod
     def get_by_id(task_id: int) -> Tasks | None:
-        return db.session.get(Tasks, task_id)
+        stmt = select(Tasks).where(Tasks.task_id == task_id)
 
-    @staticmethod
-    def add_task(data: TaskCreate) -> Tasks:
-        data_dump: dict = data.model_dump()
-
-        stmt = insert(Tasks).values(**data_dump).returning(Tasks)
-        result: Tasks = db.session.execute(stmt).scalar_one()
+        with db.session as session:
+            result: Tasks | None = session.execute(stmt).scalar_one_or_none()
 
         return result
 
     @staticmethod
-    def put_update_task(task_id: int, data: TaskUpdate) -> Tasks | None:
-        required_fields: list[str] = ["title", "description", "completed", "priority", "due_date"]
-        data_dump: dict = data.model_dump(exclude_unset=True)
+    def add_task(data: dict[str, Any]) -> Tasks | None:
+        stmt = insert(Tasks).values(**data).returning(Tasks)
 
-        for field in required_fields:
-            if field not in data_dump:
-                raise ValueError(f"The field '{field}' is required for full update.")
+        with db.session as session:
+            result: Tasks | None = session.execute(stmt).scalar_one_or_none()
 
-        if not db.session.get(Tasks, task_id):
-            return None
+        return result
 
+    @staticmethod
+    def update_task(task_id: int, data: dict[str, Any]) -> Tasks | None:
         stmt = (
             update(Tasks)
             .where(Tasks.task_id == task_id)
-            .values(**data_dump)
+            .values(**data)
             .returning(Tasks)
         )
-        result = db.session.execute(stmt).scalar_one()
+
+        with db.session as session:
+            result: Tasks | None = session.execute(stmt).scalar_one_or_none()
 
         return result
 
     @staticmethod
-    def patch_update_task(task_id: int, data: TaskUpdate) -> Tasks | None:
-        if not data.has_changes():
-            raise ValueError("No fields provided for update.")
+    def delete_task(task_id: int) -> bool:
+        stmt = delete(Tasks).where(Tasks.task_id == task_id)
 
-        data_dump: dict = data.model_dump(exclude_unset=True)
+        with db.session as session:
+            result = session.execute(stmt)
 
-        if not db.session.get(Tasks, task_id):
-            return None
+        if result.rowcount == 0:  # type: ignore
+            return False
 
-        stmt = (
-            update(Tasks)
-            .where(Tasks.task_id == task_id)
-            .values(**data_dump)
-            .returning(Tasks)
-        )
-        result = db.session.execute(stmt).scalar_one()
-
-        return result
-
-    @staticmethod
-    def delete_task(task_id: int):
-        strmt = delete(Tasks).where(Tasks.task_id == task_id)
-        db.session.execute(strmt)
+        return True
