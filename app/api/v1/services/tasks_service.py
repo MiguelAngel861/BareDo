@@ -5,7 +5,7 @@ from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from app.extensions import db
 from app.models.tasks import Tasks
 from app.repositories.tasks_repository import TasksRepository
-from app.utils.exceptions import DatabaseError, NotFoundError, ValidationError
+from app.errors.exceptions import DatabaseError, NotFoundError, ValidationError
 
 
 class TasksService:

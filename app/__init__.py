@@ -4,6 +4,7 @@ from app.extensions import db
 from app.models.tasks import Base
 from app.api.v1.routes.tasks import tasks_bp
 from app.api.v1.routes.main import main_bp
+from app.errors.handlers import register_error_handlers
 
 def create_app() -> Flask:
     app: Flask = Flask(
@@ -12,6 +13,7 @@ def create_app() -> Flask:
 
     app.config["SQLALCHEMY_ENGINES"] = {"default": "sqlite:///db.sqlite"}
 
+    register_error_handlers(app)
     db.init_app(app)
 
     with app.app_context():

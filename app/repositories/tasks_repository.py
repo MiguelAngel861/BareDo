@@ -28,9 +28,7 @@ class TasksRepository:
     @staticmethod
     def add_task(data: dict[str, Any]) -> Tasks | None:
         stmt = insert(Tasks).values(**data).returning(Tasks)
-
-        with db.session as session:
-            result: Tasks | None = session.execute(stmt).scalar_one_or_none()
+        result: Tasks | None = db.session.execute(stmt).scalar_one_or_none()
 
         return result
 
@@ -42,18 +40,14 @@ class TasksRepository:
             .values(**data)
             .returning(Tasks)
         )
-
-        with db.session as session:
-            result: Tasks | None = session.execute(stmt).scalar_one_or_none()
+        result: Tasks | None = db.session.execute(stmt).scalar_one_or_none()
 
         return result
 
     @staticmethod
     def delete_task(task_id: int) -> bool:
         stmt = delete(Tasks).where(Tasks.task_id == task_id)
-
-        with db.session as session:
-            result = session.execute(stmt)
+        result = db.session.execute(stmt)
 
         if result.rowcount == 0:  # type: ignore
             return False
