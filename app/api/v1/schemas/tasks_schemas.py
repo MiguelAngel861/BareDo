@@ -6,7 +6,7 @@ from pydantic import BaseModel, ConfigDict, Field
 class TaskBase(BaseModel):
     title: str = Field(min_length=5, max_length=40)
     description: str = Field(default="", min_length=0, max_length=500)
-    priority: int = Field(default=1, ge=1, le=5)
+    priority: int = Field(default=1, ge=1, le=3)
 
 
 class TaskResponse(TaskBase):
@@ -30,12 +30,12 @@ class TaskUpdate(BaseModel):
     description: str = Field(min_length=0, max_length=500)
     completed: bool
     priority: int = Field(ge=1, le=3)
-    due_date: datetime = Field()
+    due_date: datetime
 
 
 class TaskPatch(BaseModel):
-    title: str | None = Field(default=None, min_length=5, max_length=40)
-    description: str | None = Field(default=None, min_length=0, max_length=500)
-    completed: bool | None = Field(default=None)
-    priority: int | None = Field(default=None, ge=1, le=3)
-    due_date: datetime | None = Field(default=None)
+    title: str | None = None
+    description: str | None = None
+    completed: bool | None = None
+    priority: int | None = None
+    due_date: datetime | None = None

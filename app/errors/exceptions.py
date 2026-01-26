@@ -4,7 +4,7 @@ class DomainError(Exception):
     pass
 
 
-class ValidationError(DomainError):
+class DataValidationError(DomainError):
     """Data Validation Errors"""
 
     pass

@@ -5,7 +5,7 @@ from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from app.extensions import db
 from app.models.tasks import Tasks
 from app.repositories.tasks_repository import TasksRepository
-from app.errors.exceptions import DatabaseError, NotFoundError, ValidationError
+from app.errors.exceptions import DatabaseError, NotFoundError, DataValidationError
 
 
 class TasksService:
@@ -44,7 +44,7 @@ class TasksService:
             except IntegrityError as e:
                 session.rollback()
 
-                raise ValidationError(str(e))
+                raise DataValidationError(str(e))
 
             except SQLAlchemyError as e:
                 session.rollback()
@@ -67,7 +67,7 @@ class TasksService:
             except IntegrityError as e:
                 session.rollback()
 
-                raise ValidationError(str(e))
+                raise DataValidationError(str(e))
 
             except SQLAlchemyError as e:
                 session.rollback()
@@ -83,10 +83,10 @@ class TasksService:
 
                 session.commit()
 
-            except IntegrityError as e:
+            except IntegrityError  as e:
                 session.rollback()
 
-                raise ValidationError(str(e))
+                raise DataValidationError(str(e))
 
             except SQLAlchemyError as e:
                 session.rollback()
