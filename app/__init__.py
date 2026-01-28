@@ -1,9 +1,10 @@
-from flask import Flask, render_template
+from flask import Flask
 
 from app.extensions import db
 from app.models.tasks import Base
-from app.routes.tasks import tasks_bp
-
+from app.api.v1.routes.tasks import tasks_bp
+from app.api.v1.routes.main import main_bp
+from app.errors.handlers import register_error_handlers
 
 def create_app() -> Flask:
     app: Flask = Flask(
@@ -12,15 +13,14 @@ def create_app() -> Flask:
 
     app.config["SQLALCHEMY_ENGINES"] = {"default": "sqlite:///db.sqlite"}
 
+    register_error_handlers(app)
     db.init_app(app)
 
     with app.app_context():
         Base.metadata.create_all(db.engine)
 
     app.register_blueprint(tasks_bp, url_prefix="/api/v1")
+    app.register_blueprint(main_bp, url_prefix="/")
 
-    @app.route("/")
-    def index():
-        return render_template("index.html")
 
     return app

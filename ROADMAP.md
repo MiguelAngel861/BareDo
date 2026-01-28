@@ -8,9 +8,9 @@ La idea es iterar por fases. Cada fase deja el proyecto en un estado “presenta
 	- [ ] Instalación y ejecución
 	- [ ] Ejemplos `curl`
 	- [ ] Descripción de decisiones técnicas
-- [ ] Normalizar respuestas y errores (JSON consistente):
-	- [ ] `{"error": {"code": "...", "message": "...", "details": ...}}`
-	- [ ] Usar `404` para no encontrado, `400/422` para payload inválido.
+- [x] Normalizar respuestas y errores (JSON consistente):
+	- [x] `{"error": {"code": "...", "message": "...", "details": ...}}`
+	- [x] Usar `404` para no encontrado, `400` para payload inválido.
 - [x] Revisar códigos HTTP:
 	- [x] `POST` devuelve `201`
 	- [x] `DELETE` idealmente `204 No Content`
@@ -29,9 +29,9 @@ La idea es iterar por fases. Cada fase deja el proyecto en un estado “presenta
 	- [ ] `?realizada=true`
 	- [ ] `?search=...` (por título/descripcion)
 - [ ] Ordenación: `?sort=-fecha_creacion,titulo`
-- [ ] Validación con `flask-pydantic`:
+- [x] Validación con `pydantic`:
 	- [x] esquemas de request/response
-	- [ ] respuestas de error detalladas cuando falle validación
+	- [x] respuestas de error detalladas cuando falle validación
 
 ### Fase 2 — Persistencia pro (2–3 días)
 
@@ -41,7 +41,7 @@ La idea es iterar por fases. Cada fase deja el proyecto en un estado “presenta
 	- [x] `updated_at`
 	- [x] `due_date` (opcional)
 	- [x] `priority` (enum simple: low/medium/high)
-- [ ] Índices donde tenga sentido (`realizada`, `fecha_creacion`, etc.).
+- [x] Índices donde tenga sentido (`realizada`, `fecha_creacion`, etc.).
 
 ### Fase 3 — Testing (3–5 días)
 
