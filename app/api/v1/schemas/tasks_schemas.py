@@ -8,8 +8,7 @@ class TaskBase(BaseModel):
     description: str = Field(default="", min_length=0, max_length=500)
     priority: int = Field(default=1, ge=1, le=3)
 
-
-class TaskResponse(TaskBase):
+class TaskBody(TaskBase):
     task_id: int
     completed: bool
     due_date: datetime
@@ -19,6 +18,18 @@ class TaskResponse(TaskBase):
     # Compatibility with ORM models
     model_config = ConfigDict(from_attributes=True)
 
+class PaginationResponse(BaseModel):
+    total: int
+    page: int
+    per_page: int
+    total_pages: int
+
+class TaskResponse(BaseModel):
+    tasks: list[TaskBody]
+    meta: PaginationResponse
+    
+    # Compatibility with ORM models
+    model_config = ConfigDict(from_attributes=True)
 
 class TaskCreate(TaskBase):
     completed: bool = Field(default=False)

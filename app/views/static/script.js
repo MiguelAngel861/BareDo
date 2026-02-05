@@ -5,11 +5,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const tasksList = $('tasks-list');
     const addModal = $('add-modal');
     const editModal = $('edit-modal');
+    const deleteModal = $('delete-modal');
 
     const addForm = $('add-task-form');
     const editForm = $('edit-task-form');
 
     let currentEditTask = null;
+    let pendingDeleteId = null;
 
     /* ---------- Helpers ---------- */
     const prune = o =>
@@ -138,17 +140,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /* ---------- Delete ---------- */
     const removeTask = async id => {
-        if (!confirm('Delete task?')) return;
-        try {
-            await api(`/api/v1/tasks/${id}`, { method: 'DELETE' });
-            loadTasks();
-        } catch {
-            alert('Error deleting task');
-        }
+        pendingDeleteId = id;
+        openModal(deleteModal);
     };
 
+    const deleteConfirm = $('delete-confirm');
+    const deleteCancel = $('delete-cancel');
+
+    if (deleteConfirm) {
+        deleteConfirm.onclick = async () => {
+            if (!pendingDeleteId) return closeModal(deleteModal);
+            try {
+                await api(`/api/v1/tasks/${pendingDeleteId}`, { method: 'DELETE' });
+                closeModal(deleteModal);
+                pendingDeleteId = null;
+                loadTasks();
+            } catch {
+                alert('Error deleting task');
+            }
+        };
+    }
+
+    if (deleteCancel) {
+        deleteCancel.onclick = () => {
+            pendingDeleteId = null;
+            closeModal(deleteModal);
+        };
+    }
+
     /* ---------- Global Close ---------- */
-    [addModal, editModal].forEach(m =>
+    [addModal, editModal, deleteModal].forEach(m =>
         m.addEventListener('click', e => e.target === m && closeModal(m))
     );
 
@@ -156,6 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.key === 'Escape') {
             closeModal(addModal, addForm);
             closeModal(editModal, editForm);
+            closeModal(deleteModal);
         }
     });
 

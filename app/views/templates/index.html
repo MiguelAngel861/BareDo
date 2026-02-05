@@ -70,6 +70,18 @@
             </form>
         </div>
     </div>
+
+    <!-- Modal para eliminar tarea -->
+    <div id="delete-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="delete-modal-title">
+        <div class="modal-content">
+            <h2 id="delete-modal-title">Eliminar tarea</h2>
+            <p id="delete-modal-message">¿Seguro que quieres eliminar esta tarea? Esta acción no se puede deshacer.</p>
+            <div class="modal-actions">
+                <button type="button" id="delete-confirm" class="danger">Eliminar</button>
+                <button type="button" id="delete-cancel">Cancelar</button>
+            </div>
+        </div>
+    </div>
     
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>

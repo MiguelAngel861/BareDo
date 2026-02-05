@@ -39,6 +39,12 @@ form {
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
+.modal-content p {
+    margin: 10px 0 0 0;
+    color: #334155;
+    line-height: 1.4;
+}
+
 .modal-actions {
     margin-top: 15px;
     display: flex;
