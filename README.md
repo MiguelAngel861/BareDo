@@ -1,11 +1,12 @@
 # BareDo
-BareDo is a minimal tasks management web app built with Python and Flask. 
+BareDo is a minimal tasks management web app built with Flask. 
 
-## Screenshots
-
-## Installation
-
+## Getting Started
+### Prerequisites
+  - npm
+  - uv
 ## Usage
 
+## Technical Decisions
 ## License
-[GNU General Public License v3](https://www.gnu.org/licenses/gpl-3.0.html#license-text)
+[The MIT License](https://mit-license.org/)
