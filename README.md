@@ -5,6 +5,12 @@ BareDo is a minimal tasks management web app built with Flask.
 ### Prerequisites
   - npm
   - uv
+
+### Instalation
+1. Clone this Repository
+```
+https://github.com/MiguelAngel861/BareDo.git
+```
 ## Usage
 
 ## Technical Decisions
