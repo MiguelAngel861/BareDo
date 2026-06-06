@@ -24,11 +24,11 @@ La idea es iterar por fases. Cada fase deja el proyecto en un estado “presenta
 - [x] Mejorar diseño de endpoints:
 	- [x] `GET /tasks/<id>` (detalle)
 	- [x] `PATCH /tasks/<id>` (updates parciales)
-- [ ] Paginación y filtros en `GET /tasks`:
-	- [ ] `?page=1&page_size=20`
-	- [ ] `?realizada=true`
-	- [ ] `?search=...` (por título/descripcion)
-- [ ] Ordenación: `?sort=-fecha_creacion,titulo`
+- [x] Paginación y filtros en `GET /tasks`:
+	- [x] `?page=1&page_size=20`
+	- [x] `?realizada=true`
+	- [x] `?search=...` (por título/descripcion)
+- [x] Ordenación: `?sort=-fecha_creacion,titulo`
 - [x] Validación con `pydantic`:
 	- [x] esquemas de request/response
 	- [x] respuestas de error detalladas cuando falle validación
@@ -67,7 +67,6 @@ Si quieres subir el nivel, añade autenticación.
 ### Fase 5 — Documentación de API y DX (2–4 días)
 
 - [ ] OpenAPI/Swagger (por ejemplo con Flask-Smorest) o documentación Markdown completa.
-- [ ] Colección de Postman/Insomnia.
 - [ ] Logs y trazabilidad:
 	- [ ] logging consistente
 	- [ ] `request_id` en logs/respuestas (opcional)

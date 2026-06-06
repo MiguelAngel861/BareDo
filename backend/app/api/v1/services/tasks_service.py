@@ -1,25 +1,35 @@
-from typing import Sequence
-
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
+from app.errors.exceptions import DatabaseError, DataValidationError, NotFoundError
 from app.extensions import db
 from app.models.tasks import Tasks
 from app.repositories.tasks_repository import TasksRepository
-from app.errors.exceptions import DatabaseError, NotFoundError, DataValidationError
 
 
 class TasksService:
     def __init__(self) -> None:
         self.repository = TasksRepository()
 
-    def get_all_tasks(self) -> list[dict]:
-        stmt: Sequence[Tasks] = self.repository.get_all()
-        if not stmt:
-            return []
+    def get_all_tasks(self, page: int, per_page: int, filters: dict | None, sort):
+        sort_fields = self._parse_sort(sort)
 
-        result: list[dict] = [task.to_dict() for task in stmt]
+        tasks, total_tasks = self.repository.get_all(page, per_page, filters, sort_fields)
+        
+        if not tasks:
+            return {}
 
-        return result
+        result: list[dict] = [task.to_dict() for task in tasks]  # type: ignore
+        total_pages = (total_tasks + per_page - 1) // total_tasks if per_page else 1  # type: ignore
+
+        return {
+            "tasks": result,
+            "meta": {
+                "total": total_tasks,
+                "page": page,
+                "per_page": per_page,
+                "total_pages": total_pages,
+            },
+        }
 
     def get_task_by_id(self, task_id: int) -> dict:
         stmt: Tasks | None = self.repository.get_by_id(task_id)
@@ -83,7 +93,7 @@ class TasksService:
 
                 session.commit()
 
-            except IntegrityError  as e:
+            except IntegrityError as e:
                 session.rollback()
 
                 raise DataValidationError(str(e))
@@ -92,3 +102,25 @@ class TasksService:
                 session.rollback()
 
                 raise DatabaseError(str(e))
+
+    @staticmethod
+    def _parse_sort(sort: str | None):
+        allowed_fields = ["completed", "due_date"]
+
+        if not sort:
+            return []
+
+        fields: list = []
+
+        for raw in sort.split(","):
+            raw = raw.strip()
+
+            desc = raw.startswith("-")
+            field = raw[1:] if desc else raw
+
+            if field not in allowed_fields:
+                continue
+
+            fields.append((field, desc))
+
+        return fields
