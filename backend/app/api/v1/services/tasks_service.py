@@ -13,13 +13,12 @@ class TasksService:
     def get_all_tasks(self, page: int, per_page: int, filters: dict | None, sort):
         sort_fields = self._parse_sort(sort)
 
-        tasks, total_tasks = self.repository.get_all(page, per_page, filters, sort_fields)
-        
-        if not tasks:
-            return {}
+        tasks, total_tasks = self.repository.get_all(
+            page, per_page, filters, sort_fields
+        )
 
-        result: list[dict] = [task.to_dict() for task in tasks]  # type: ignore
-        total_pages = (total_tasks + per_page - 1) // total_tasks if per_page else 1  # type: ignore
+        result: list[dict] = [task.to_dict() for task in tasks]
+        total_pages = (total_tasks + per_page - 1) // per_page if per_page > 0 else 0
 
         return {
             "tasks": result,

@@ -9,25 +9,22 @@ from app.models.tasks import Tasks
 class TasksRepository:
     def get_all(
         self, page: int, per_page: int, filters: dict | None, sort
-    ) -> Sequence[Tasks] | tuple[Sequence[Tasks], int | None]:
-        stmt = select(Tasks)
-        filtered_stmt = self._apply_data_filters(stmt, filters)
-        sorted_stmt = self._apply_sort(filtered_stmt, sort)
+    ) -> tuple[Sequence[Tasks], int]:
+        # Base filtered query
+        base_stmt = self._apply_sort(
+            self._apply_data_filters(select(Tasks), filters), sort
+        )
 
-        if page is not None and per_page is not None:
+        # Count total items before pagination
+        count_stmt = select(func.count()).select_from(base_stmt.subquery())
+        total_count: int = db.session.execute(count_stmt).scalar()
 
-            # data
-            offset: int = (page - 1) * per_page
-            data_stmt = sorted_stmt.limit(per_page).offset(offset)
-            data_result: Sequence[Tasks] = db.session.execute(data_stmt).scalars().all()
+        # Paginated data query
+        offset: int = (page - 1) * per_page
+        data_stmt = base_stmt.offset(offset).limit(per_page)
+        data_result: Sequence[Tasks] = db.session.execute(data_stmt).scalars().all()
 
-        
-        # total items
-        base_stmt = self._apply_sort(self._apply_data_filters(select(Tasks), filters), sort)
-        items_stmt = select(func.count()).select_from(base_stmt.subquery())
-        items_result: int | None = db.session.execute(items_stmt).scalar()
-
-        return data_result, items_result
+        return data_result, total_count
 
     @staticmethod
     def get_by_id(task_id: int) -> Tasks | None:
@@ -69,17 +66,14 @@ class TasksRepository:
 
     @staticmethod
     def _apply_sort(stmt: Select, sort_fields):
-        columns = {
-            "due_date": Tasks.due_date,
-            "completed": Tasks.completed
-        }
-        
+        columns = {"due_date": Tasks.due_date, "completed": Tasks.completed}
+
         for field, is_desc in sort_fields:
             column = columns[field]
             stmt = stmt.order_by(desc(column) if is_desc else asc(column))
-        
+
         return stmt
-        
+
     @staticmethod
     def _apply_data_filters(stmt: Select, filters: dict | None):
         if not filters:
@@ -91,7 +85,8 @@ class TasksRepository:
         if description := filters.get("description"):
             stmt = stmt.where(Tasks.description.ilike(f"%{description}%"))
 
-        if task_status := filters.get("completed"):
+        task_status = filters.get("completed")
+        if task_status is not None:
             stmt = stmt.where(Tasks.completed == task_status)
 
         return stmt
