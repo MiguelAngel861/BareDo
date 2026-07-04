@@ -9,7 +9,6 @@ from app.api.v1.schemas.tasks_schemas import (
     PaginationResponse,
 )
 from app.api.v1.services.tasks_service import TasksService
-from app.errors.exceptions import NotFoundError
 
 tasks_bp = Blueprint("tasks", __name__)
 service = TasksService()
@@ -17,7 +16,6 @@ service = TasksService()
 
 @tasks_bp.get("/tasks")
 def get_tasks():
-    # URL Arguments
     page = request.args.get("page", default=1, type=int)
     per_page = request.args.get("per_page", default=100, type=int)
     sort = request.args.get("sort")
@@ -27,7 +25,6 @@ def get_tasks():
         "completed": request.args.get("completed", type=lambda v: v.lower() == "true"),
     }
 
-    # Validate query parameters
     if page < 1:
         abort(400, "page must be >= 1")
 
@@ -49,18 +46,14 @@ def get_tasks():
 
 @tasks_bp.get("/tasks/<int:task_id>")
 def get_task_by_id(task_id: int):
-    try:
-        stmt = service.get_task_by_id(task_id)
-        return TaskBody.model_validate(stmt).model_dump(), 200
-
-    except NotFoundError:
-        abort(404)
+    stmt = service.get_task_by_id(task_id)
+    return TaskBody.model_validate(stmt).model_dump(), 200
 
 
 @tasks_bp.post("/tasks")
 def add_task():
     request.max_content_length = 1024 * 1024
-    payload = request.get_json() or {}
+    payload = request.get_json(silent=True) or {}
     task_data = TaskCreate(**payload)
 
     new_task = service.add_new_task(task_data.model_dump())
@@ -69,9 +62,9 @@ def add_task():
 
 
 @tasks_bp.put("/tasks/<int:task_id>")
-def update_task(task_id: int) -> dict:
+def update_task(task_id: int):
     request.max_content_length = 1024 * 1024
-    payload = request.get_json() or {}
+    payload = request.get_json(silent=True) or {}
     task_data = TaskUpdate(**payload)
 
     updated_task = service.update_task(task_id, task_data.model_dump())
@@ -82,7 +75,7 @@ def update_task(task_id: int) -> dict:
 @tasks_bp.patch("/tasks/<int:task_id>")
 def patch_task(task_id: int):
     request.max_content_length = 1024 * 1024
-    payload = request.get_json() or {}
+    payload = request.get_json(silent=True) or {}
     task_data = TaskPatch(**payload)
 
     patched_task = service.update_task(
@@ -94,10 +87,5 @@ def patch_task(task_id: int):
 
 @tasks_bp.delete("/tasks/<int:task_id>")
 def delete_task(task_id: int):
-    try:
-        service.delete_task(task_id)
-
-        return {}, 204
-
-    except NotFoundError:
-        abort(404)
+    service.delete_task(task_id)
+    return {}, 204
