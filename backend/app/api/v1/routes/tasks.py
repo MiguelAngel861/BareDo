@@ -28,7 +28,8 @@ def get_tasks():
         "completed": request.args.get("completed", type=lambda v: v.lower() == "true"),
     }
 
-    stmt = service.get_all_tasks(page, per_page, filters, sort)["tasks"]
+    stmt = service.get_all_tasks(page, per_page, filters, sort)
+    tasks = stmt.get("tasks", [])
     validated_tasks = [TaskBody.model_validate(task) for task in stmt]
 
     meta = PaginationResponse(
@@ -40,7 +41,7 @@ def get_tasks():
     
     validated_data = TaskResponse(tasks = validated_tasks, meta=meta)
     
-    return TaskResponse.model_validate(validated_data).model_dump(), 201
+    return TaskResponse.model_validate(validated_data).model_dump(), 200
 
 
 @tasks_bp.get("/tasks/<int:task_id>")

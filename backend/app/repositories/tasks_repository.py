@@ -21,8 +21,10 @@ class TasksRepository:
             data_stmt = sorted_stmt.limit(per_page).offset(offset)
             data_result: Sequence[Tasks] = db.session.execute(data_stmt).scalars().all()
 
+        
         # total items
-        items_stmt = select(func.count()).select_from(data_stmt.subquery())
+        base_stmt = self._apply_sort(self._apply_data_filters(select(Tasks), filters), sort)
+        items_stmt = select(func.count()).select_from(base_stmt.subquery())
         items_result: int | None = db.session.execute(items_stmt).scalar()
 
         return data_result, items_result
