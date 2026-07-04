@@ -36,11 +36,8 @@ class TaskCreate(TaskBase):
     due_date: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
-class TaskUpdate(BaseModel):
-    title: str = Field(min_length=5, max_length=40)
-    description: str = Field(min_length=0, max_length=500)
+class TaskUpdate(TaskBase):
     completed: bool
-    priority: int = Field(ge=1, le=3)
     due_date: datetime
 
 

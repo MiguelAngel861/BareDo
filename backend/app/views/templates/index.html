@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BareDo</title>
+</head>
+<body>
+    <h1>BareDo</h1>
+
+    <form id="task-form">
+        <input type="text" id="title" placeholder="Title" required>
+        <input type="text" id="description" placeholder="Description">
+        <input type="number" id="priority" min="1" max="3" value="1">
+        <button type="submit">Add Task</button>
+    </form>
+
+    <ul id="task-list"></ul>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
