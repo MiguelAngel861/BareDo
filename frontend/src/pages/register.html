@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BareDo - Register</title>
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/auth.css">
+</head>
+<body>
+    <div class="auth-page">
+        <div class="auth-container">
+            <h1>Create Account</h1>
+            <form id="register-form">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" required minlength="3" maxlength="50" autocomplete="username" placeholder="Choose a username">
+                    <span class="error-message" id="username-error"></span>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required minlength="8" maxlength="128" autocomplete="new-password" placeholder="Create a password">
+                    <span class="error-message" id="password-error"></span>
+                    <div class="password-requirements">Minimum 8 characters</div>
+                </div>
+                <div class="form-group">
+                    <label for="confirm-password">Confirm Password</label>
+                    <input type="password" id="confirm-password" name="confirm-password" required minlength="8" maxlength="128" autocomplete="new-password" placeholder="Confirm your password">
+                    <span class="error-message" id="confirm-password-error"></span>
+                </div>
+                <div id="global-error" class="global-error"></div>
+                <button type="submit" id="submit-btn">Register</button>
+            </form>
+            <div class="switch-link">
+                Already have an account? <a href="login.html">Login</a>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="../js/pages/register.js"></script>
+</body>
+</html>
