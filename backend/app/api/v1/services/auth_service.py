@@ -1,4 +1,4 @@
-from flask_jwt_extended import create_access_token, get_jwt_identity
+from flask_jwt_extended import create_access_token, create_refresh_token, get_jwt_identity
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
@@ -32,8 +32,9 @@ class AuthService:
 
     def get_current_user(self) -> dict | None:
         user_id = get_jwt_identity()
-        if not user_id:
-            return None
+        return self.get_user_by_id(user_id) if user_id else None
+
+    def get_user_by_id(self, user_id) -> dict | None:
         stmt = select(Users).where(Users.user_id == int(user_id))
         user = db.session.execute(stmt).scalar_one_or_none()
         return user.to_dict() if user else None
@@ -41,3 +42,7 @@ class AuthService:
     @staticmethod
     def create_token(user_id: int) -> str:
         return create_access_token(identity=str(user_id))
+
+    @staticmethod
+    def create_refresh_token(user_id: int) -> str:
+        return create_refresh_token(identity=str(user_id))

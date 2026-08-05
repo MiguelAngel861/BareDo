@@ -30,6 +30,7 @@ def create_app(config_name: str | None = None) -> Flask:
     app.config.from_object(config[config_name])
     app.config.setdefault("JWT_SECRET_KEY", os.environ.get("JWT_SECRET_KEY", "dev-secret-change-in-production"))
     app.config.setdefault("JWT_ACCESS_TOKEN_EXPIRES", 3600)
+    app.config.setdefault("JWT_REFRESH_TOKEN_EXPIRES", 2592000)
 
     # Configure logging
     configure_logging(app)

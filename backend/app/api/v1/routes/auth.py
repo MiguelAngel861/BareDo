@@ -28,8 +28,10 @@ def register():
         abort(400, str(e))
 
     access_token = auth_service.create_token(user["user_id"])
+    refresh_token = auth_service.create_refresh_token(user["user_id"])
     response = TokenResponse(
         access_token=access_token,
+        refresh_token=refresh_token,
         user=UserResponse(
             user_id=user["user_id"],
             username=user["username"],
@@ -52,8 +54,32 @@ def login():
         abort(401, "Invalid credentials")
 
     access_token = auth_service.create_token(user["user_id"])
+    refresh_token = auth_service.create_refresh_token(user["user_id"])
     response = TokenResponse(
         access_token=access_token,
+        refresh_token=refresh_token,
+        user=UserResponse(
+            user_id=user["user_id"],
+            username=user["username"],
+            created_at=user["created_at"].isoformat() if user["created_at"] else "",
+        ),
+    )
+    return response.model_dump(), 200
+
+
+@auth_bp.post("/refresh")
+@jwt_required(refresh=True)
+def refresh():
+    user_id = get_jwt_identity()
+    user = auth_service.get_user_by_id(user_id)
+    if not user:
+        abort(404, "User not found")
+
+    access_token = auth_service.create_token(user["user_id"])
+    refresh_token = auth_service.create_refresh_token(user["user_id"])
+    response = TokenResponse(
+        access_token=access_token,
+        refresh_token=refresh_token,
         user=UserResponse(
             user_id=user["user_id"],
             username=user["username"],
