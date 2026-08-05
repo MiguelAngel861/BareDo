@@ -65,5 +65,5 @@ curl http://localhost:5000/api/v1/tasks \
 |---|---|---|
 | `FLASK_ENV` | `development` | Entorno de Flask |
 | `DEBUG` | `false` | Modo debug |
-| `DATABASE_URL` | `sqlite:///db.sqlite` | Conexión a BD |
+| `DATABASE_URL` | `sqlite:///backend/instance/db.sqlite` | Conexión a BD |
 | `JWT_SECRET_KEY` | dev | Clave para firmar tokens |
