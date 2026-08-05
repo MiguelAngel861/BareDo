@@ -8,11 +8,11 @@ from app.models.tasks import Tasks
 
 class TasksRepository:
     def get_all(
-        self, page: int, per_page: int, filters: dict | None, sort
+        self, page: int, per_page: int, filters: dict | None, sort, user_id: int
     ) -> tuple[Sequence[Tasks], int]:
         # Base filtered query
         base_stmt = self._apply_sort(
-            self._apply_data_filters(select(Tasks), filters), sort
+            self._apply_data_filters(select(Tasks).where(Tasks.user_id == user_id), filters), sort
         )
 
         # Count total items before pagination
@@ -26,27 +26,25 @@ class TasksRepository:
 
         return data_result, total_count
 
-    @staticmethod
-    def get_by_id(task_id: int) -> Tasks | None:
-        stmt = select(Tasks).where(Tasks.task_id == task_id)
+    def get_by_id(self, task_id: int, user_id: int) -> Tasks | None:
+        stmt = select(Tasks).where(Tasks.task_id == task_id, Tasks.user_id == user_id)
 
         with db.session as session:
             result: Tasks | None = session.execute(stmt).scalar_one_or_none()
 
         return result
 
-    @staticmethod
-    def add_task(data: dict[str, Any]) -> Tasks | None:
+    def add_task(self, data: dict[str, Any], user_id: int) -> Tasks | None:
+        data["user_id"] = user_id
         stmt = insert(Tasks).values(**data).returning(Tasks)
         result: Tasks | None = db.session.execute(stmt).scalar_one_or_none()
 
         return result
 
-    @staticmethod
-    def update_task(task_id: int, data: dict[str, Any]) -> Tasks | None:
+    def update_task(self, task_id: int, data: dict[str, Any], user_id: int) -> Tasks | None:
         stmt = (
             update(Tasks)
-            .where(Tasks.task_id == task_id)
+            .where(Tasks.task_id == task_id, Tasks.user_id == user_id)
             .values(**data)
             .returning(Tasks)
         )
@@ -54,9 +52,8 @@ class TasksRepository:
 
         return result
 
-    @staticmethod
-    def delete_task(task_id: int) -> bool:
-        stmt = delete(Tasks).where(Tasks.task_id == task_id)
+    def delete_task(self, task_id: int, user_id: int) -> bool:
+        stmt = delete(Tasks).where(Tasks.task_id == task_id, Tasks.user_id == user_id)
         result = db.session.execute(stmt)
 
         if result.rowcount == 0:  # type: ignore
@@ -85,8 +82,8 @@ class TasksRepository:
         if description := filters.get("description"):
             stmt = stmt.where(Tasks.description.ilike(f"%{description}%"))
 
-        task_status = filters.get("completed")
-        if task_status is not None:
-            stmt = stmt.where(Tasks.completed == task_status)
+        completed = filters.get("completed")
+        if completed is not None:
+            stmt = stmt.where(Tasks.completed == completed)
 
         return stmt

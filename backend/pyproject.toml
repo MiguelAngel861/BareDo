@@ -7,12 +7,16 @@ requires-python = ">=3.13"
 dependencies = [
     "flask>=3.1.2",
     "flask-sqlalchemy-lite>=0.2.1",
+    "flask-jwt-extended>=4.7.4",
+    "flask-limiter>=4.1.1",
+    "flask-cors>=5.0.0",
     "gunicorn>=23.0.0",
     "pydantic>=2.12.5",
+    "flask-alembic>=3.2.0",
 ]
 
 [dependency-groups]
 dev = [
     "ruff>=0.14.13",
-    "pytest>=8.0",
 ]
+

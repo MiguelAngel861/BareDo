@@ -10,11 +10,11 @@ class TasksService:
     def __init__(self) -> None:
         self.repository = TasksRepository()
 
-    def get_all_tasks(self, page: int, per_page: int, filters: dict | None, sort):
+    def get_all_tasks(self, page: int, per_page: int, filters: dict | None, sort, user_id: int):
         sort_fields = self._parse_sort(sort)
 
         tasks, total_tasks = self.repository.get_all(
-            page, per_page, filters, sort_fields
+            page, per_page, filters, sort_fields, user_id
         )
 
         result: list[dict] = [task.to_dict() for task in tasks]
@@ -30,8 +30,8 @@ class TasksService:
             },
         }
 
-    def get_task_by_id(self, task_id: int) -> dict:
-        stmt: Tasks | None = self.repository.get_by_id(task_id)
+    def get_task_by_id(self, task_id: int, user_id: int) -> dict:
+        stmt: Tasks | None = self.repository.get_by_id(task_id, user_id)
         if not stmt:
             raise NotFoundError()
 
@@ -39,10 +39,10 @@ class TasksService:
 
         return result
 
-    def add_new_task(self, task_data: dict) -> dict:
+    def add_new_task(self, task_data: dict, user_id: int) -> dict:
         with db.session as session:
             try:
-                new_task: Tasks | None = self.repository.add_task(task_data)
+                new_task: Tasks | None = self.repository.add_task(task_data, user_id)
                 if not new_task:
                     raise DatabaseError()
 
@@ -60,11 +60,11 @@ class TasksService:
 
                 raise DatabaseError(str(e))
 
-    def update_task(self, task_id: int, task_data: dict) -> dict:
+    def update_task(self, task_id: int, task_data: dict, user_id: int) -> dict:
         with db.session as session:
             try:
                 patched_task: Tasks | None = self.repository.update_task(
-                    task_id, task_data
+                    task_id, task_data, user_id
                 )
                 if not patched_task:
                     raise NotFoundError()
@@ -83,10 +83,10 @@ class TasksService:
 
                 raise DatabaseError(str(e))
 
-    def delete_task(self, task_id: int) -> None:
+    def delete_task(self, task_id: int, user_id: int) -> None:
         with db.session as session:
             try:
-                deleted_task: bool = self.repository.delete_task(task_id)
+                deleted_task: bool = self.repository.delete_task(task_id, user_id)
                 if not deleted_task:
                     raise NotFoundError()
 
