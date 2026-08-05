@@ -134,7 +134,7 @@ export class TaskList {
 
     async toggleComplete(task) {
         try {
-            await this.service.patch(task.id, { completed: !task.completed });
+            await this.service.patch(task.task_id, { completed: !task.completed });
             showToast(this.toastContainer, task.completed ? "Task marked as pending" : "Task marked as complete", "success");
             this.load();
         } catch (error) {
@@ -144,7 +144,7 @@ export class TaskList {
 
     confirmDelete(task) {
         if (confirm(`Are you sure you want to delete "${task.title}"?`)) {
-            this.deleteTask(task.id);
+            this.deleteTask(task.task_id);
         }
     }
 

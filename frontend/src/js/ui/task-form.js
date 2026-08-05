@@ -135,8 +135,8 @@ export class TaskForm {
     }
 
     startEdit(task) {
-        this.editingTaskId = task.id;
-        this.el.idInput.value = task.id;
+        this.editingTaskId = task.task_id;
+        this.el.idInput.value = task.task_id;
         this.el.titleInput.value = task.title;
         this.el.descInput.value = task.description || "";
         this.el.dueDateInput.value = task.due_date || "";
