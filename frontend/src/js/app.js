@@ -9,6 +9,12 @@ function goToLogin() {
     window.location.href = "pages/login.html";
 }
 
+async function handleUnauthorized() {
+    const refreshed = await AuthSession.refresh();
+    if (!refreshed) goToLogin();
+    return refreshed;
+}
+
 function init() {
     if (!AuthSession.hasToken()) {
         window.location.href = "pages/login.html";
@@ -16,7 +22,7 @@ function init() {
     }
 
     const toastContainer = document.getElementById("toast-container");
-    const service = new TaskService(new TaskAPI(), goToLogin);
+    const service = new TaskService(new TaskAPI({ onUnauthorized: handleUnauthorized }), goToLogin);
 
     const form = new TaskForm(service, toastContainer, () => list.load());
     const list = new TaskList(service, toastContainer, (task) => form.startEdit(task));

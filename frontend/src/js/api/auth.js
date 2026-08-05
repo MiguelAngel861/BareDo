@@ -8,4 +8,8 @@ export class AuthAPI extends BaseAPI {
     login(username, password) {
         return this.request("POST", "/auth/login", { username, password });
     }
+
+    refresh(refreshToken) {
+        return this.request("POST", "/auth/refresh", null, false, refreshToken);
+    }
 }

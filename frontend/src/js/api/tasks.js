@@ -1,6 +1,10 @@
 import { BaseAPI } from "./base.js";
 
 export class TaskAPI extends BaseAPI {
+    constructor(baseUrl, options) {
+        super(baseUrl, options);
+    }
+
     getTasks(params = {}) {
         const q = new URLSearchParams();
         for (const [k, v] of Object.entries(params)) {
