@@ -8,7 +8,7 @@ from app.api.v1.schemas.auth_schemas import (
     UserResponse,
     TokenResponse,
 )
-from app.api.v1.services.auth_service import AuthService
+from app.services.auth_service import AuthService
 
 auth_bp = Blueprint("auth", __name__)
 auth_service = AuthService()

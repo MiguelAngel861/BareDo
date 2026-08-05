@@ -11,7 +11,7 @@ from app.api.v1.schemas.tasks_schemas import (
     PaginationResponse,
     TaskListQuery,
 )
-from app.api.v1.services.tasks_service import TasksService
+from app.services.tasks_service import TasksService
 
 tasks_bp = Blueprint("tasks", __name__)
 service = TasksService()
