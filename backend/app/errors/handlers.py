@@ -1,6 +1,7 @@
 from flask import Flask
 from werkzeug.exceptions import HTTPException
 from pydantic import ValidationError as PydanticValidationError
+from flask_jwt_extended import JWTManager
 
 from app.errors.schemas import api_error
 from app.errors.exceptions import DataValidationError, DatabaseError, NotFoundError
@@ -81,4 +82,35 @@ def register_error_handlers(app: Flask):
             message="Database error",
             status=500,
             details=str(error),
+        )
+
+
+def register_jwt_handlers(jwt: JWTManager):
+    """Register custom JWT error handlers to match our error envelope format."""
+    
+    @jwt.unauthorized_loader
+    def unauthorized_callback(reason):
+        return api_error(
+            code="AUTHENTICATION_ERROR",
+            message="Missing Authorization Header",
+            status=401,
+            details=reason,
+        )
+
+    @jwt.invalid_token_loader
+    def invalid_token_callback(reason):
+        return api_error(
+            code="AUTHENTICATION_ERROR",
+            message="Invalid token",
+            status=401,
+            details=reason,
+        )
+
+    @jwt.expired_token_loader
+    def expired_token_callback(jwt_header, jwt_payload):
+        return api_error(
+            code="AUTHENTICATION_ERROR",
+            message="Token has expired",
+            status=401,
+            details="Token expired",
         )

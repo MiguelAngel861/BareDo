@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BareDo - Task Manager</title>
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/tasks.css">
+</head>
+<body>
+    <header>
+        <h1>BareDo</h1>
+        <section id="auth-section">
+            <span id="auth-status"></span>
+            <button id="logout-btn" type="button" style="display: none;">Logout</button>
+        </section>
+    </header>
+
+    <main>
+        <section id="task-form-section">
+            <h2>Create Task</h2>
+            <form id="task-form">
+                <input type="hidden" id="task-id" name="task_id">
+                <div class="form-group">
+                    <label for="title">Title <span class="required">*</span></label>
+                    <input type="text" id="title" name="title" required maxlength="40" placeholder="Task title (max 40 chars)">
+                    <span class="error-message" id="title-error"></span>
+                </div>
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" name="description" maxlength="200" placeholder="Task description (max 200 chars)"></textarea>
+                    <span class="error-message" id="description-error"></span>
+                </div>
+                <div class="form-group">
+                    <label for="due_date">Due Date</label>
+                    <input type="date" id="due_date" name="due_date">
+                    <span class="error-message" id="due_date-error"></span>
+                </div>
+                <div class="form-group">
+                    <label for="completed">Completed</label>
+                    <input type="checkbox" id="completed" name="completed">
+                </div>
+                <button type="submit" id="submit-btn">Create Task</button>
+                <button type="button" id="cancel-edit-btn" style="display: none;">Cancel Edit</button>
+            </form>
+            <div id="form-error" class="error-message"></div>
+        </section>
+
+        <section id="filters-section">
+            <h2>Filters</h2>
+            <div class="filter-group">
+                <label for="search-title">Search Title</label>
+                <input type="text" id="search-title" placeholder="Search by title...">
+            </div>
+            <div class="filter-group">
+                <label for="filter-completed">Completed</label>
+                <select id="filter-completed">
+                    <option value="">All</option>
+                    <option value="true">Completed</option>
+                    <option value="false">Pending</option>
+                </select>
+            </div>
+        </section>
+
+        <section id="task-list-section">
+            <h2>Tasks</h2>
+            <div id="toast-container"></div>
+            <ul id="task-list"></ul>
+            <div id="empty-message" style="display: none;">No tasks found.</div>
+            <nav id="pagination" aria-label="Pagination">
+                <button type="button" id="prev-page" disabled>Previous</button>
+                <span id="page-indicator">Page 1</span>
+                <button type="button" id="next-page" disabled>Next</button>
+            </nav>
+        </section>
+    </main>
+
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>
