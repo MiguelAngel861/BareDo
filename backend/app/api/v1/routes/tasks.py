@@ -66,7 +66,6 @@ def add_task():
         abort(401, "Invalid token")
     user_id = int(user_id)
 
-    request.max_content_length = 1024 * 1024
     payload = request.get_json(silent=True) or {}
     try:
         task_data = TaskCreate(**payload)
@@ -86,7 +85,6 @@ def update_task(task_id: int):
         abort(401, "Invalid token")
     user_id = int(user_id)
 
-    request.max_content_length = 1024 * 1024
     payload = request.get_json(silent=True) or {}
     try:
         task_data = TaskUpdate(**payload)
@@ -106,7 +104,6 @@ def patch_task(task_id: int):
         abort(401, "Invalid token")
     user_id = int(user_id)
 
-    request.max_content_length = 1024 * 1024
     payload = request.get_json(silent=True) or {}
     try:
         task_data = TaskPatch(**payload)
