@@ -1,7 +1,7 @@
 import pytest
 from app import create_app
-from app.extensions import db as _db
-from app.extensions import Base
+from app.core.extensions import db as _db
+from app.core.extensions import Base
 from app.models.users import Users
 from app.models.tasks import Tasks
 

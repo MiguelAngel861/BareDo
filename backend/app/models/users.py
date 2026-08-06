@@ -4,7 +4,7 @@ from sqlalchemy import String, func
 from sqlalchemy.orm import Mapped, mapped_column
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from app.extensions import Base
+from app.core.extensions import Base
 
 
 class Users(Base):

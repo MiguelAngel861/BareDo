@@ -2,7 +2,7 @@ from typing import Any, Sequence
 
 from sqlalchemy import delete, insert, select, update, func, Select, desc, asc
 
-from app.extensions import db
+from app.core.extensions import db
 from app.models.tasks import Tasks
 
 

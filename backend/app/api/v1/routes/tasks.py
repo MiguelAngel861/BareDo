@@ -113,9 +113,7 @@ def patch_task(task_id: int):
     except ValidationError as e:
         abort(400, str(e))
 
-    patched_task = service.update_task(
-        task_id, task_data.model_dump(exclude_unset=True), user_id
-    )
+    patched_task = service.update_task(task_id, task_data.model_dump(exclude_unset=True), user_id)
 
     return TaskBody.model_validate(patched_task).model_dump()
 
