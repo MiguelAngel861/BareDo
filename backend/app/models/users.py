@@ -5,6 +5,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from app.core.extensions import Base
+from flask_jwt_extended import create_access_token, create_refresh_token
 
 
 class Users(Base):
@@ -23,5 +24,8 @@ class Users(Base):
     def check_password(self, password: str) -> bool:
         return check_password_hash(self.password_hash, password)
 
-    def to_dict(self):
-        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+    def issue_access_token(self) -> str:
+        return create_access_token(identity=str(self.user_id))
+
+    def issue_refresh_token(self) -> str:
+        return create_refresh_token(identity=str(self.user_id))
