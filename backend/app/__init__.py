@@ -4,54 +4,50 @@ from logging.handlers import RotatingFileHandler
 from datetime import datetime
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
-from flask_jwt_extended import JWTManager
 
-from app.extensions import db, alembic
-from app.models.tasks import Base
-from app.models.users import Users
+from app.core.extensions import db, alembic, jwt, limiter
+from app.core.config import config
 from app.api.v1.routes.tasks import tasks_bp
 from app.api.v1.routes.auth import auth_bp
 from app.api.v1.routes.main import main_bp
 from app.errors.handlers import register_error_handlers, register_jwt_handlers
-from config import config
 
 
 def create_app(config_name: str | None = None) -> Flask:
     if config_name is None:
         config_name = os.environ.get("FLASK_ENV", "default")
 
-    frontend_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "frontend", "src")
+    frontend_path = os.path.join(
+        os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "frontend", "src"
+    )
     app: Flask = Flask(
         __name__, template_folder=frontend_path, static_folder=frontend_path, static_url_path=""
     )
 
     app.config.from_object(config[config_name])
-    app.config.setdefault("JWT_SECRET_KEY", os.environ.get("JWT_SECRET_KEY", "dev-secret-change-in-production"))
-    app.config.setdefault("JWT_ACCESS_TOKEN_EXPIRES", 3600)
-    app.config.setdefault("JWT_REFRESH_TOKEN_EXPIRES", 2592000)
 
     # Configure logging
     configure_logging(app)
 
     # CORS - explicit for same-origin frontend
-    CORS(app, origins=["http://localhost:5000", "http://127.0.0.1:5000", "http://localhost:5500", "http://127.0.0.1:5500"], supports_credentials=True)
-
-    # Rate limiter
-    limiter = Limiter(
-        key_func=get_remote_address,
-        default_limits=["200 per minute", "50 per second"],
-        storage_uri="memory://",
+    CORS(
+        app,
+        origins=[
+            "http://localhost:5000",
+            "http://127.0.0.1:5000",
+            "http://localhost:5500",
+            "http://127.0.0.1:5500",
+        ],
+        supports_credentials=True,
     )
-    limiter.init_app(app)
 
+    # Extensions from app.core
     register_error_handlers(app)
     db.init_app(app)
     alembic.init_app(app)
-
-    JWTManager(app)
+    jwt.init_app(app)
     register_jwt_handlers(app.extensions["flask-jwt-extended"])
+    limiter.init_app(app)
 
     # Security headers middleware
     @app.after_request
@@ -72,7 +68,9 @@ def create_app(config_name: str | None = None) -> Flask:
         if request.path == "/health":
             return response
 
-        duration = (datetime.utcnow() - getattr(request, "_start_time", datetime.utcnow())).total_seconds() * 1000
+        duration = (
+            datetime.utcnow() - getattr(request, "_start_time", datetime.utcnow())
+        ).total_seconds() * 1000
 
         log_data = {
             "method": request.method,
@@ -139,11 +137,30 @@ def configure_logging(app: Flask):
             # Add extra fields if present
             for key, value in record.__dict__.items():
                 if key not in [
-                    "name", "msg", "args", "created", "filename", "funcName",
-                    "levelname", "levelno", "lineno", "module", "msecs",
-                    "message", "msg", "name", "pathname", "process",
-                    "processName", "relativeCreated", "thread", "threadName",
-                    "exc_info", "exc_text", "stack_info", "getMessage",
+                    "name",
+                    "msg",
+                    "args",
+                    "created",
+                    "filename",
+                    "funcName",
+                    "levelname",
+                    "levelno",
+                    "lineno",
+                    "module",
+                    "msecs",
+                    "message",
+                    "msg",
+                    "name",
+                    "pathname",
+                    "process",
+                    "processName",
+                    "relativeCreated",
+                    "thread",
+                    "threadName",
+                    "exc_info",
+                    "exc_text",
+                    "stack_info",
+                    "getMessage",
                 ]:
                     log_data[key] = value
 
@@ -158,9 +175,7 @@ def configure_logging(app: Flask):
     # File handler for production
     if not app.debug:
         os.makedirs("logs", exist_ok=True)
-        file_handler = RotatingFileHandler(
-            "logs/app.log", maxBytes=10485760, backupCount=10
-        )
+        file_handler = RotatingFileHandler("logs/app.log", maxBytes=10485760, backupCount=10)
         file_handler.setLevel(logging.INFO)
         file_handler.setFormatter(JSONFormatter())
         app.logger.addHandler(file_handler)

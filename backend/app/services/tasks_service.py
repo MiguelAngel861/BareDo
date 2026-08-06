@@ -1,7 +1,7 @@
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
 from app.errors.exceptions import DatabaseError, DataValidationError, NotFoundError
-from app.extensions import db
+from app.core.extensions import db
 from app.models.tasks import Tasks
 from app.repositories.tasks_repository import TasksRepository
 
@@ -13,9 +13,7 @@ class TasksService:
     def get_all_tasks(self, page: int, per_page: int, filters: dict | None, sort, user_id: int):
         sort_fields = self._parse_sort(sort)
 
-        tasks, total_tasks = self.repository.get_all(
-            page, per_page, filters, sort_fields, user_id
-        )
+        tasks, total_tasks = self.repository.get_all(page, per_page, filters, sort_fields, user_id)
 
         result: list[dict] = [task.to_dict() for task in tasks]
         total_pages = (total_tasks + per_page - 1) // per_page if per_page > 0 else 0

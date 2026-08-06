@@ -3,7 +3,7 @@ from datetime import datetime, date
 from sqlalchemy import String, false, func, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 
-from app.extensions import Base
+from app.core.extensions import Base
 
 
 class Tasks(Base):
@@ -14,10 +14,10 @@ class Tasks(Base):
     title: Mapped[str] = mapped_column(String(40), nullable=False)
     description: Mapped[str] = mapped_column(String(500), nullable=True)
     priority: Mapped[int] = mapped_column(nullable=False, default=1, server_default="1")
-    due_date: Mapped[datetime] = mapped_column(nullable=False, default=date.today, server_default=func.current_date())
-    completed: Mapped[bool] = mapped_column(
-        nullable=False, default=False, server_default=false()
+    due_date: Mapped[datetime] = mapped_column(
+        nullable=False, default=date.today, server_default=func.current_date()
     )
+    completed: Mapped[bool] = mapped_column(nullable=False, default=False, server_default=false())
 
     created_at: Mapped[datetime] = mapped_column(
         nullable=False, default=datetime.now, server_default=func.current_timestamp()
