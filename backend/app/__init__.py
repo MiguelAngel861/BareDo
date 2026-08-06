@@ -1,8 +1,7 @@
 import os
-from flask import Flask, request, jsonify
-from flask_cors import CORS
+from flask import Flask
 
-from app.core.extensions import db, alembic, jwt, limiter
+from app.core.extensions import db, alembic, jwt, init_limiter
 from app.core.config import config
 from app.core.logging import configure_logging
 from app.core.cors import setup_cors
@@ -38,7 +37,7 @@ def create_app(config_name: str | None = None) -> Flask:
     alembic.init_app(app)
     jwt.init_app(app)
     register_jwt_handlers(app.extensions["flask-jwt-extended"])
-    limiter.init_app(app)
+    init_limiter(app)
 
     # Security headers + request/response logging middleware
     register_middleware(app)

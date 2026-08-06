@@ -23,6 +23,7 @@ class Config:
     }
     SQLALCHEMY_ENGINES = {"default": os.environ.get("DATABASE_URL") or _default_db_url()}
     MAX_CONTENT_LENGTH = 1024 * 1024
+    RATELIMIT_ENABLED = True
 
 
 class DevelopmentConfig(Config):
@@ -47,6 +48,7 @@ class TestingConfig(Config):
     TESTING = True
     SQLALCHEMY_ECHO = False
     SQLALCHEMY_ENGINES = {"default": "sqlite:///:memory:"}
+    RATELIMIT_ENABLED = False
 
 
 config = {
