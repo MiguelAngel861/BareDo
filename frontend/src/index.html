@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark">
     <title>BareDo - Task Manager</title>
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/tasks.css">
@@ -12,7 +13,7 @@
         <h1>BareDo</h1>
         <section id="auth-section">
             <span id="auth-status"></span>
-            <button id="logout-btn" type="button" style="display: none;">Logout</button>
+            <button id="logout-btn" type="button" class="hidden">Logout</button>
         </section>
     </header>
 
@@ -41,7 +42,7 @@
                     <input type="checkbox" id="completed" name="completed">
                 </div>
                 <button type="submit" id="submit-btn">Create Task</button>
-                <button type="button" id="cancel-edit-btn" style="display: none;">Cancel Edit</button>
+                <button type="button" id="cancel-edit-btn" class="hidden">Cancel Edit</button>
             </form>
             <div id="form-error" class="error-message"></div>
         </section>
@@ -66,7 +67,7 @@
             <h2>Tasks</h2>
             <div id="toast-container"></div>
             <ul id="task-list"></ul>
-            <div id="empty-message" style="display: none;">No tasks found.</div>
+            <div id="empty-message" class="hidden">No tasks found.</div>
             <nav id="pagination" aria-label="Pagination">
                 <button type="button" id="prev-page" disabled>Previous</button>
                 <span id="page-indicator">Page 1</span>
