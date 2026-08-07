@@ -3,7 +3,6 @@ from typing import Any
 
 from flask import Flask, request
 
-
 SENSITIVE_FIELDS = {
     "password",
     "token",

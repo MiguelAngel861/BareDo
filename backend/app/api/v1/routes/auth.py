@@ -1,7 +1,7 @@
 from flask import Blueprint, abort
 from flask_jwt_extended import jwt_required
 
-from app.api.helpers import get_current_user_id, build_token_response, validate_body
+from app.api.helpers import build_token_response, get_current_user_id, validate_body
 from app.api.v1.schemas.auth_schemas import UserCreate, UserLogin, UserResponse
 from app.core.extensions import limiter
 from app.services.auth_service import AuthService

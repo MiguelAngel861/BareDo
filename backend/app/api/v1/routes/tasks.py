@@ -4,13 +4,13 @@ from pydantic import ValidationError
 
 from app.api.helpers import get_current_user_id
 from app.api.v1.schemas.tasks_schemas import (
-    TaskCreate,
-    TaskPatch,
-    TaskUpdate,
-    TaskBody,
-    TaskResponse,
     PaginationResponse,
+    TaskBody,
+    TaskCreate,
     TaskListQuery,
+    TaskPatch,
+    TaskResponse,
+    TaskUpdate,
 )
 from app.services.tasks_service import TasksService
 

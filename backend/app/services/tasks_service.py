@@ -1,7 +1,7 @@
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
-from app.errors.exceptions import DatabaseError, DataValidationError, NotFoundError
 from app.core.extensions import db
+from app.errors.exceptions import DatabaseError, DataValidationError, NotFoundError
 from app.models.tasks import Tasks
 from app.repositories.tasks_repository import TasksRepository
 
@@ -51,12 +51,12 @@ class TasksService:
             except IntegrityError as e:
                 session.rollback()
 
-                raise DataValidationError(str(e))
+                raise DataValidationError(str(e)) from e
 
             except SQLAlchemyError as e:
                 session.rollback()
 
-                raise DatabaseError(str(e))
+                raise DatabaseError(str(e)) from e
 
     def update_task(self, task_id: int, task_data: dict, user_id: int) -> dict:
         with db.session as session:
@@ -74,12 +74,12 @@ class TasksService:
             except IntegrityError as e:
                 session.rollback()
 
-                raise DataValidationError(str(e))
+                raise DataValidationError(str(e)) from e
 
             except SQLAlchemyError as e:
                 session.rollback()
 
-                raise DatabaseError(str(e))
+                raise DatabaseError(str(e)) from e
 
     def delete_task(self, task_id: int, user_id: int) -> None:
         with db.session as session:
@@ -93,12 +93,12 @@ class TasksService:
             except IntegrityError as e:
                 session.rollback()
 
-                raise DataValidationError(str(e))
+                raise DataValidationError(str(e)) from e
 
             except SQLAlchemyError as e:
                 session.rollback()
 
-                raise DatabaseError(str(e))
+                raise DatabaseError(str(e)) from e
 
     @staticmethod
     def _parse_sort(sort: str | None):
