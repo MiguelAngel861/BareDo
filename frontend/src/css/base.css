@@ -43,42 +43,58 @@ body {
     display: none;
 }
 
+/* ===== Botones: bare curado, hover invert instantaneo, disabled muted (G1, G8) ===== */
 button {
     padding: 8px 16px;
-    border: none;
-    border-radius: 4px;
-    background-color: #3498db;
-    color: white;
+    border: 1px solid var(--text);
+    border-radius: 0;
+    background-color: transparent;
+    color: var(--text);
     cursor: pointer;
     font-size: 0.875rem;
-    transition: background-color 0.2s;
+    font-family: inherit;
 }
 
-button:hover:not(:disabled) {
-    background-color: #2980b9;
+button:hover:not(:disabled),
+button:active:not(:disabled) {
+    background-color: var(--text);
+    color: var(--bg);
 }
 
 button:disabled {
-    background-color: #bdc3c7;
+    border-color: var(--border);
+    color: var(--text-muted);
     cursor: not-allowed;
 }
 
 button.secondary {
-    background-color: #95a5a6;
+    border-color: var(--text-muted);
+    color: var(--text-muted);
 }
 
-button.secondary:hover:not(:disabled) {
-    background-color: #7f8c8d;
+button.secondary:hover:not(:disabled),
+button.secondary:active:not(:disabled) {
+    background-color: var(--text-muted);
+    color: var(--bg);
 }
 
 button.danger {
-    background-color: #e74c3c;
+    border-color: var(--danger);
+    color: var(--danger);
 }
 
-button.danger:hover:not(:disabled) {
-    background-color: #c0392b;
+button.danger:hover:not(:disabled),
+button.danger:active:not(:disabled) {
+    background-color: var(--danger);
+    color: var(--bg);
 }
 
+button:focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+}
+
+/* ===== Formularios (G1, G3) ===== */
 .form-group {
     margin-bottom: 15px;
 }
@@ -90,7 +106,7 @@ button.danger:hover:not(:disabled) {
 }
 
 .required {
-    color: #e74c3c;
+    color: var(--danger);
 }
 
 .form-group input,
@@ -98,18 +114,20 @@ button.danger:hover:not(:disabled) {
 .form-group select {
     width: 100%;
     padding: 8px 12px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+    border: 1px solid var(--border);
+    border-radius: 0;
+    background-color: var(--surface);
+    color: var(--text);
     font-size: 0.875rem;
     font-family: inherit;
 }
 
-.form-group input:focus,
-.form-group textarea:focus,
-.form-group select:focus {
-    outline: none;
-    border-color: #3498db;
-    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+.form-group input:focus-visible,
+.form-group textarea:focus-visible,
+.form-group select:focus-visible {
+    border-color: var(--text);
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 1px;
 }
 
 .form-group textarea {
@@ -120,11 +138,12 @@ button.danger:hover:not(:disabled) {
 .form-group input[type="checkbox"] {
     width: auto;
     margin-right: 8px;
+    accent-color: var(--text);
 }
 
 .error-message {
     display: none;
-    color: #e74c3c;
+    color: var(--danger);
     font-size: 0.75rem;
     margin-top: 4px;
 }
@@ -134,10 +153,10 @@ button.danger:hover:not(:disabled) {
 }
 
 .global-error {
-    color: #e74c3c;
-    background: #ffeaea;
+    color: var(--danger);
+    border: 1px solid var(--danger);
+    background: transparent;
     padding: 0.75rem;
-    border-radius: 4px;
     margin-bottom: 1rem;
     display: none;
 }
@@ -185,11 +204,5 @@ button.danger:hover:not(:disabled) {
     to {
         transform: translateX(0);
         opacity: 1;
-    }
-}
-
-@media (max-width: 600px) {
-    body {
-        padding: 10px;
     }
 }
