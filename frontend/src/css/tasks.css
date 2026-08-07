@@ -1,53 +1,64 @@
+/* ===== Layout: mobile-first, piso 360px (G4) ===== */
 body {
-    max-width: 800px;
+    max-width: 100%;
     margin: 0 auto;
-    padding: 20px;
+    padding: 1rem;
+}
+
+@media (min-width: 60rem) {
+    body {
+        max-width: 50rem;
+    }
 }
 
 header {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
-    padding: 20px 0;
-    border-bottom: 1px solid #ddd;
-    margin-bottom: 20px;
+    gap: 0.5rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 1.25rem;
 }
 
 header h1 {
     font-size: 1.5rem;
-    color: #2c3e50;
 }
 
 #auth-section {
     display: flex;
     align-items: center;
     gap: 10px;
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
 }
 
 #auth-status {
     font-size: 0.875rem;
-    color: #666;
+    color: var(--text-muted);
 }
 
+/* ===== Cards bare: surface + borde 1px, sin sombra ni radius (G1) ===== */
 section {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0;
+    padding: 1.25rem;
+    margin-bottom: 1.25rem;
 }
 
 section h2 {
     margin-bottom: 15px;
     font-size: 1.125rem;
-    color: #2c3e50;
 }
 
 #form-error {
     padding: 10px;
-    background-color: #fdf2f2;
-    border: 1px solid #fadbd8;
-    border-radius: 4px;
+    border: 1px solid var(--danger);
+    color: var(--danger);
     display: none;
 }
 
@@ -55,10 +66,10 @@ section h2 {
     display: block;
 }
 
+/* ===== Filtros (G3, G4) ===== */
 .filter-group {
-    display: inline-block;
-    margin-right: 20px;
-    margin-bottom: 10px;
+    display: block;
+    margin-bottom: 0.75rem;
 }
 
 .filter-group label {
@@ -70,23 +81,46 @@ section h2 {
 
 .filter-group input,
 .filter-group select {
+    width: 100%;
     padding: 6px 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+    border: 1px solid var(--border);
+    border-radius: 0;
+    background-color: var(--surface);
+    color: var(--text);
     font-size: 0.875rem;
 }
 
+.filter-group input:focus-visible,
+.filter-group select:focus-visible {
+    border-color: var(--text);
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 1px;
+}
+
+@media (min-width: 40rem) {
+    .filter-group {
+        display: inline-block;
+        margin-right: 20px;
+        margin-bottom: 10px;
+    }
+
+    .filter-group input,
+    .filter-group select {
+        width: auto;
+    }
+}
+
+/* ===== Lista de tareas (G1, G3) ===== */
 #task-list {
     list-style: none;
 }
 
 .task-item {
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    padding: 15px;
-    border-bottom: 1px solid #eee;
-    gap: 15px;
+    flex-direction: column;
+    gap: 10px;
+    padding: 15px 0;
+    border-bottom: 1px solid var(--border);
 }
 
 .task-item:last-child {
@@ -107,21 +141,22 @@ section h2 {
 
 .task-title.completed {
     text-decoration: line-through;
-    color: #95a5a6;
+    color: var(--text-muted);
 }
 
 .task-description {
     font-size: 0.8125rem;
-    color: #666;
+    color: var(--text-muted);
     margin-bottom: 4px;
     word-break: break-word;
 }
 
 .task-meta {
     display: flex;
+    flex-wrap: wrap;
     gap: 12px;
     font-size: 0.75rem;
-    color: #999;
+    color: var(--text-muted);
 }
 
 .task-due-date {
@@ -133,7 +168,7 @@ section h2 {
 .task-actions {
     display: flex;
     gap: 8px;
-    flex-shrink: 0;
+    justify-content: flex-end;
 }
 
 .task-actions button {
@@ -141,10 +176,22 @@ section h2 {
     font-size: 0.75rem;
 }
 
+@media (min-width: 40rem) {
+    .task-item {
+        flex-direction: row;
+        align-items: flex-start;
+    }
+
+    .task-actions {
+        justify-content: flex-start;
+        flex-shrink: 0;
+    }
+}
+
 #empty-message {
     text-align: center;
     padding: 40px;
-    color: #999;
+    color: var(--text-muted);
     font-style: italic;
 }
 
@@ -155,26 +202,10 @@ section h2 {
     gap: 15px;
     margin-top: 20px;
     padding-top: 15px;
-    border-top: 1px solid #eee;
+    border-top: 1px solid var(--border);
 }
 
 #page-indicator {
     font-size: 0.875rem;
-    color: #666;
-}
-
-@media (max-width: 600px) {
-    .filter-group {
-        display: block;
-        margin-right: 0;
-    }
-
-    .task-item {
-        flex-direction: column;
-    }
-
-    .task-actions {
-        width: 100%;
-        justify-content: flex-end;
-    }
+    color: var(--text-muted);
 }
