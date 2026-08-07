@@ -16,12 +16,8 @@ def create_app(config_name: str | None = None) -> Flask:
     if config_name is None:
         config_name = os.environ.get("FLASK_ENV", "default")
 
-    frontend_path = os.path.join(
-        os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "frontend", "src"
-    )
-    app: Flask = Flask(
-        __name__, template_folder=frontend_path, static_folder=frontend_path, static_url_path=""
-    )
+
+    app: Flask = Flask(__name__)
 
     app.config.from_object(config[config_name])
 

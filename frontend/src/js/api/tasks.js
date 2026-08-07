@@ -1,8 +1,8 @@
 import { BaseAPI } from "./base.js";
 
 export class TaskAPI extends BaseAPI {
-    constructor(baseUrl, options) {
-        super(baseUrl, options);
+    constructor(options = null) {
+        super(undefined, options);
     }
 
     getTasks(params = {}) {
