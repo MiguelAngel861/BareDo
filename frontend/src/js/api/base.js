@@ -1,5 +1,8 @@
 export class BaseAPI {
-    constructor(baseUrl = "http://localhost:5000/api/v1", { onUnauthorized = null } = {}) {
+    constructor(
+        baseUrl = window.__API_BASE_URL__ || "http://localhost:5000/api/v1",
+        { onUnauthorized = null } = {},
+    ) {
         this.baseUrl = baseUrl;
         this.onUnauthorized = onUnauthorized;
     }

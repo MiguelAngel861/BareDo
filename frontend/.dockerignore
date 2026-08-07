@@ -1,0 +1,6 @@
+*
+!src
+!src/**
+!nginx.conf
+!env.js.template
+!docker-entrypoint.sh
