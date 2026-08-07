@@ -29,7 +29,7 @@ function init() {
 
     const status = document.getElementById("auth-status");
     status.textContent = "Authenticated";
-    status.style.color = "#27ae60";
+    status.style.color = "var(--success)";
     const logoutBtn = document.getElementById("logout-btn");
     logoutBtn.style.display = "inline-block";
     logoutBtn.addEventListener("click", () => goToLogin());

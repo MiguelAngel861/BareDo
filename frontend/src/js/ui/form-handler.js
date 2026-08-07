@@ -56,7 +56,7 @@ export class FormHandler {
     }
 
     showFieldError(input, error, message) {
-        input.style.borderColor = "#e74c3c";
+        input.style.borderColor = "var(--danger)";
         error.textContent = message;
         error.classList.add("visible");
     }
