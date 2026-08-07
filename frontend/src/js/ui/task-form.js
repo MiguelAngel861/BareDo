@@ -60,7 +60,7 @@ export class TaskForm {
     }
 
     showFieldError(input, errorEl, msg) {
-        input.style.borderColor = "#e74c3c";
+        input.style.borderColor = "var(--danger)";
         errorEl.textContent = msg;
         errorEl.classList.add("visible");
     }
