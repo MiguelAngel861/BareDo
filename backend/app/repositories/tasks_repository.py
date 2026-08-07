@@ -1,6 +1,7 @@
-from typing import Any, Sequence
+from collections.abc import Sequence
+from typing import Any
 
-from sqlalchemy import delete, insert, select, update, func, Select, desc, asc
+from sqlalchemy import Select, asc, delete, desc, func, insert, select, update
 
 from app.core.extensions import db
 from app.models.tasks import Tasks

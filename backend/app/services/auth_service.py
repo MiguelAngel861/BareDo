@@ -2,8 +2,8 @@ from flask_jwt_extended import get_jwt_identity
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
-from app.errors.exceptions import DatabaseError, DataValidationError
 from app.core.extensions import db
+from app.errors.exceptions import DatabaseError, DataValidationError
 from app.models.users import Users
 
 
@@ -20,10 +20,10 @@ class AuthService:
                 return user
             except IntegrityError:
                 session.rollback()
-                raise DataValidationError("Username already exists")
+                raise DataValidationError("Username already exists") from None
             except SQLAlchemyError as e:
                 session.rollback()
-                raise DatabaseError(str(e))
+                raise DatabaseError(str(e)) from e
 
     def login(self, username: str, password: str) -> Users | None:
         stmt = select(Users).where(Users.username == username)

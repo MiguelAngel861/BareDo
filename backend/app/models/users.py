@@ -1,11 +1,11 @@
 from datetime import datetime
 
+from flask_jwt_extended import create_access_token, create_refresh_token
 from sqlalchemy import String, func
 from sqlalchemy.orm import Mapped, mapped_column
-from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
 
 from app.core.extensions import Base
-from flask_jwt_extended import create_access_token, create_refresh_token
 
 
 class Users(Base):

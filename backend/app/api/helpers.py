@@ -32,7 +32,7 @@ def build_token_response(user) -> dict:
 T = TypeVar("T", bound=BaseModel)
 
 
-def validate_body(schema_class: type[T]):
+def validate_body[T: BaseModel](schema_class: type[T]):
     """Decorator to validate request JSON against a Pydantic schema."""
 
     def decorator(f):

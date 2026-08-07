@@ -1,10 +1,10 @@
 from flask import Flask
-from werkzeug.exceptions import HTTPException
-from pydantic import ValidationError as PydanticValidationError
 from flask_jwt_extended import JWTManager
+from pydantic import ValidationError as PydanticValidationError
+from werkzeug.exceptions import HTTPException
 
+from app.errors.exceptions import DatabaseError, DataValidationError, NotFoundError
 from app.errors.schemas import api_error
-from app.errors.exceptions import DataValidationError, DatabaseError, NotFoundError
 
 
 def register_error_handlers(app: Flask):

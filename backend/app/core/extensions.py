@@ -1,8 +1,8 @@
-from flask_sqlalchemy_lite import SQLAlchemy
 from flask_alembic import Alembic
 from flask_jwt_extended import JWTManager
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+from flask_sqlalchemy_lite import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
 
 
