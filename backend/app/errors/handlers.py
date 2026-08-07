@@ -12,9 +12,7 @@ def register_error_handlers(app: Flask):
     def bad_request(error: HTTPException):
         message = error.description or "Bad Request"
 
-        return api_error(
-            code="BAD_REQUEST", message=message, status=400, details=str(error)
-        )
+        return api_error(code="BAD_REQUEST", message=message, status=400, details=str(error))
 
     @app.errorhandler(401)
     def unauthorized(error: HTTPException):
@@ -28,25 +26,19 @@ def register_error_handlers(app: Flask):
     def forbidden_error(error: HTTPException):
         message = error.description or "Acces Denied"
 
-        return api_error(
-            code="FORBIDDEN", message=message, status=403, details=str(error)
-        )
+        return api_error(code="FORBIDDEN", message=message, status=403, details=str(error))
 
     @app.errorhandler(404)
     def not_found(error: HTTPException):
         message = error.description or "Resource Not Found"
 
-        return api_error(
-            code="NOT_FOUND", message=message, status=404, details=str(error)
-        )
+        return api_error(code="NOT_FOUND", message=message, status=404, details=str(error))
 
     @app.errorhandler(500)
     def internal_server_error(error: HTTPException):
         message = error.description or "Internal Server Error"
 
-        return api_error(
-            code="INTERNAL_ERROR", message=message, status=500, details=str(error)
-        )
+        return api_error(code="INTERNAL_ERROR", message=message, status=500, details=str(error))
 
     @app.errorhandler(PydanticValidationError)
     def validation_error_handler(error: PydanticValidationError):
@@ -87,7 +79,7 @@ def register_error_handlers(app: Flask):
 
 def register_jwt_handlers(jwt: JWTManager):
     """Register custom JWT error handlers to match our error envelope format."""
-    
+
     @jwt.unauthorized_loader
     def unauthorized_callback(reason):
         return api_error(
