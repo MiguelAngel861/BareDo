@@ -177,23 +177,27 @@ button:focus-visible {
 
 .toast {
     padding: 12px 20px;
-    border-radius: 4px;
-    color: white;
+    border: 1px solid var(--border);
+    border-radius: 0;
+    background-color: var(--surface);
+    color: var(--text);
     font-size: 0.875rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     animation: slideIn 0.3s ease;
 }
 
 .toast.success {
-    background-color: #27ae60;
+    border-color: var(--success);
+    color: var(--success);
 }
 
 .toast.error {
-    background-color: #e74c3c;
+    border-color: var(--danger);
+    color: var(--danger);
 }
 
 .toast.info {
-    background-color: #3498db;
+    border-color: var(--border);
+    color: var(--text-muted);
 }
 
 @keyframes slideIn {
@@ -204,5 +208,11 @@ button:focus-visible {
     to {
         transform: translateX(0);
         opacity: 1;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .toast {
+        animation: none;
     }
 }
