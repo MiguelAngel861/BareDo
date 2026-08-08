@@ -1,3 +1,5 @@
+export const ACCESS_KEY = "access_token";
+
 function resolveApiBaseUrl() {
     const baseUrl = window.__API_BASE_URL__ || "http://localhost:5000/api/v1";
     return baseUrl.endsWith("/api/v1") ? baseUrl : `${baseUrl.replace(/\/$/, "")}/api/v1`;
@@ -13,7 +15,7 @@ export class BaseAPI {
     }
 
     getAuthHeaders() {
-        const token = localStorage.getItem("access_token");
+        const token = localStorage.getItem(ACCESS_KEY);
         const headers = { "Content-Type": "application/json" };
         if (token) headers["Authorization"] = `Bearer ${token}`;
         return headers;

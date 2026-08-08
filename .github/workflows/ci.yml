@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches: [dev, main]
+  pull_request:
+    branches: [dev, main]
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      backend: ${{ steps.filter.outputs.backend }}
+      frontend: ${{ steps.filter.outputs.frontend }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            backend:
+              - 'backend/**'
+            frontend:
+              - 'frontend/**'
+
+  lint:
+    needs: changes
+    if: needs.changes.outputs.backend == 'true'
+    runs-on: ubuntu-latest
+    container: python:3.13-slim
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install --break-system-packages uv
+      - run: uv sync --only-group dev
+      - run: uv run ruff check
+      - run: uv run ruff format --check
+
+  test:
+    needs: changes
+    if: needs.changes.outputs.backend == 'true'
+    runs-on: ubuntu-latest
+    container: python:3.13-slim
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install --break-system-packages uv
+      - run: uv sync --only-group dev
+      - run: uv run pytest
+
+  docker-frontend:
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t baredo-frontend:ci .

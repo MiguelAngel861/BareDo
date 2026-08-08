@@ -78,12 +78,6 @@
     </main>
 
     <script type="module" src="js/app.js"></script>
-    <script>
-        if ("serviceWorker" in navigator) {
-            window.addEventListener("load", function () {
-                navigator.serviceWorker.register("sw.js", { scope: "/" }).catch(function () {});
-            });
-        }
-    </script>
+    <script type="module" src="js/utils/sw-register.js"></script>
 </body>
 </html>

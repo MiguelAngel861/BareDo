@@ -67,6 +67,16 @@ export class FormHandler {
         error.classList.remove("visible");
     }
 
+    clearAllErrors() {
+        for (const name of Object.keys(this.fields)) {
+            this.clearFieldError(name);
+        }
+        if (this.globalError) {
+            this.globalError.classList.remove("visible");
+            this.globalError.textContent = "";
+        }
+    }
+
     showGlobalError(message) {
         if (this.globalError) {
             this.globalError.textContent = message;

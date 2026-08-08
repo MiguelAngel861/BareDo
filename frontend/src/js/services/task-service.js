@@ -1,21 +1,10 @@
-import { TaskAPI } from "../api/tasks.js";
-
 export class TaskService {
-    constructor(api, onUnauthorized) {
+    constructor(api) {
         this.api = api;
-        this.onUnauthorized = onUnauthorized;
     }
 
     async load(filters) {
-        try {
-            return await this.api.getTasks(filters);
-        } catch (error) {
-            if (error.status === 401) {
-                this.onUnauthorized();
-                return null;
-            }
-            throw error;
-        }
+        return await this.api.getTasks(filters);
     }
 
     create(data) { return this.api.createTask(data); }

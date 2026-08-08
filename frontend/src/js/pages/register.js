@@ -1,4 +1,5 @@
 import { AuthFormHandler } from "../ui/auth-form.js";
+import { USERNAME_RULES, PASSWORD_RULES, confirmPasswordRules } from "../utils/validations.js";
 
 class RegisterPage extends AuthFormHandler {
     constructor() {
@@ -14,22 +15,9 @@ class RegisterPage extends AuthFormHandler {
     }
 
     validateAndSubmit() {
-        const usernameValid = this.validateField("username", [
-            { required: true, message: "Username is required" },
-            { min: 3, message: "Username must be at least 3 characters" },
-            { max: 50, message: "Username must be 50 characters or less" },
-        ]);
-
-        const passwordValid = this.validateField("password", [
-            { required: true, message: "Password is required" },
-            { min: 8, message: "Password must be at least 8 characters" },
-            { max: 128, message: "Password must be 128 characters or less" },
-        ]);
-
-        const confirmValid = this.validateField("confirmPassword", [
-            { required: true, message: "Please confirm your password" },
-            { match: this.getFieldValue("password"), message: "Passwords do not match" },
-        ]);
+        const usernameValid = this.validateField("username", USERNAME_RULES);
+        const passwordValid = this.validateField("password", PASSWORD_RULES);
+        const confirmValid = this.validateField("confirmPassword", confirmPasswordRules(() => this.getFieldValue("password")));
 
         if (!usernameValid || !passwordValid || !confirmValid) return;
 
