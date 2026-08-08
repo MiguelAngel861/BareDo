@@ -1,5 +1,5 @@
 /* Service Worker BareDo: cache-first para estaticos (con retry en cold start de Render) y network-first para navegaciones. */
-const CACHE_NAME = "baredo-static-v1";
+const CACHE_NAME = "baredo-static-v2";
 const PRECACHE = [
   "./",
   "./index.html",
