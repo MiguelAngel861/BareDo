@@ -14,10 +14,7 @@ services:
       - key: JWT_SECRET_KEY
         sync: false
       - key: CORS_ORIGINS
-        fromService:
-          type: web
-          name: baredo-web
-          property: url
+        value: https://baredo-web.onrender.com
       - key: DATABASE_URL
         fromDatabase:
           name: baredo-db
@@ -31,10 +28,7 @@ services:
     dockerfilePath: Dockerfile
     envVars:
       - key: API_BASE_URL
-        fromService:
-          type: web
-          name: baredo-api
-          property: url
+        value: https://baredo-api.onrender.com
 
 databases:
   - name: baredo-db
