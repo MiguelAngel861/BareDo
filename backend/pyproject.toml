@@ -14,6 +14,7 @@ dependencies = [
     "pydantic>=2.12.5",
     "flask-alembic>=3.2.0",
     "psycopg[binary]>=3.3.4",
+    "python-dotenv>=1.2.2",
 ]
 
 [dependency-groups]
