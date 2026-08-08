@@ -7,40 +7,42 @@ from app.repositories.tasks_repository import TasksRepository
 
 
 class TasksService:
-    def __init__(self) -> None:
-        self.repository = TasksRepository()
-
     def get_all_tasks(self, page: int, per_page: int, filters: dict | None, sort, user_id: int):
-        sort_fields = self._parse_sort(sort)
+        with db.session as session:
+            repository = TasksRepository(session)
+            sort_fields = self._parse_sort(sort)
 
-        tasks, total_tasks = self.repository.get_all(page, per_page, filters, sort_fields, user_id)
+            tasks, total_tasks = repository.get_all(page, per_page, filters, sort_fields, user_id)
 
-        result: list[dict] = [task.to_dict() for task in tasks]
-        total_pages = (total_tasks + per_page - 1) // per_page if per_page > 0 else 0
+            result: list[dict] = [task.to_dict() for task in tasks]
+            total_pages = (total_tasks + per_page - 1) // per_page if per_page > 0 else 0
 
-        return {
-            "tasks": result,
-            "meta": {
-                "total": total_tasks,
-                "page": page,
-                "per_page": per_page,
-                "total_pages": total_pages,
-            },
-        }
+            return {
+                "tasks": result,
+                "meta": {
+                    "total": total_tasks,
+                    "page": page,
+                    "per_page": per_page,
+                    "total_pages": total_pages,
+                },
+            }
 
     def get_task_by_id(self, task_id: int, user_id: int) -> dict:
-        stmt: Tasks | None = self.repository.get_by_id(task_id, user_id)
-        if not stmt:
-            raise NotFoundError()
+        with db.session as session:
+            repository = TasksRepository(session)
+            stmt: Tasks | None = repository.get_by_id(task_id, user_id)
+            if not stmt:
+                raise NotFoundError()
 
-        result: dict = stmt.to_dict()
+            result: dict = stmt.to_dict()
 
-        return result
+            return result
 
     def add_new_task(self, task_data: dict, user_id: int) -> dict:
         with db.session as session:
+            repository = TasksRepository(session)
             try:
-                new_task: Tasks | None = self.repository.add_task(task_data, user_id)
+                new_task: Tasks | None = repository.add_task(task_data, user_id)
                 if not new_task:
                     raise DatabaseError()
 
@@ -60,10 +62,9 @@ class TasksService:
 
     def update_task(self, task_id: int, task_data: dict, user_id: int) -> dict:
         with db.session as session:
+            repository = TasksRepository(session)
             try:
-                patched_task: Tasks | None = self.repository.update_task(
-                    task_id, task_data, user_id
-                )
+                patched_task: Tasks | None = repository.update_task(task_id, task_data, user_id)
                 if not patched_task:
                     raise NotFoundError()
 
@@ -83,8 +84,9 @@ class TasksService:
 
     def delete_task(self, task_id: int, user_id: int) -> None:
         with db.session as session:
+            repository = TasksRepository(session)
             try:
-                deleted_task: bool = self.repository.delete_task(task_id, user_id)
+                deleted_task: bool = repository.delete_task(task_id, user_id)
                 if not deleted_task:
                     raise NotFoundError()
 
