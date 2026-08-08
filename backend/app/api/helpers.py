@@ -14,21 +14,6 @@ def get_current_user_id() -> int:
     return int(user_id)
 
 
-def build_token_response(user) -> dict:
-    """Build token response envelope from user ORM object."""
-    from app.api.v1.schemas.auth_schemas import TokenResponse, UserResponse
-
-    return TokenResponse(
-        access_token=user.issue_access_token(),
-        refresh_token=user.issue_refresh_token(),
-        user=UserResponse(
-            user_id=user.user_id,
-            username=user.username,
-            created_at=user.created_at.isoformat() if user.created_at else "",
-        ),
-    ).model_dump()
-
-
 T = TypeVar("T", bound=BaseModel)
 
 
