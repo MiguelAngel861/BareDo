@@ -25,6 +25,20 @@ uv run python run.py
 
 Abre `http://localhost:5000/` — redirige a login si no estás autenticado.
 
+## Uso con Docker Compose (dev, Postgres incluido)
+
+```bash
+docker compose up --build
+```
+
+Levanta: `db` (Postgres 16 en `localhost:5433`), `api` (`http://localhost:5000`, hot-reload) y `web` (frontend en `http://localhost:8080`). El backend corre las migraciones al arrancar.
+
+## Despliegue (Render)
+
+Blueprints via `render.yaml`: Web Service `baredo-api` (gunicorn + migraciones en start.sh) y Web Service `baredo-web` (nginx sirviendo el frontend), ambos con Postgres gestionado. Los secretos `SECRET_KEY` y `JWT_SECRET_KEY` se definen en el dashboard de Render.
+
+URL de producción: _(pendiente de primer deploy)_
+
 ## API
 
 Base URL: `http://localhost:5000/api/v1`
@@ -65,5 +79,6 @@ curl http://localhost:5000/api/v1/tasks \
 |---|---|---|
 | `FLASK_ENV` | `development` | Entorno de Flask |
 | `DEBUG` | `false` | Modo debug |
-| `DATABASE_URL` | `sqlite:///backend/instance/db.sqlite` | Conexión a BD |
+| `DATABASE_URL` | `sqlite:///backend/instance/db.sqlite` | Conexión a BD (`postgres://` y `postgresql://` se normalizan a `postgresql+psycopg://`) |
 | `JWT_SECRET_KEY` | dev | Clave para firmar tokens |
+| `CORS_ORIGINS` | localhost dev | Orígenes CORS permitidos (csv) |
