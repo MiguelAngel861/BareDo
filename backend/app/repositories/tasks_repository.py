@@ -4,6 +4,7 @@ from typing import Any
 from sqlalchemy import Select, delete, func, insert, select, update
 from sqlalchemy.orm import Session
 
+from app.core.pagination import Pagination
 from app.core.repositories.base import BaseRepository
 from app.models.tasks import Tasks
 
@@ -19,7 +20,7 @@ class TasksRepository(BaseRepository[Tasks]):
         filters: dict | None,
         sort_fields: list[tuple[str, bool]],
         user_id: int,
-    ) -> tuple[Sequence[Tasks], int]:
+    ) -> tuple[Sequence[Tasks], Pagination]:
         base_stmt = self._apply_sort(
             self._apply_data_filters(select(Tasks).where(Tasks.user_id == user_id), filters),
             sort_fields,
@@ -27,13 +28,13 @@ class TasksRepository(BaseRepository[Tasks]):
         )
 
         count_stmt = select(func.count()).select_from(base_stmt.subquery())
-        total_count: int = self.session.execute(count_stmt).scalar()
+        total: int = self.session.execute(count_stmt).scalar()
 
         offset: int = (page - 1) * per_page
         data_stmt = base_stmt.offset(offset).limit(per_page)
         data_result: Sequence[Tasks] = self.session.execute(data_stmt).scalars().all()
 
-        return data_result, total_count
+        return data_result, Pagination(page=page, per_page=per_page, total=total)
 
     def get_by_id(self, task_id: int, user_id: int) -> Tasks | None:
         stmt = select(Tasks).where(Tasks.task_id == task_id, Tasks.user_id == user_id)

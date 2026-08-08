@@ -97,4 +97,14 @@ export class FormHandler {
             await callback();
         });
     }
+
+    validateOnBlur(name, rules) {
+        const field = this.fields[name];
+        if (!field) return;
+        field.input.addEventListener("blur", () => {
+            if (field.input.value) {
+                this.validateField(name, rules);
+            }
+        });
+    }
 }

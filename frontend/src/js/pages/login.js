@@ -10,6 +10,9 @@ class LoginPage extends AuthFormHandler {
         this.registerGlobalError("global-error");
         this.registerSubmitButton("submit-btn");
 
+        this.validateOnBlur("username", USERNAME_RULES);
+        this.validateOnBlur("password", PASSWORD_RULES);
+
         this.handleSubmit(() => this.validateAndSubmit());
     }
 

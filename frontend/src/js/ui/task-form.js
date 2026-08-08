@@ -19,7 +19,7 @@ export class TaskForm extends FormHandler {
         this.completedInput = document.getElementById("completed");
         this.idInput = document.getElementById("task-id");
 
-        this.handleSubmit((e) => this._onSubmit(e));
+        this.handleSubmit(() => this._onSubmit());
         this.cancelBtn.addEventListener("click", () => this.resetForm());
     }
 
@@ -76,8 +76,7 @@ export class TaskForm extends FormHandler {
         return data;
     }
 
-    async _onSubmit(e) {
-        e.preventDefault();
+    async _onSubmit() {
         if (!this.validate()) return;
 
         const isEdit = !!this.editingTaskId;

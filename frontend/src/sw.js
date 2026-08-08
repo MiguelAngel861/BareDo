@@ -19,6 +19,7 @@ const PRECACHE = [
   "./js/ui/auth-form.js",
   "./js/ui/dom-utils.js",
   "./js/ui/form-handler.js",
+  "./js/ui/modal.js",
   "./js/ui/task-form.js",
   "./js/ui/task-list.js",
   "./js/ui/toast.js",

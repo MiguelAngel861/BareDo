@@ -11,6 +11,10 @@ class RegisterPage extends AuthFormHandler {
         this.registerGlobalError("global-error");
         this.registerSubmitButton("submit-btn");
 
+        this.validateOnBlur("username", USERNAME_RULES);
+        this.validateOnBlur("password", PASSWORD_RULES);
+        this.validateOnBlur("confirmPassword", confirmPasswordRules(() => this.getFieldValue("password")));
+
         this.handleSubmit(() => this.validateAndSubmit());
     }
 

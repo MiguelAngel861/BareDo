@@ -21,7 +21,7 @@ def test_get_all_filters_by_user_and_title(make_user, make_task, tasks_repo):
     make_task(user_a.user_id, title="Beta task", description="shared")
     make_task(user_b.user_id, title="Alpha task", description="shared")
 
-    tasks, total = tasks_repo.get_all(
+    tasks, pagination = tasks_repo.get_all(
         page=1,
         per_page=10,
         filters={"title": "Alpha"},
@@ -29,7 +29,7 @@ def test_get_all_filters_by_user_and_title(make_user, make_task, tasks_repo):
         user_id=user_a.user_id,
     )
 
-    assert total == 1
+    assert pagination.total == 1
     assert [t.title for t in tasks] == ["Alpha task"]
 
 
@@ -38,7 +38,7 @@ def test_get_all_filters_completed(make_user, make_task, tasks_repo):
     make_task(user.user_id, title="done", completed=True)
     make_task(user.user_id, title="pending", completed=False)
 
-    tasks, total = tasks_repo.get_all(
+    tasks, pagination = tasks_repo.get_all(
         page=1,
         per_page=10,
         filters={"completed": True},
@@ -46,7 +46,7 @@ def test_get_all_filters_completed(make_user, make_task, tasks_repo):
         user_id=user.user_id,
     )
 
-    assert total == 1
+    assert pagination.total == 1
     assert tasks[0].title == "done"
 
 
@@ -57,7 +57,7 @@ def test_get_all_sort_by_due_date_desc(make_user, make_task, tasks_repo):
     make_task(user.user_id, due_date=date(2026, 1, 1))
     make_task(user.user_id, due_date=date(2026, 12, 31))
 
-    tasks, total = tasks_repo.get_all(
+    tasks, pagination = tasks_repo.get_all(
         page=1,
         per_page=10,
         filters=None,
@@ -65,7 +65,7 @@ def test_get_all_sort_by_due_date_desc(make_user, make_task, tasks_repo):
         user_id=user.user_id,
     )
 
-    assert total == 2
+    assert pagination.total == 2
     assert [t.due_date.isoformat()[:10] for t in tasks] == ["2026-12-31", "2026-01-01"]
 
 
@@ -74,7 +74,7 @@ def test_get_all_pagination(make_user, make_task, tasks_repo):
     for i in range(5):
         make_task(user.user_id, title=f"Task {i}")
 
-    tasks, total = tasks_repo.get_all(
+    tasks, pagination = tasks_repo.get_all(
         page=2,
         per_page=2,
         filters=None,
@@ -82,7 +82,7 @@ def test_get_all_pagination(make_user, make_task, tasks_repo):
         user_id=user.user_id,
     )
 
-    assert total == 5
+    assert pagination.total == 5
     assert len(tasks) == 2
 
 

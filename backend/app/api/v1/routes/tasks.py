@@ -32,11 +32,11 @@ def get_tasks():
         "completed": query.completed,
     }
 
-    tasks, meta_data = service.get_all_tasks(
+    tasks, pagination = service.get_all_tasks(
         query.page, query.per_page, filters, query.sort, user_id
     )
 
-    return present_task_list(tasks, meta_data), 200
+    return present_task_list(tasks, pagination), 200
 
 
 @tasks_bp.get("/tasks/<int:task_id>")

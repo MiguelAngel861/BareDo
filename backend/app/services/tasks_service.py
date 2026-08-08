@@ -1,6 +1,7 @@
 from collections.abc import Sequence
 
 from app.core.db import transactional
+from app.core.pagination import Pagination
 from app.errors.exceptions import DatabaseError, NotFoundError
 from app.models.tasks import Tasks
 from app.repositories.tasks_repository import TasksRepository
@@ -10,20 +11,11 @@ from app.utils.sorting import parse_sort
 class TasksService:
     def get_all_tasks(
         self, page: int, per_page: int, filters: dict | None, sort: str | None, user_id: int
-    ) -> tuple[Sequence[Tasks], dict]:
+    ) -> tuple[Sequence[Tasks], Pagination]:
         with transactional() as session:
             repository = TasksRepository(session)
             sort_fields = parse_sort(sort, allowed_fields=["completed", "due_date"])
-
-            tasks, total_tasks = repository.get_all(page, per_page, filters, sort_fields, user_id)
-            total_pages = (total_tasks + per_page - 1) // per_page if per_page > 0 else 0
-
-            return tasks, {
-                "total": total_tasks,
-                "page": page,
-                "per_page": per_page,
-                "total_pages": total_pages,
-            }
+            return repository.get_all(page, per_page, filters, sort_fields, user_id)
 
     def get_task_by_id(self, task_id: int, user_id: int) -> Tasks:
         with transactional() as session:

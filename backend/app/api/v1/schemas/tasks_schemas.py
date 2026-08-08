@@ -21,16 +21,9 @@ class TaskBody(TaskBase):
     model_config = ConfigDict(from_attributes=True, extra="forbid")
 
 
-class PaginationResponse(BaseModel):
-    total: int
-    page: int
-    per_page: int
-    total_pages: int
-
-
 class TaskResponse(BaseModel):
     tasks: list[TaskBody]
-    meta: PaginationResponse
+    meta: dict
 
     # Compatibility with ORM models
     model_config = ConfigDict(from_attributes=True, extra="forbid")

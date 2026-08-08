@@ -34,12 +34,12 @@ def test_get_all_tasks_returns_orm_and_meta(make_user, make_task, tasks_service)
     make_task(user.user_id, title="first")
     make_task(user.user_id, title="second")
 
-    tasks, meta = tasks_service.get_all_tasks(1, 10, {}, None, user.user_id)
+    tasks, pagination = tasks_service.get_all_tasks(1, 10, {}, None, user.user_id)
 
     assert len(tasks) == 2
-    assert meta["total"] == 2
-    assert meta["page"] == 1
-    assert meta["total_pages"] == 1
+    assert pagination.total == 2
+    assert pagination.page == 1
+    assert pagination.total_pages == 1
     assert all(hasattr(t, "title") for t in tasks)
 
 
@@ -49,9 +49,9 @@ def test_get_all_tasks_only_own_user(make_user, make_task, tasks_service):
     make_task(user_a.user_id, title="mine")
     make_task(user_b.user_id, title="theirs")
 
-    tasks, meta = tasks_service.get_all_tasks(1, 10, None, None, user_a.user_id)
+    tasks, pagination = tasks_service.get_all_tasks(1, 10, None, None, user_a.user_id)
 
-    assert meta["total"] == 1
+    assert pagination.total == 1
     assert tasks[0].title == "mine"
 
 
@@ -60,10 +60,10 @@ def test_get_all_tasks_pagination(make_user, make_task, tasks_service):
     for i in range(5):
         make_task(user.user_id, title=f"Task {i}")
 
-    tasks, meta = tasks_service.get_all_tasks(2, 2, None, None, user.user_id)
+    tasks, pagination = tasks_service.get_all_tasks(2, 2, None, None, user.user_id)
 
-    assert meta["total"] == 5
-    assert meta["total_pages"] == 3
+    assert pagination.total == 5
+    assert pagination.total_pages == 3
     assert len(tasks) == 2
 
 
