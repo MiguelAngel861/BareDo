@@ -1,5 +1,4 @@
-from datetime import datetime, timezone
-from typing import Optional
+from datetime import UTC, datetime
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
@@ -39,7 +38,7 @@ class TaskResponse(BaseModel):
 
 class TaskCreate(TaskBase):
     completed: bool = Field(default=False)
-    due_date: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    due_date: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
     model_config = ConfigDict(extra="forbid")
 
@@ -64,10 +63,10 @@ class TaskPatch(BaseModel):
 class TaskListQuery(BaseModel):
     page: int = Field(default=1, ge=1)
     per_page: int = Field(default=100, ge=1, le=100)
-    sort: Optional[str] = None
-    title: Optional[str] = None
-    description: Optional[str] = None
-    completed: Optional[bool] = None
+    sort: str | None = None
+    title: str | None = None
+    description: str | None = None
+    completed: bool | None = None
 
     model_config = ConfigDict(extra="forbid")
 

@@ -1,9 +1,10 @@
 import pytest
+
 from app import create_app
-from app.core.extensions import db as _db
 from app.core.extensions import Base
-from app.models.users import Users
+from app.core.extensions import db as _db
 from app.models.tasks import Tasks
+from app.models.users import Users
 
 
 @pytest.fixture(scope="session")
