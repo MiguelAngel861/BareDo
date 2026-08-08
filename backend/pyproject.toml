@@ -28,7 +28,7 @@ dev = [
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "--strict-markers --cov=app --cov-report=term-missing"
+addopts = "--strict-markers --cov=app --cov-report=term-missing --cov-fail-under=80"
 pythonpath = ["."]
 
 [tool.ruff]

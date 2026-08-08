@@ -1,6 +1,3 @@
-from typing import list, tuple
-
-
 def parse_sort(sort_str: str | None, allowed_fields: list[str]) -> list[tuple[str, bool]]:
     """Parse sort string into list of (field, desc) tuples."""
     if not sort_str:
