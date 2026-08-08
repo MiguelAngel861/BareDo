@@ -1,6 +1,10 @@
 import os
 from pathlib import Path
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 SQLITE_PATH = BASE_DIR / "instance" / "db.sqlite"
 
@@ -52,8 +56,9 @@ class Config:
     }
     SQLALCHEMY_ENGINES = {"default": DATABASE_URL or _default_db_url()}
     CORS_ORIGINS = _cors_origins_from_env()
-    MAX_CONTENT_LENGTH = 1024 * 1024
+    MAX_CONTENT_LENGTH = int(os.environ.get("MAX_CONTENT_LENGTH", 1024 * 1024))
     RATELIMIT_ENABLED = True
+    RATELIMIT_STORAGE_URI = os.environ.get("RATELIMIT_STORAGE_URI", "memory://")
 
 
 class DevelopmentConfig(Config):
