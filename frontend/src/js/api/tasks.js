@@ -17,6 +17,5 @@ export class TaskAPI extends BaseAPI {
     createTask(data) { return this.request("POST", "/tasks", data, true); }
     getTask(id) { return this.request("GET", `/tasks/${id}`, null, true); }
     updateTask(id, data) { return this.request("PUT", `/tasks/${id}`, data, true); }
-    patchTask(id, data) { return this.request("PATCH", `/tasks/${id}`, data, true); }
     deleteTask(id) { return this.request("DELETE", `/tasks/${id}`, null, true); }
 }

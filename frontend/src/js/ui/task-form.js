@@ -8,6 +8,7 @@ export class TaskForm extends FormHandler {
         this.toastContainer = toastContainer;
         this.onSaved = onSaved;
         this.editingTaskId = null;
+        this.editingTask = null;
         this.lastFocusedElement = null;
 
         this.registerField("title", "title", "title-error");
@@ -142,15 +143,13 @@ export class TaskForm extends FormHandler {
     }
 
     getUpdateData() {
-        const data = {
+        return {
             title: this.getFieldValue("title"),
+            description: this.getFieldValue("description") || "",
+            priority: this.editingTask?.priority ?? 1,
+            due_date: this.fields.due_date.input.value || this.editingTask?.due_date,
             completed: this.completedInput.checked,
         };
-        const description = this.getFieldValue("description");
-        if (description) data.description = description;
-        const dueDate = this.fields.due_date.input.value;
-        if (dueDate) data.due_date = dueDate;
-        return data;
     }
 
     async _onSubmit() {
@@ -162,7 +161,7 @@ export class TaskForm extends FormHandler {
         try {
             const data = isEdit ? this.getUpdateData() : this.getFormData();
             if (isEdit) {
-                await this.service.patch(this.editingTaskId, data);
+                await this.service.update(this.editingTaskId, data);
                 showToast(this.toastContainer, "Task updated successfully", "success");
             } else {
                 await this.service.create(data);
@@ -195,6 +194,7 @@ export class TaskForm extends FormHandler {
     startEdit(task) {
         this.open(true);
         this.editingTaskId = task.task_id;
+        this.editingTask = task;
         this.idInput.value = task.task_id;
         this.fields.title.input.value = task.title;
         this.fields.description.input.value = task.description || "";
@@ -207,6 +207,7 @@ export class TaskForm extends FormHandler {
 
     resetForm() {
         this.editingTaskId = null;
+        this.editingTask = null;
         this.idInput.value = "";
         this.form.reset();
         this.clearAllErrors();

@@ -9,6 +9,5 @@ export class TaskService {
 
     create(data) { return this.api.createTask(data); }
     update(id, data) { return this.api.updateTask(id, data); }
-    patch(id, data) { return this.api.patchTask(id, data); }
     delete(id) { return this.api.deleteTask(id); }
 }

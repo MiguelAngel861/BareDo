@@ -282,7 +282,13 @@ export class TaskList {
 
     async toggleComplete(task) {
         try {
-            await this.service.patch(task.task_id, { completed: !task.completed });
+            await this.service.update(task.task_id, {
+                title: task.title,
+                description: task.description || "",
+                priority: task.priority,
+                due_date: task.due_date,
+                completed: !task.completed,
+            });
             showToast(this.toastContainer, task.completed ? "Task marked as pending" : "Task marked as complete", "success");
             this.load();
         } catch (error) {
