@@ -20,7 +20,7 @@ cp .env.example .env   # editar valores si hace falta
 ## Uso
 
 ```bash
-uv run python run.py
+uv run python wsgi.py
 ```
 
 Abre `http://localhost:5000/` — redirige a login si no estás autenticado.
@@ -70,7 +70,7 @@ curl http://localhost:5000/api/v1/tasks \
 
 | Comando | Descripción |
 |---|---|
-| `uv run python run.py` | Levantar servidor local |
+| `uv run python wsgi.py` | Levantar servidor local |
 | `uv run ruff check` | Lint del código Python |
 
 ## Variables de entorno

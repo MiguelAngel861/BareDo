@@ -1,7 +1,6 @@
 import os
 
 from flask import Flask
-from flask_pydantic import validate
 
 from app.api.v1.routes.auth import auth_bp
 from app.api.v1.routes.health import health_bp
@@ -24,8 +23,6 @@ def create_app(config_name: str | None = None) -> Flask:
 
     # Flask-Pydantic: raise validation errors to be handled by custom error handlers
     app.config["FLASK_PYDANTIC_VALIDATION_ERROR_RAISE"] = True
-    # Make validate decorator available on app
-    app.validate = validate
 
     # Configure logging
     configure_logging(app)
