@@ -17,6 +17,7 @@ WORKDIR /app
 COPY --from=builder /app/.venv /app/.venv
 
 COPY app ./app
+COPY migrations ./migrations
 COPY wsgi.py run.py start.sh ./
 
 RUN chmod +x start.sh
