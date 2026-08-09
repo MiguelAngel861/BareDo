@@ -16,9 +16,6 @@ class BaseRepository[T]:
         self.session.add(entity)
         return entity
 
-    def delete(self, entity: T) -> None:
-        self.session.delete(entity)
-
     @staticmethod
     def _apply_sort(
         stmt: Select, sort_fields: list[tuple[str, bool]], columns: dict[str, Any]

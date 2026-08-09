@@ -46,31 +46,28 @@ def _cors_origins_from_env() -> list[str]:
     return [origin.strip() for origin in raw.split(",") if origin.strip()]
 
 
+def _sqlalchemy_engines() -> dict[str, str | dict]:
+    url = _db_url_from_env() or _default_db_url()
+    if url.startswith("postgresql"):
+        return {"default": {"url": url, "pool_pre_ping": True, "pool_recycle": 300}}
+    return {"default": url}
+
+
 class Config:
     SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-change-in-production")
     JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY", "dev-jwt-secret-change-in-production")
-    DATABASE_URL = _db_url_from_env()
-    SQLALCHEMY_DATABASE_URI = DATABASE_URL or _default_db_url()
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SQLALCHEMY_ENGINE_OPTIONS = {
-        "pool_pre_ping": True,
-        "pool_recycle": 300,
-    }
-    SQLALCHEMY_ENGINES = {"default": DATABASE_URL or _default_db_url()}
+    SQLALCHEMY_ENGINES = _sqlalchemy_engines()
     CORS_ORIGINS = _cors_origins_from_env()
     MAX_CONTENT_LENGTH = int(os.environ.get("MAX_CONTENT_LENGTH", 1024 * 1024))
     RATELIMIT_ENABLED = True
-    RATELIMIT_STORAGE_URI = os.environ.get("RATELIMIT_STORAGE_URI", "memory://")
 
 
 class DevelopmentConfig(Config):
     DEBUG = True
-    SQLALCHEMY_ECHO = False
 
 
 class ProductionConfig(Config):
     DEBUG = False
-    SQLALCHEMY_ECHO = False
 
     def __init__(self):
         super().__init__()
@@ -83,7 +80,6 @@ class ProductionConfig(Config):
 class TestingConfig(Config):
     DEBUG = False
     TESTING = True
-    SQLALCHEMY_ECHO = False
     SQLALCHEMY_ENGINES = {"default": "sqlite:///:memory:"}
     RATELIMIT_ENABLED = False
 
