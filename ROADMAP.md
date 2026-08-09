@@ -82,7 +82,7 @@ La idea es iterar por fases. Cada fase deja el proyecto en un estado “presenta
 - [ ] OpenAPI/Swagger (por ejemplo con Flask-Smorest).
 - [x] Logs y trazabilidad:
 	- [x] logging estructurado (JSON, por request)
-	- [ ] `request_id` en logs/respuestas (opcional)
+	- [x] `request_id` en logs/respuestas (opcional)
 
 ### Fase 6.5 — Refactor arquitectónico backend ✅
 

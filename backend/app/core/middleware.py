@@ -1,7 +1,8 @@
 from datetime import datetime
 from typing import Any
+from uuid import uuid4
 
-from flask import Flask, request
+from flask import Flask, g, request
 
 SENSITIVE_FIELDS = {
     "password",
@@ -38,6 +39,7 @@ def register_middleware(app: Flask):
 
     @app.before_request
     def log_request():
+        g.request_id = uuid4().hex
         request._start_time = datetime.utcnow()
 
     @app.after_request
@@ -45,11 +47,13 @@ def register_middleware(app: Flask):
         if request.path == "/health":
             return response
 
+        request_id = getattr(g, "request_id", None)
         duration = (
             datetime.utcnow() - getattr(request, "_start_time", datetime.utcnow())
         ).total_seconds() * 1000
 
         log_data = {
+            "request_id": request_id,
             "method": request.method,
             "path": request.path,
             "status": response.status_code,
@@ -69,5 +73,8 @@ def register_middleware(app: Flask):
             app.logger.warning("HTTP Request", extra=log_data)
         else:
             app.logger.info("HTTP Request", extra=log_data)
+
+        if request_id:
+            response.headers["X-Request-ID"] = request_id
 
         return response
