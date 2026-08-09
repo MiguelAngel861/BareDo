@@ -40,6 +40,7 @@ export class TaskList {
     }
 
     async load() {
+        this.renderSkeletons();
         try {
             const data = await this.service.load({
                 page: this.currentPage,
@@ -51,6 +52,18 @@ export class TaskList {
             this.updatePagination(data.meta);
         } catch (error) {
             showToast(this.toastContainer, "Failed to load tasks: " + error.message, "error");
+        }
+    }
+
+    renderSkeletons() {
+        clearChildren(this.el.list);
+        this.el.emptyMsg.style.display = "none";
+        for (let i = 0; i < 3; i++) {
+            const li = SafeRenderer.createElement("li", { className: "task-skeleton" });
+            li.appendChild(SafeRenderer.createElement("div", { className: "skeleton-line skeleton-title" }));
+            li.appendChild(SafeRenderer.createElement("div", { className: "skeleton-line skeleton-desc" }));
+            li.appendChild(SafeRenderer.createElement("div", { className: "skeleton-line skeleton-meta" }));
+            this.el.list.appendChild(li);
         }
     }
 

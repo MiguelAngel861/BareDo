@@ -11,66 +11,80 @@
 </head>
 <body>
     <a href="#main" class="skip-link">Skip to content</a>
-    <header>
-        <h1>BareDo</h1>
-        <section id="auth-section">
-            <span id="auth-status"></span>
-            <button id="logout-btn" type="button" class="hidden">Logout</button>
-        </section>
+
+    <header class="site-header">
+        <div class="header-inner">
+            <h1 class="site-title">BareDo</h1>
+            <div id="auth-section" class="auth-minimal">
+                <span id="auth-status" aria-live="polite"></span>
+                <button id="logout-btn" type="button" class="btn ghost hidden">Logout</button>
+            </div>
+        </div>
     </header>
 
     <main id="main">
-        <section id="task-form-section">
-            <h2>Create Task</h2>
-            <form id="task-form">
-                <input type="hidden" id="task-id" name="task_id">
-                <div class="form-group">
-                    <label for="title">Title <span class="required">*</span></label>
-                    <input type="text" id="title" name="title" required maxlength="40" placeholder="Task title (max 40 chars)">
-                    <span class="error-message" id="title-error"></span>
-                </div>
-                <div class="form-group">
-                    <label for="description">Description</label>
-                    <textarea id="description" name="description" maxlength="200" placeholder="Task description (max 200 chars)"></textarea>
-                    <span class="error-message" id="description-error"></span>
-                </div>
-                <div class="form-group">
-                    <label for="due_date">Due Date</label>
-                    <input type="date" id="due_date" name="due_date">
-                    <span class="error-message" id="due_date-error"></span>
-                </div>
-                <div class="form-group">
-                    <label for="completed">Completed</label>
-                    <input type="checkbox" id="completed" name="completed">
-                </div>
-                <button type="submit" id="submit-btn">Create Task</button>
-                <button type="button" id="cancel-edit-btn" class="hidden">Cancel Edit</button>
-            </form>
-            <div id="form-error" class="error-message"></div>
-        </section>
-
-        <section id="filters-section">
-            <h2>Filters</h2>
-            <div class="filter-group">
-                <label for="search-title">Search Title</label>
-                <input type="text" id="search-title" placeholder="Search by title...">
-            </div>
-            <div class="filter-group">
-                <label for="filter-completed">Completed</label>
-                <select id="filter-completed">
-                    <option value="">All</option>
-                    <option value="true">Completed</option>
-                    <option value="false">Pending</option>
-                </select>
+        <section id="task-form-section" class="section section--split">
+            <div class="section-content">
+                <header class="section-header">
+                    <h2>Create Task</h2>
+                    <p class="section-desc">Add a new task or edit existing one.</p>
+                </header>
+                <form id="task-form" class="task-form">
+                    <input type="hidden" id="task-id" name="task_id">
+                    <div class="form-group">
+                        <label for="title">Title <span class="required">*</span></label>
+                        <input type="text" id="title" name="title" required maxlength="40" placeholder="Task title (max 40 chars)">
+                        <span class="error-message" id="title-error"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea id="description" name="description" maxlength="200" placeholder="Task description (max 200 chars)"></textarea>
+                        <span class="error-message" id="description-error"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="due_date">Due Date</label>
+                        <input type="date" id="due_date" name="due_date">
+                        <span class="error-message" id="due_date-error"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="completed">Completed</label>
+                        <input type="checkbox" id="completed" name="completed">
+                    </div>
+                    <button type="submit" id="submit-btn">Create Task</button>
+                    <button type="button" id="cancel-edit-btn" class="secondary hidden">Cancel Edit</button>
+                </form>
+                <div id="form-error" class="error-message"></div>
             </div>
         </section>
 
-        <section id="task-list-section">
-            <h2>Tasks</h2>
+        <section id="task-list-section" class="section section--list">
+            <header class="section-header section-header--minimal">
+                <h2>Tasks</h2>
+                <span id="task-count" class="task-count" aria-live="polite">0 tasks</span>
+            </header>
+
+            <div id="filters-bar" class="filters-bar" role="search" aria-label="Task filters">
+                <div class="filter-group">
+                    <label for="search-title" class="visually-hidden">Search Title</label>
+                    <input type="search" id="search-title" placeholder="Search tasks...">
+                </div>
+                <div class="filter-group">
+                    <label for="filter-completed" class="visually-hidden">Filter by status</label>
+                    <select id="filter-completed">
+                        <option value="">All</option>
+                        <option value="true">Completed</option>
+                        <option value="false">Pending</option>
+                    </select>
+                </div>
+            </div>
             <div id="toast-container"></div>
-            <ul id="task-list"></ul>
-            <div id="empty-message" class="hidden">No tasks found.</div>
-            <nav id="pagination" aria-label="Pagination">
+            <ul id="task-list" class="task-list" role="list"></ul>
+            <div id="empty-message" class="empty-state hidden">
+                <span class="empty-state-tag">STATUS: 0 TASKS</span>
+                <h3 class="empty-state-title">NO TASKS FOUND</h3>
+                <p class="empty-state-desc">Create your first task using the form on the left to initialize your workspace.</p>
+            </div>
+            <nav id="pagination" class="pagination" aria-label="Pagination">
                 <button type="button" id="prev-page" disabled>Previous</button>
                 <span id="page-indicator">Page 1</span>
                 <button type="button" id="next-page" disabled>Next</button>
