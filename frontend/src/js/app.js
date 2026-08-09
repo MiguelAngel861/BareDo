@@ -52,7 +52,7 @@ function init() {
 
     const service = new TaskService(new TaskAPI({ onUnauthorized: handleUnauthorized }));
 
-    const form = new TaskForm(service, toastContainer, () => list.load());
+    const form = new TaskForm(service, toastContainer, () => list.loadRetry());
     const list = new TaskList(service, toastContainer, (task) => form.startEdit(task));
 
     const openCreateBtn = document.getElementById("open-create-task-btn");

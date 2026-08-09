@@ -216,6 +216,16 @@ button:focus-visible {
     font-weight: 500;
 }
 
+.form-group label.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    user-select: none;
+    width: fit-content;
+    margin-bottom: 0;
+}
+
 .required {
     color: var(--danger);
 }
@@ -247,10 +257,63 @@ button:focus-visible {
     resize: vertical;
 }
 
-.form-group input[type="checkbox"] {
-    width: auto;
-    margin-right: 8px;
-    accent-color: var(--text);
+/* Custom Brutalist Checkbox */
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    user-select: none;
+    width: fit-content;
+}
+
+.checkbox-input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.checkbox-custom {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    min-width: 18px;
+    border: 1px solid var(--text);
+    background-color: var(--surface);
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.checkbox-custom::after {
+    content: "";
+    display: block;
+    width: 10px;
+    height: 10px;
+    background-color: var(--text);
+    opacity: 0;
+    transition: opacity 0.15s ease;
+}
+
+.checkbox-input:checked + .checkbox-custom {
+    background-color: var(--bg);
+    border-color: var(--text);
+}
+
+.checkbox-input:checked + .checkbox-custom::after {
+    background-color: var(--text);
+    opacity: 1;
+}
+
+.checkbox-input:focus-visible + .checkbox-custom {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 1px;
+}
+
+.checkbox-text {
+    font-size: 0.875rem;
+    color: var(--text);
 }
 
 .error-message {

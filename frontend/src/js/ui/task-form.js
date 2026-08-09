@@ -198,7 +198,7 @@ export class TaskForm extends FormHandler {
         this.idInput.value = task.task_id;
         this.fields.title.input.value = task.title;
         this.fields.description.input.value = task.description || "";
-        this.fields.due_date.input.value = task.due_date || "";
+        this.fields.due_date.input.value = task.due_date ? task.due_date.substring(0, 10) : "";
         this.completedInput.checked = task.completed;
         if (this.modalTitle) this.modalTitle.textContent = "Edit Task";
         this.submitBtn.textContent = "Update Task";

@@ -39,11 +39,17 @@
                 </div>
                 <div class="filter-group">
                     <label for="filter-completed" class="visually-hidden">Filter by status</label>
-                    <select id="filter-completed">
-                        <option value="">All</option>
-                        <option value="true">Completed</option>
-                        <option value="false">Pending</option>
-                    </select>
+                    <div class="custom-dropdown" id="filter-completed" role="listbox" aria-expanded="false" aria-haspopup="listbox" tabindex="0" data-value="">
+                        <div class="dropdown-trigger">
+                            <span class="dropdown-value">All</span>
+                            <span class="dropdown-icon">▼</span>
+                        </div>
+                        <div class="dropdown-options">
+                            <div class="dropdown-option selected" data-value="" role="option" aria-selected="true">All</div>
+                            <div class="dropdown-option" data-value="true" role="option" aria-selected="false">Completed</div>
+                            <div class="dropdown-option" data-value="false" role="option" aria-selected="false">Pending</div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div id="toast-container"></div>
@@ -86,8 +92,11 @@
                     <span class="error-message" id="due_date-error"></span>
                 </div>
                 <div class="form-group">
-                    <label for="completed">Completed</label>
-                    <input type="checkbox" id="completed" name="completed">
+                    <label class="checkbox-label" for="completed">
+                        <input type="checkbox" id="completed" name="completed" class="checkbox-input">
+                        <span class="checkbox-custom"></span>
+                        <span class="checkbox-text">Completed</span>
+                    </label>
                 </div>
                 <button type="submit" id="submit-btn">Create Task</button>
                 <button type="button" id="cancel-edit-btn" class="secondary">Cancel</button>

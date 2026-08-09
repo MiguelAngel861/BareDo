@@ -1,5 +1,5 @@
 /* Service Worker BareDo: cache-first para estaticos (con retry en cold start de Render) y network-first para navegaciones. */
-const CACHE_NAME = "baredo-static-v3";
+const CACHE_NAME = "baredo-static-v5";
 const PRECACHE = [
   "./",
   "./index.html",
@@ -111,6 +111,7 @@ self.addEventListener("fetch", (event) => {
   if (request.method !== "GET") return;
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
+  if (url.pathname.startsWith("/api/")) return;
 
   if (request.mode === "navigate") {
     event.respondWith(networkFirst(request));

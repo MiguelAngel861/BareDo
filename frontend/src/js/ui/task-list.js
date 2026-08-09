@@ -2,6 +2,119 @@ import { SafeRenderer, clearChildren } from "./dom-utils.js";
 import { showToast } from "./toast.js";
 import { showModal } from "./modal.js";
 
+class CustomDropdown {
+    constructor(element, onSelect) {
+        this.element = element;
+        this.trigger = element.querySelector('.dropdown-trigger');
+        this.optionsContainer = element.querySelector('.dropdown-options');
+        this.options = element.querySelectorAll('.dropdown-option');
+        this.value = element.dataset.value || '';
+        this.onSelect = onSelect;
+        
+        this.init();
+    }
+    
+    init() {
+        this.trigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.toggle();
+        });
+        
+        this.options.forEach(option => {
+            option.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.select(option);
+            });
+        });
+        
+        this.element.addEventListener('keydown', (e) => {
+            this.handleKeyboard(e);
+        });
+        
+        document.addEventListener('click', () => {
+            this.close();
+        });
+    }
+    
+    toggle() {
+        const isExpanded = this.element.getAttribute('aria-expanded') === 'true';
+        if (isExpanded) {
+            this.close();
+        } else {
+            this.open();
+        }
+    }
+    
+    open() {
+        this.element.setAttribute('aria-expanded', 'true');
+    }
+    
+    close() {
+        this.element.setAttribute('aria-expanded', 'false');
+    }
+    
+    select(option) {
+        this.options.forEach(opt => {
+            opt.classList.remove('selected');
+            opt.setAttribute('aria-selected', 'false');
+        });
+        
+        option.classList.add('selected');
+        option.setAttribute('aria-selected', 'true');
+        
+        this.trigger.querySelector('.dropdown-value').textContent = option.textContent;
+        
+        this.value = option.dataset.value;
+        this.element.dataset.value = this.value;
+        
+        this.close();
+        
+        if (this.onSelect) {
+            this.onSelect(this.value);
+        }
+    }
+    
+    handleKeyboard(e) {
+        switch (e.key) {
+            case 'Enter':
+            case ' ':
+                e.preventDefault();
+                this.toggle();
+                break;
+            case 'ArrowDown':
+                e.preventDefault();
+                if (this.element.getAttribute('aria-expanded') === 'false') {
+                    this.open();
+                } else {
+                    this.focusNextOption();
+                }
+                break;
+            case 'ArrowUp':
+                e.preventDefault();
+                this.focusPrevOption();
+                break;
+            case 'Escape':
+                this.close();
+                this.trigger.focus();
+                break;
+        }
+    }
+    
+    focusNextOption() {
+        const options = Array.from(this.options);
+        const currentIndex = options.findIndex(opt => opt === document.activeElement);
+        const nextIndex = currentIndex < options.length - 1 ? currentIndex + 1 : 0;
+        options[nextIndex].focus();
+    }
+    
+    focusPrevOption() {
+        const options = Array.from(this.options);
+        const currentIndex = options.findIndex(opt => opt === document.activeElement);
+        const prevIndex = currentIndex > 0 ? currentIndex - 1 : options.length - 1;
+        options[prevIndex].focus();
+    }
+}
+
 export class TaskList {
     constructor(service, toastContainer, onEdit) {
         this.service = service;
@@ -25,7 +138,10 @@ export class TaskList {
         this.el.prevBtn.addEventListener("click", () => this.changePage(this.currentPage - 1));
         this.el.nextBtn.addEventListener("click", () => this.changePage(this.currentPage + 1));
         this.el.searchInput.addEventListener("input", (e) => this.debounceSearch(e.target.value));
-        this.el.filterSelect.addEventListener("change", (e) => this.setFilter("completed", e.target.value));
+        
+        this.customDropdown = new CustomDropdown(this.el.filterSelect, (value) => {
+            this.setFilter("completed", value);
+        });
     }
 
     debounceSearch(value) {
@@ -52,6 +168,21 @@ export class TaskList {
             this.updatePagination(data.meta);
         } catch (error) {
             showToast(this.toastContainer, "Failed to load tasks: " + error.message, "error");
+        }
+    }
+
+    async loadRetry() {
+        try {
+            const data = await this.service.load({
+                page: this.currentPage,
+                per_page: this.perPage,
+                ...this.filters,
+            });
+            if (!data) return;
+            this.renderList(data.tasks);
+            this.updatePagination(data.meta);
+        } catch {
+            // silently ignore - edit was already saved
         }
     }
 
@@ -102,7 +233,7 @@ export class TaskList {
         if (task.due_date) {
             meta.appendChild(SafeRenderer.createElement("span", {
                 className: "task-due-date",
-                textContent: `Due: ${task.due_date}`,
+                textContent: `Due: ${task.due_date.substring(0, 10)}`,
             }));
         }
         meta.appendChild(SafeRenderer.createElement("span", {
