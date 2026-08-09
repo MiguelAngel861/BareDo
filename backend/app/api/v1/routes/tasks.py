@@ -91,4 +91,4 @@ def delete_task(task_id: int):
     user_id = get_current_user_id()
 
     service.delete_task(task_id, user_id)
-    return {}, 204
+    return "", 204
