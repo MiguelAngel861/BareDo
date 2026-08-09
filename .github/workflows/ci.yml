@@ -20,18 +20,25 @@ jobs:
           filters: |
             backend:
               - 'backend/**'
+              - '.github/workflows/ci.yml'
             frontend:
               - 'frontend/**'
+              - '.github/workflows/ci.yml'
 
   lint:
     needs: changes
     if: needs.changes.outputs.backend == 'true'
     runs-on: ubuntu-latest
-    container: python:3.13-slim
+    defaults:
+      run:
+        working-directory: backend
     steps:
       - uses: actions/checkout@v4
-      - run: pip install --break-system-packages uv
-      - run: uv sync --only-group dev
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          python-version: '3.13'
+      - run: uv sync --frozen
       - run: uv run ruff check
       - run: uv run ruff format --check
 
@@ -39,11 +46,16 @@ jobs:
     needs: changes
     if: needs.changes.outputs.backend == 'true'
     runs-on: ubuntu-latest
-    container: python:3.13-slim
+    defaults:
+      run:
+        working-directory: backend
     steps:
       - uses: actions/checkout@v4
-      - run: pip install --break-system-packages uv
-      - run: uv sync --only-group dev
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          python-version: '3.13'
+      - run: uv sync --frozen
       - run: uv run pytest
 
   docker-frontend:
@@ -52,4 +64,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: docker build -t baredo-frontend:ci .
+      - run: docker build -t baredo-frontend:ci ./frontend
