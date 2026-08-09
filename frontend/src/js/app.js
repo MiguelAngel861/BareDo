@@ -1,15 +1,9 @@
-import { TaskAPI, AuthSession, TaskService } from "./api/index.ts";
+import { TaskAPI, AuthSession, TaskService, goToLogin } from "./api/index.js";
 import { TaskForm } from "./ui/task-form.js";
 import { TaskList } from "./ui/task-list.js";
 import { showToast, flushPendingToasts } from "./ui/toast.js";
 
 const LAST_ERROR_KEY = "last_auth_error";
-
-function goToLogin(reason = "") {
-  if (reason) sessionStorage.setItem(LAST_ERROR_KEY, reason);
-  AuthSession.clear();
-  window.location.href = "pages/login.html";
-}
 
 function init() {
   const toastContainer = document.getElementById("toast-container");

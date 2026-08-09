@@ -1,40 +1,18 @@
-type RequestInit = {
-  method?: string;
-  headers?: Record<string, string>;
-  body?: string;
-};
-
-type FetchOptions = {
-  method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
-  body?: unknown;
-  auth?: boolean;
-  refreshToken?: string;
-};
-
-type ApiError = {
-  code: string;
-  message: string;
-  status: number;
-  details?: unknown;
-};
-
-type ApiResponse = T extends void ? void ;
-
-const API_BASE = (typeof window !== 'undefined' && window.__API_BASE_URL__) || import.meta.env.VITE_API_BASE || '/api/v1';
+const API_BASE = (typeof window !== 'undefined' && window.__API_BASE_URL__) || '/api/v1';
 const ACCESS_KEY = 'access_token';
 const REFRESH_KEY = 'refresh_token';
 
-let refreshPromise: Promise<boolean> | null = null;
+let refreshPromise = null;
 
-function getAuthHeaders(refresh = false): Record<string, string> {
+function getAuthHeaders(refresh = false) {
   const key = refresh ? REFRESH_KEY : ACCESS_KEY;
   const token = localStorage.getItem(key);
-  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  const headers = { 'Content-Type': 'application/json' };
   if (token) headers.Authorization = `Bearer ${token}`;
   return headers;
 }
 
-async function refreshAccessToken(): Promise<boolean> {
+async function refreshAccessToken() {
   if (refreshPromise) return refreshPromise;
 
   refreshPromise = (async () => {
@@ -61,7 +39,7 @@ async function refreshAccessToken(): Promise<boolean> {
   return refreshPromise;
 }
 
-async function request(endpoint: string, options: FetchOptions = {}): Promise {
+async function request(endpoint, options = {}) {
   const { method = 'GET', body, auth = true, refreshToken = false } = options;
 
   const headers = refreshToken
@@ -95,103 +73,127 @@ async function request(endpoint: string, options: FetchOptions = {}): Promise {
     throw err;
   }
 
-  return data as T;
+  return data;
 }
 
-const cache = new Map<string, { data; timestamp: number; ttl: number }>();
+const cache = new Map();
 
-function getCacheKey(endpoint: string, params): string {
-  return params ? `${endpoint}?${new URLSearchParams(params as Record<string, string>).toString()}` : endpoint;
+function getCacheKey(endpoint, params) {
+  return params ? `${endpoint}?${new URLSearchParams(params).toString()}` : endpoint;
 }
 
-function isFresh(key: string): boolean {
+function isFresh(key) {
   const entry = cache.get(key);
   if (!entry) return false;
   return Date.now() - entry.timestamp < entry.ttl;
 }
 
-function setCache(key: string, data, ttl): void {
+function setCache(key, data, ttl = 30000) {
   cache.set(key, { data, timestamp: Date.now(), ttl });
 }
 
-function invalidateCache(pattern): void {
+function invalidateCache(pattern) {
   for (const key of cache.keys()) {
     if (key.startsWith(pattern)) cache.delete(key);
   }
 }
 
 export const api = {
-  get: (endpoint: string, params, useCache) => {
+  get(endpoint, params, useCache = true) {
     const key = getCacheKey(endpoint, params);
-    if (useCache && isFresh(key)) return Promise.resolve(cache.get(key)!.data);
+    if (useCache && isFresh(key)) return Promise.resolve(cache.get(key).data);
 
-    const url = params ? `${endpoint}?${new URLSearchParams(params as Record<string, string>).toString()}` : endpoint;
+    const url = params ? `${endpoint}?${new URLSearchParams(params).toString()}` : endpoint;
     return request(endpoint, { method: 'GET' }).then((data) => {
       setCache(key, data);
       return data;
     });
   },
 
-  post: (endpoint: string, body) =>
-    request<unknown>(endpoint, { method: 'POST', body }).then((data) => {
+  post(endpoint, body) {
+    return request(endpoint, { method: 'POST', body }).then((data) => {
       invalidateCache('/');
       return data;
-    }),
+    });
+  },
 
-  put: (endpoint: string, body) =>
-    request<unknown>(endpoint, { method: 'PUT', body }).then((data) => {
+  put(endpoint, body) {
+    return request(endpoint, { method: 'PUT', body }).then((data) => {
       invalidateCache('/');
       return data;
-    }),
+    });
+  },
 
-  patch: (endpoint: string, body) =>
-    request<unknown>(endpoint, { method: 'PATCH', body }).then((data) => {
+  patch(endpoint, body) {
+    return request(endpoint, { method: 'PATCH', body }).then((data) => {
       invalidateCache('/');
       return data;
-    }),
+    });
+  },
 
-  delete: (endpoint: string) =>
-    request<unknown>(endpoint, { method: 'DELETE' }).then((data) => {
+  delete(endpoint) {
+    return request(endpoint, { method: 'DELETE' }).then((data) => {
       invalidateCache('/');
       return data;
-    }),
+    });
+  },
 
   // Auth endpoints
   auth: {
-    register: (username: string, password: string) =>
-      request('/auth/register', { method: 'POST', body: { username, password }, auth: false }),
-    login: (username: string, password: string) =>
-      request('/auth/login', { method: 'POST', body: { username, password }, auth: false }),
-    refresh: () => request('/auth/refresh', { method: 'POST', auth: true, refreshToken: true }),
-    me: () => request('/auth/me', { method: 'GET', auth: true }),
+    register(username, password) {
+      return request('/auth/register', { method: 'POST', body: { username, password }, auth: false });
+    },
+    login(username, password) {
+      return request('/auth/login', { method: 'POST', body: { username, password }, auth: false });
+    },
+    refresh() {
+      return request('/auth/refresh', { method: 'POST', auth: true, refreshToken: true });
+    },
+    me() {
+      return request('/auth/me', { method: 'GET', auth: true });
+    },
   },
 
   // Task endpoints
   tasks: {
-    list: (params: { page: number; per_page: number; sort?: string; title?: string; completed?: boolean }) =>
-      request('/tasks', { method: 'GET', params }),
+    list(params) {
+      return request('/tasks', { method: 'GET', params });
+    },
 
-    get: (id: number) => request(`/tasks/${id}`, { method: 'GET' }),
+    get(id) {
+      return request(`/tasks/${id}`, { method: 'GET' });
+    },
 
-    create: (data: { title: string; description?: string; priority?: number; due_date?: string; completed?: boolean }) =>
-      request('/tasks', { method: 'POST', body: data }),
+    create(data) {
+      return request('/tasks', { method: 'POST', body: data });
+    },
 
-    update: (id: number, data: { title: string; description: string; priority: number; due_date: string; completed: boolean }) =>
-      request(`/tasks/${id}`, { method: 'PUT', body: data }),
+    update(id, data) {
+      return request(`/tasks/${id}`, { method: 'PUT', body: data });
+    },
 
-    patch: (id: number, data: Partial<{ title: string; description: string; priority: number; due_date: string; completed: boolean }>) =>
-      request(`/tasks/${id}`, { method: 'PATCH', body: data }),
+    patch(id, data) {
+      return request(`/tasks/${id}`, { method: 'PATCH', body: data });
+    },
 
-    delete: (id: number) => request(`/tasks/${id}`, { method: 'DELETE' }),
+    delete(id) {
+      return request(`/tasks/${id}`, { method: 'DELETE' });
+    },
 
-    toggle: (id: number, completed: boolean) => request(`/tasks/${id}`, { method: 'PATCH', body: { completed } }),
+    toggle(id, completed) {
+      return request(`/tasks/${id}`, { method: 'PATCH', body: { completed } });
+    },
   },
 
   // Helpers
   cache: {
-    invalidate: (pattern) => invalidateCache(pattern),
-    clear: () => cache.clear(),
+    invalidate(pattern) {
+      invalidateCache(pattern);
+    },
+    clear() {
+      cache.clear();
+    },
   },
 };
 
-export type { ApiError };
+export { api };
