@@ -44,10 +44,10 @@ class TaskUpdate(TaskBase):
 
 
 class TaskPatch(BaseModel):
-    title: str | None = None
-    description: str | None = None
+    title: str | None = Field(default=None, min_length=5, max_length=40)
+    description: str | None = Field(default=None, min_length=0, max_length=500)
     completed: bool | None = None
-    priority: int | None = None
+    priority: int | None = Field(default=None, ge=1, le=3)
     due_date: datetime | None = None
 
     model_config = ConfigDict(extra="forbid")
