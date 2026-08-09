@@ -1,8 +1,8 @@
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.core.repositories.base import BaseRepository
 from app.models.users import Users
+from app.repositories.base import BaseRepository
 
 
 class UsersRepository(BaseRepository[Users]):

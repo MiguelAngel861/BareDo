@@ -5,8 +5,8 @@ from sqlalchemy import Select, delete, func, insert, select, update
 from sqlalchemy.orm import Session
 
 from app.core.pagination import Pagination
-from app.core.repositories.base import BaseRepository
 from app.models.tasks import Tasks
+from app.repositories.base import BaseRepository
 
 
 class TasksRepository(BaseRepository[Tasks]):
