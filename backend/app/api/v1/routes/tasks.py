@@ -1,13 +1,14 @@
-from flask import Blueprint, abort, request
+from flask import Blueprint
 from flask_jwt_extended import jwt_required
-from pydantic import ValidationError
+from flask_pydantic import validate
 
 from app.api.helpers import get_current_user_id
-from app.api.v1.presenters.tasks_presenter import present_task, present_task_list
 from app.api.v1.schemas.tasks_schemas import (
+    TaskBody,
     TaskCreate,
     TaskListQuery,
     TaskPatch,
+    TaskResponse,
     TaskUpdate,
 )
 from app.services.tasks_service import TasksService
@@ -18,40 +19,10 @@ service = TasksService()
 
 @tasks_bp.get("/tasks")
 @jwt_required()
-def get_tasks():
-    """List tasks with pagination and filters.
-
-    ---
-    parameters:
-      - in: query
-        name: page
-        schema: { type: integer, default: 1 }
-      - in: query
-        name: per_page
-        schema: { type: integer, default: 100, maximum: 100 }
-      - in: query
-        name: completed
-        schema: { type: string, enum: ['true', 'false'] }
-      - in: query
-        name: title
-        schema: { type: string }
-      - in: query
-        name: sort
-        schema: { type: string }
-    responses:
-      200:
-        description: Paginated task list
-      400:
-        description: Bad request
-      401:
-        description: Unauthorized
-    """
+@validate(query=TaskListQuery)
+def get_tasks(query: TaskListQuery):
+    """List tasks with pagination and filters."""
     user_id = get_current_user_id()
-
-    try:
-        query = TaskListQuery(**request.args)
-    except ValidationError as e:
-        abort(400, str(e))
 
     filters = {
         "title": query.title,
@@ -63,123 +34,60 @@ def get_tasks():
         query.page, query.per_page, filters, query.sort, user_id
     )
 
-    return present_task_list(tasks, pagination), 200
+    return TaskResponse(
+        tasks=[TaskBody.model_validate(task) for task in tasks],
+        meta=pagination.to_dict(),
+    ), 200
 
 
 @tasks_bp.get("/tasks/<int:task_id>")
 @jwt_required()
-def get_task_by_id(task_id):
-    """Get a task by ID.
-
-    responses:
-      200:
-        description: Task details
-      401:
-        description: Unauthorized
-      404:
-        description: Not found
-    """
+@validate()
+def get_task_by_id(task_id: int):
+    """Get a task by ID."""
     user_id = get_current_user_id()
 
     task = service.get_task_by_id(task_id, user_id)
-    return present_task(task), 200
+    return TaskBody.model_validate(task), 200
 
 
 @tasks_bp.post("/tasks")
 @jwt_required()
-def add_task():
-    """Create a new task.
-
-    responses:
-      201:
-        description: Task created
-      400:
-        description: Bad request
-      401:
-        description: Unauthorized
-    """
+@validate(body=TaskCreate)
+def add_task(body: TaskCreate):
+    """Create a new task."""
     user_id = get_current_user_id()
 
-    payload = request.get_json(silent=True) or {}
-    try:
-        task_data = TaskCreate(**payload)
-    except ValidationError as e:
-        abort(400, str(e))
-
-    new_task = service.add_new_task(task_data.model_dump(), user_id)
-
-    return present_task(new_task), 201
+    new_task = service.add_new_task(body.model_dump(), user_id)
+    return TaskBody.model_validate(new_task), 201
 
 
 @tasks_bp.put("/tasks/<int:task_id>")
 @jwt_required()
-def update_task(task_id):
-    """Update a task (full).
-
-    responses:
-      200:
-        description: Task updated
-      400:
-        description: Bad request
-      401:
-        description: Unauthorized
-      404:
-        description: Not found
-    """
+@validate(body=TaskUpdate)
+def update_task(task_id: int, body: TaskUpdate):
+    """Update a task (full)."""
     user_id = get_current_user_id()
 
-    payload = request.get_json(silent=True) or {}
-    try:
-        task_data = TaskUpdate(**payload)
-    except ValidationError as e:
-        abort(400, str(e))
-
-    updated_task = service.update_task(task_id, task_data.model_dump(), user_id)
-
-    return present_task(updated_task)
+    updated_task = service.update_task(task_id, body.model_dump(), user_id)
+    return TaskBody.model_validate(updated_task), 200
 
 
 @tasks_bp.patch("/tasks/<int:task_id>")
 @jwt_required()
-def patch_task(task_id):
-    """Update a task (partial).
-
-    responses:
-      200:
-        description: Task patched
-      400:
-        description: Bad request
-      401:
-        description: Unauthorized
-      404:
-        description: Not found
-    """
+@validate(body=TaskPatch)
+def patch_task(task_id: int, body: TaskPatch):
+    """Update a task (partial)."""
     user_id = get_current_user_id()
 
-    payload = request.get_json(silent=True) or {}
-    try:
-        task_data = TaskPatch(**payload)
-    except ValidationError as e:
-        abort(400, str(e))
-
-    patched_task = service.update_task(task_id, task_data.model_dump(exclude_unset=True), user_id)
-
-    return present_task(patched_task)
+    patched_task = service.update_task(task_id, body.model_dump(exclude_unset=True), user_id)
+    return TaskBody.model_validate(patched_task), 200
 
 
 @tasks_bp.delete("/tasks/<int:task_id>")
 @jwt_required()
-def delete_task(task_id):
-    """Delete a task.
-
-    responses:
-      204:
-        description: Deleted
-      401:
-        description: Unauthorized
-      404:
-        description: Not found
-    """
+def delete_task(task_id: int):
+    """Delete a task."""
     user_id = get_current_user_id()
 
     service.delete_task(task_id, user_id)
