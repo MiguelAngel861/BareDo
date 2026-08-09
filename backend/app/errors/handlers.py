@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_jwt_extended import JWTManager
+from flask_pydantic import ValidationError as FlaskPydanticValidationError
 from pydantic import ValidationError as PydanticValidationError
 from werkzeug.exceptions import HTTPException
 
@@ -16,7 +17,7 @@ def register_error_handlers(app: Flask):
 
     @app.errorhandler(401)
     def unauthorized(error: HTTPException):
-        message = error.description or "Athenticaution Required"
+        message = error.description or "Authentication Required"
 
         return api_error(
             code="AUTHENTICATION_ERROR", message=message, status=401, details=str(error)
@@ -24,7 +25,7 @@ def register_error_handlers(app: Flask):
 
     @app.errorhandler(403)
     def forbidden_error(error: HTTPException):
-        message = error.description or "Acces Denied"
+        message = error.description or "Access Denied"
 
         return api_error(code="FORBIDDEN", message=message, status=403, details=str(error))
 
@@ -39,6 +40,20 @@ def register_error_handlers(app: Flask):
         message = error.description or "Internal Server Error"
 
         return api_error(code="INTERNAL_ERROR", message=message, status=500, details=str(error))
+
+    @app.errorhandler(FlaskPydanticValidationError)
+    def flask_pydantic_validation_error_handler(error: FlaskPydanticValidationError):
+        return api_error(
+            code="VALIDATION_ERROR",
+            message="Request validation failed",
+            status=422,
+            details={
+                "body_params": error.body_params,
+                "query_params": error.query_params,
+                "path_params": error.path_params,
+                "form_params": error.form_params,
+            },
+        )
 
     @app.errorhandler(PydanticValidationError)
     def validation_error_handler(error: PydanticValidationError):

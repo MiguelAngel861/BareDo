@@ -19,6 +19,33 @@ service = TasksService()
 @tasks_bp.get("/tasks")
 @jwt_required()
 def get_tasks():
+    """List tasks with pagination and filters.
+
+    ---
+    parameters:
+      - in: query
+        name: page
+        schema: { type: integer, default: 1 }
+      - in: query
+        name: per_page
+        schema: { type: integer, default: 100, maximum: 100 }
+      - in: query
+        name: completed
+        schema: { type: string, enum: ['true', 'false'] }
+      - in: query
+        name: title
+        schema: { type: string }
+      - in: query
+        name: sort
+        schema: { type: string }
+    responses:
+      200:
+        description: Paginated task list
+      400:
+        description: Bad request
+      401:
+        description: Unauthorized
+    """
     user_id = get_current_user_id()
 
     try:
@@ -41,7 +68,17 @@ def get_tasks():
 
 @tasks_bp.get("/tasks/<int:task_id>")
 @jwt_required()
-def get_task_by_id(task_id: int):
+def get_task_by_id(task_id):
+    """Get a task by ID.
+
+    responses:
+      200:
+        description: Task details
+      401:
+        description: Unauthorized
+      404:
+        description: Not found
+    """
     user_id = get_current_user_id()
 
     task = service.get_task_by_id(task_id, user_id)
@@ -51,6 +88,16 @@ def get_task_by_id(task_id: int):
 @tasks_bp.post("/tasks")
 @jwt_required()
 def add_task():
+    """Create a new task.
+
+    responses:
+      201:
+        description: Task created
+      400:
+        description: Bad request
+      401:
+        description: Unauthorized
+    """
     user_id = get_current_user_id()
 
     payload = request.get_json(silent=True) or {}
@@ -66,7 +113,19 @@ def add_task():
 
 @tasks_bp.put("/tasks/<int:task_id>")
 @jwt_required()
-def update_task(task_id: int):
+def update_task(task_id):
+    """Update a task (full).
+
+    responses:
+      200:
+        description: Task updated
+      400:
+        description: Bad request
+      401:
+        description: Unauthorized
+      404:
+        description: Not found
+    """
     user_id = get_current_user_id()
 
     payload = request.get_json(silent=True) or {}
@@ -82,7 +141,19 @@ def update_task(task_id: int):
 
 @tasks_bp.patch("/tasks/<int:task_id>")
 @jwt_required()
-def patch_task(task_id: int):
+def patch_task(task_id):
+    """Update a task (partial).
+
+    responses:
+      200:
+        description: Task patched
+      400:
+        description: Bad request
+      401:
+        description: Unauthorized
+      404:
+        description: Not found
+    """
     user_id = get_current_user_id()
 
     payload = request.get_json(silent=True) or {}
@@ -98,7 +169,17 @@ def patch_task(task_id: int):
 
 @tasks_bp.delete("/tasks/<int:task_id>")
 @jwt_required()
-def delete_task(task_id: int):
+def delete_task(task_id):
+    """Delete a task.
+
+    responses:
+      204:
+        description: Deleted
+      401:
+        description: Unauthorized
+      404:
+        description: Not found
+    """
     user_id = get_current_user_id()
 
     service.delete_task(task_id, user_id)
