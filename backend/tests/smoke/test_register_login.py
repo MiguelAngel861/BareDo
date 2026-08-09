@@ -20,11 +20,11 @@ def test_register_duplicate_username(client):
         "/api/v1/auth/register",
         json={"username": "dupuser", "password": "password123"},
     )
-    # Current behavior: catch-all Exception returns 400 (bug D8 in plan)
-    # Will be fixed to 409 in later phases
+    # Database integrity error returns 400 with our domain error format
     assert resp.status_code == 400
     data = resp.get_json()
-    assert data["error"]["code"] == "BAD_REQUEST"
+    assert data["code"] == "BAD_REQUEST"
+    assert "UNIQUE constraint failed" in data["message"]
 
 
 def test_login_success(client):
@@ -75,3 +75,45 @@ def test_me_endpoint(client, auth_headers):
 def test_me_endpoint_requires_auth(client):
     resp = client.get("/api/v1/auth/me")
     assert resp.status_code == 401
+
+
+def test_register_validation_error(client):
+    """Test validation error format for register endpoint."""
+    resp = client.post(
+        "/api/v1/auth/register",
+        json={"username": "ab", "password": "short"},
+    )
+    assert resp.status_code == 422
+    data = resp.get_json()
+    assert data["code"] == "VALIDATION_ERROR"
+    assert "body_params" in data["details"]
+    body_errors = data["details"]["body_params"]
+    assert len(body_errors) == 2  # username too short, password too short
+    locs = [e["loc"][0] for e in body_errors]
+    assert "username" in locs
+    assert "password" in locs
+
+
+def test_login_validation_error(client):
+    """Test validation error format for login endpoint."""
+    resp = client.post(
+        "/api/v1/auth/login",
+        json={"username": "ab"},
+    )
+    assert resp.status_code == 422
+    data = resp.get_json()
+    assert data["code"] == "VALIDATION_ERROR"
+    assert "body_params" in data["details"]
+
+
+def test_tasks_query_validation_error(client, auth_headers):
+    """Test validation error format for query params in tasks list."""
+    headers, _ = auth_headers
+    resp = client.get("/api/v1/tasks?page=invalid", headers=headers)
+    assert resp.status_code == 422
+    data = resp.get_json()
+    assert data["code"] == "VALIDATION_ERROR"
+    assert "query_params" in data["details"]
+    query_errors = data["details"]["query_params"]
+    assert len(query_errors) >= 1
+    assert query_errors[0]["loc"][0] == "page"

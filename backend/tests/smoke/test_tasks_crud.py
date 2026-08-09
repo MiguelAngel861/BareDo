@@ -105,3 +105,65 @@ def test_tasks_require_auth(client):
 
     resp = client.post("/api/v1/tasks", json={"title": "Test"})
     assert resp.status_code == 401
+
+
+def test_create_task_validation_error(client, auth_headers):
+    """Test validation error format for create task."""
+    headers, _ = auth_headers
+    resp = client.post(
+        "/api/v1/tasks",
+        json={"title": "ab", "priority": 99},
+        headers=headers,
+    )
+    assert resp.status_code == 422
+    data = resp.get_json()
+    assert data["code"] == "VALIDATION_ERROR"
+    assert "body_params" in data["details"]
+    body_errors = data["details"]["body_params"]
+    locs = [e["loc"][0] for e in body_errors]
+    assert "title" in locs  # min_length
+    assert "priority" in locs  # le=3
+
+
+def test_update_task_validation_error(client, auth_headers, make_task):
+    """Test validation error format for update task."""
+    headers, user_id = auth_headers
+    task = make_task(user_id, title="Original")
+    resp = client.put(
+        f"/api/v1/tasks/{task.task_id}",
+        json={"title": "ab", "completed": True, "due_date": "2026-12-31"},
+        headers=headers,
+    )
+    assert resp.status_code == 422
+    data = resp.get_json()
+    assert data["code"] == "VALIDATION_ERROR"
+    assert "body_params" in data["details"]
+
+
+def test_patch_task_validation_error(client, auth_headers, make_task):
+    """Test validation error format for patch task."""
+    headers, user_id = auth_headers
+    task = make_task(user_id, title="Original")
+    resp = client.patch(
+        f"/api/v1/tasks/{task.task_id}",
+        json={"priority": 99},
+        headers=headers,
+    )
+    assert resp.status_code == 422
+    data = resp.get_json()
+    assert data["code"] == "VALIDATION_ERROR"
+    assert "body_params" in data["details"]
+
+
+def test_tasks_query_validation_error(client, auth_headers):
+    """Test validation error format for query params in tasks list."""
+    headers, _ = auth_headers
+    resp = client.get("/api/v1/tasks?page=invalid&per_page=abc", headers=headers)
+    assert resp.status_code == 422
+    data = resp.get_json()
+    assert data["code"] == "VALIDATION_ERROR"
+    assert "query_params" in data["details"]
+    query_errors = data["details"]["query_params"]
+    locs = [e["loc"][0] for e in query_errors]
+    assert "page" in locs
+    assert "per_page" in locs
