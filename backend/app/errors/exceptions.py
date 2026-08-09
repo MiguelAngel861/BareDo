@@ -16,6 +16,12 @@ class NotFoundError(DomainError):
     pass
 
 
+class UnauthorizedError(DomainError):
+    """Authentication Required Errors"""
+
+    pass
+
+
 class DatabaseError(DomainError):
     """Generic Database and SQLAlchemy related errors"""
 

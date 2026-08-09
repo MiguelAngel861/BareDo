@@ -1,6 +1,5 @@
 from datetime import datetime
 
-from flask_jwt_extended import create_access_token, create_refresh_token
 from sqlalchemy import String, func
 from sqlalchemy.orm import Mapped, mapped_column
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -23,9 +22,3 @@ class Users(Base):
 
     def check_password(self, password: str) -> bool:
         return check_password_hash(self.password_hash, password)
-
-    def issue_access_token(self) -> str:
-        return create_access_token(identity=str(self.user_id))
-
-    def issue_refresh_token(self) -> str:
-        return create_refresh_token(identity=str(self.user_id))
