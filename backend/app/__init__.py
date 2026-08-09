@@ -7,7 +7,7 @@ from app.api.v1.routes.health import health_bp
 from app.api.v1.routes.tasks import tasks_bp
 from app.core.config import config
 from app.core.cors import setup_cors
-from app.core.extensions import alembic, db, init_limiter, jwt
+from app.core.extensions import db, init_alembic, init_limiter, jwt
 from app.core.logging import configure_logging
 from app.core.middleware import register_middleware
 from app.errors.handlers import register_error_handlers, register_jwt_handlers
@@ -30,7 +30,7 @@ def create_app(config_name: str | None = None) -> Flask:
     # Extensions from app.core
     register_error_handlers(app)
     db.init_app(app)
-    alembic.init_app(app)
+    init_alembic(app)
     jwt.init_app(app)
     register_jwt_handlers(app.extensions["flask-jwt-extended"])
     init_limiter(app)

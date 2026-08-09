@@ -1,4 +1,5 @@
 import { AuthFormHandler } from "../ui/auth-form.js";
+import { USERNAME_RULES, PASSWORD_RULES } from "../utils/validations.js";
 
 class LoginPage extends AuthFormHandler {
     constructor() {
@@ -9,17 +10,15 @@ class LoginPage extends AuthFormHandler {
         this.registerGlobalError("global-error");
         this.registerSubmitButton("submit-btn");
 
+        this.validateOnBlur("username", USERNAME_RULES);
+        this.validateOnBlur("password", PASSWORD_RULES);
+
         this.handleSubmit(() => this.validateAndSubmit());
     }
 
     validateAndSubmit() {
-        const usernameValid = this.validateField("username", [
-            { required: true, message: "Username is required" },
-        ]);
-
-        const passwordValid = this.validateField("password", [
-            { required: true, message: "Password is required" },
-        ]);
+        const usernameValid = this.validateField("username", USERNAME_RULES);
+        const passwordValid = this.validateField("password", PASSWORD_RULES);
 
         if (!usernameValid || !passwordValid) return;
 

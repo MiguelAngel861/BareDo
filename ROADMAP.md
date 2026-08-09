@@ -43,16 +43,14 @@ La idea es iterar por fases. Cada fase deja el proyecto en un estado “presenta
 	- [x] `priority`
 - [x] Índices donde tenga sentido (`completed`, `created_at`).
 
-### Fase 3 — Testing
+### Fase 3 — Testing ✅
 
-> Suite `pytest` implementada y ejecutada, luego **removida por decisión** (2026-08).
-> Re-implementar si el proyecto vuelve a necesitar red de seguridad automática.
-
-- [ ] `pytest` + configuración de app de test
-- [ ] Tests de integración para endpoints:
-	- [ ] crear/listar/editar/eliminar
-	- [ ] casos negativos: `404`, payload inválido, etc.
-- [ ] Coverage como métrica orientativa (`>= 80%`).
+- [x] `pytest` + configuración de app de test
+- [x] Tests de integración para endpoints:
+	- [x] crear/listar/editar/eliminar
+	- [x] casos negativos: `404`, payload inválido, etc.
+- [x] Coverage como métrica orientativa (`>= 80%`).
+- [x] Tests stratificados: smoke/api + repositories + services (49 tests, 87%)
 
 ### Fase 4 — Auth y multiusuario ✅
 
@@ -64,13 +62,20 @@ La idea es iterar por fases. Cada fase deja el proyecto en un estado “presenta
 	- [x] `GET /auth/me`
 - [x] Ownership: cada tarea pertenece a un usuario (`user_id`) y no se ven tareas ajenas.
 
-### Fase 5 — Frontend (nueva)
+### Fase 5 — Frontend ✅
 
 - [x] Restructurar `frontend/src/` por capas: `api/`, `services/`, `ui/`, `pages/`.
 - [x] Migrar a ES modules (`<script type="module">`).
 - [x] Flujo auth en páginas separadas (`pages/login.html`, `pages/register.html`); eliminar modal inline.
 - [x] Dividir `TaskManager` (313 líneas) en `TaskService` + `TaskForm` + `TaskList`.
 - [x] Flask sirve estáticos desde `frontend/src/` (mismo origen).
+- [x] DRY refactoring:
+	- [x] `sw-register.js`: registro del service worker consolidado (antes 3x inline)
+	- [x] `validations.js`: reglas compartidas para login/register
+	- [x] `TaskForm` extiende `FormHandler` (eliminó reimplementación de 6+ patrones)
+	- [x] `toast.js`: `scheduleDismiss()` extraído (animación duplicada)
+	- [x] `ACCESS_KEY` centralizado en `base.js`
+	- [x] 401 handling consolidado en `BaseAPI` (eliminado de `TaskService`)
 
 ### Fase 6 — Documentación de API y DX
 
@@ -79,13 +84,34 @@ La idea es iterar por fases. Cada fase deja el proyecto en un estado “presenta
 	- [x] logging estructurado (JSON, por request)
 	- [ ] `request_id` en logs/respuestas (opcional)
 
-### Fase 7 — Deploy y CI/CD
+### Fase 6.5 — Refactor arquitectónico backend ✅
 
-- [ ] Docker:
-	- [ ] `Dockerfile`
-	- [ ] `docker-compose.yml` (app + Postgres)
+- [x] Smoke tests para endpoints críticos (F0)
+- [x] Estructura de carpetas: `app/core/`, `app/repositories/`, `app/api/v1/presenters/` (F1)
+- [x] Factory decomposition: `create_app()` limpio (F2)
+- [x] Helpers/utils: `sorting.py` con `parse_sort()` (F3)
+- [x] `transactional()` contextmanager para commit/rollback (F4)
+- [x] `BaseRepository[T]` genérico con CRUD + sort (F4)
+- [x] Services retornan ORM, no dict; eliminación de `to_dict()` (F5)
+- [x] Presenters: `auth_presenter.py`, `tasks_presenter.py` (F5)
+- [x] Rutas delegan serialización a presenters (F5)
+- [x] `--cov-fail-under=80` activo en pytest (F5)
+- [x] Migraciones Alembic movidas a `backend/migrations/` (F6)
+- [x] `python-dotenv` + `load_dotenv()` (F6)
+- [x] `RATELIMIT_STORAGE_URI`, `MAX_CONTENT_LENGTH` via env (F6)
+
+### Fase 7 — Deploy y CI/CD ✅
+
+- [x] Docker:
+	- [x] `Dockerfile` (backend + frontend nginx)
+	- [x] `docker-compose.yml` (app + Postgres para dev local)
+	- [x] `docker-entrypoint.sh` (genera `env.js` y config de nginx en runtime)
 - [x] Servidor WSGI (gunicorn) y config por entorno (`config.py`).
-- [ ] GitHub Actions:
-	- [ ] lint + build en cada PR/push
-	- [ ] tests (si se re-implementa Fase 3)
-- [x] Deploy público (Render/Fly.io/Railway) + URL en README.
+- [x] GitHub Actions:
+	- [x] lint (`ruff check` + `ruff format --check`) en cada PR/push
+	- [x] tests (`pytest` con coverage ≥80%)
+- [x] Deploy público en Render:
+	- [x] `baredo-api` (backend Flask + Gunicorn)
+	- [x] `baredo` (frontend nginx + docker-entrypoint)
+	- [x] CORS_ORIGINS configurado
+	- [x] URL en README

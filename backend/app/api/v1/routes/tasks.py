@@ -3,13 +3,11 @@ from flask_jwt_extended import jwt_required
 from pydantic import ValidationError
 
 from app.api.helpers import get_current_user_id
+from app.api.v1.presenters.tasks_presenter import present_task, present_task_list
 from app.api.v1.schemas.tasks_schemas import (
-    PaginationResponse,
-    TaskBody,
     TaskCreate,
     TaskListQuery,
     TaskPatch,
-    TaskResponse,
     TaskUpdate,
 )
 from app.services.tasks_service import TasksService
@@ -34,14 +32,11 @@ def get_tasks():
         "completed": query.completed,
     }
 
-    result = service.get_all_tasks(query.page, query.per_page, filters, query.sort, user_id)
-    tasks = result.get("tasks", [])
-    meta_data = result.get("meta", {})
+    tasks, pagination = service.get_all_tasks(
+        query.page, query.per_page, filters, query.sort, user_id
+    )
 
-    validated_tasks = [TaskBody.model_validate(task) for task in tasks]
-    meta = PaginationResponse(**meta_data)
-
-    return TaskResponse(tasks=validated_tasks, meta=meta).model_dump(), 200
+    return present_task_list(tasks, pagination), 200
 
 
 @tasks_bp.get("/tasks/<int:task_id>")
@@ -49,8 +44,8 @@ def get_tasks():
 def get_task_by_id(task_id: int):
     user_id = get_current_user_id()
 
-    stmt = service.get_task_by_id(task_id, user_id)
-    return TaskBody.model_validate(stmt).model_dump(), 200
+    task = service.get_task_by_id(task_id, user_id)
+    return present_task(task), 200
 
 
 @tasks_bp.post("/tasks")
@@ -66,7 +61,7 @@ def add_task():
 
     new_task = service.add_new_task(task_data.model_dump(), user_id)
 
-    return TaskBody.model_validate(new_task).model_dump(), 201
+    return present_task(new_task), 201
 
 
 @tasks_bp.put("/tasks/<int:task_id>")
@@ -82,7 +77,7 @@ def update_task(task_id: int):
 
     updated_task = service.update_task(task_id, task_data.model_dump(), user_id)
 
-    return TaskBody.model_validate(updated_task).model_dump()
+    return present_task(updated_task)
 
 
 @tasks_bp.patch("/tasks/<int:task_id>")
@@ -98,7 +93,7 @@ def patch_task(task_id: int):
 
     patched_task = service.update_task(task_id, task_data.model_dump(exclude_unset=True), user_id)
 
-    return TaskBody.model_validate(patched_task).model_dump()
+    return present_task(patched_task)
 
 
 @tasks_bp.delete("/tasks/<int:task_id>")

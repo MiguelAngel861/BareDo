@@ -37,7 +37,7 @@ Levanta: `db` (Postgres 16 en `localhost:5433`), `api` (`http://localhost:5000`,
 
 Blueprints via `render.yaml`: Web Service `baredo-api` (gunicorn + migraciones en start.sh) y Web Service `baredo` (nginx sirviendo el frontend), ambos con Postgres gestionado. Los secretos `SECRET_KEY` y `JWT_SECRET_KEY` se definen en el dashboard de Render.
 
-URL de producción: _(pendiente de primer deploy)_
+URL de producción: https://baredo.onrender.com
 
 ## API
 

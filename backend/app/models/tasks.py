@@ -29,6 +29,3 @@ class Tasks(Base):
         server_default=func.current_timestamp(),
         server_onupdate=func.current_timestamp(),
     )
-
-    def to_dict(self):
-        return {c.name: getattr(self, c.name) for c in self.__table__.columns}

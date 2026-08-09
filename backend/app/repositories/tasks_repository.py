@@ -1,46 +1,51 @@
 from collections.abc import Sequence
 from typing import Any
 
-from sqlalchemy import Select, asc, delete, desc, func, insert, select, update
+from sqlalchemy import Select, delete, func, insert, select, update
+from sqlalchemy.orm import Session
 
-from app.core.extensions import db
+from app.core.pagination import Pagination
+from app.core.repositories.base import BaseRepository
 from app.models.tasks import Tasks
 
 
-class TasksRepository:
+class TasksRepository(BaseRepository[Tasks]):
+    def __init__(self, session: Session) -> None:
+        super().__init__(session, Tasks)
+
     def get_all(
-        self, page: int, per_page: int, filters: dict | None, sort, user_id: int
-    ) -> tuple[Sequence[Tasks], int]:
-        # Base filtered query
+        self,
+        page: int,
+        per_page: int,
+        filters: dict | None,
+        sort_fields: list[tuple[str, bool]],
+        user_id: int,
+    ) -> tuple[Sequence[Tasks], Pagination]:
         base_stmt = self._apply_sort(
-            self._apply_data_filters(select(Tasks).where(Tasks.user_id == user_id), filters), sort
+            self._apply_data_filters(select(Tasks).where(Tasks.user_id == user_id), filters),
+            sort_fields,
+            {"due_date": Tasks.due_date, "completed": Tasks.completed},
         )
 
-        # Count total items before pagination
         count_stmt = select(func.count()).select_from(base_stmt.subquery())
-        total_count: int = db.session.execute(count_stmt).scalar()
+        total: int = self.session.execute(count_stmt).scalar()
 
-        # Paginated data query
         offset: int = (page - 1) * per_page
         data_stmt = base_stmt.offset(offset).limit(per_page)
-        data_result: Sequence[Tasks] = db.session.execute(data_stmt).scalars().all()
+        data_result: Sequence[Tasks] = self.session.execute(data_stmt).scalars().all()
 
-        return data_result, total_count
+        return data_result, Pagination(page=page, per_page=per_page, total=total)
 
     def get_by_id(self, task_id: int, user_id: int) -> Tasks | None:
         stmt = select(Tasks).where(Tasks.task_id == task_id, Tasks.user_id == user_id)
 
-        with db.session as session:
-            result: Tasks | None = session.execute(stmt).scalar_one_or_none()
-
-        return result
+        return self.session.scalar(stmt)
 
     def add_task(self, data: dict[str, Any], user_id: int) -> Tasks | None:
         data["user_id"] = user_id
         stmt = insert(Tasks).values(**data).returning(Tasks)
-        result: Tasks | None = db.session.execute(stmt).scalar_one_or_none()
 
-        return result
+        return self.session.execute(stmt).scalar_one_or_none()
 
     def update_task(self, task_id: int, data: dict[str, Any], user_id: int) -> Tasks | None:
         stmt = (
@@ -49,28 +54,14 @@ class TasksRepository:
             .values(**data)
             .returning(Tasks)
         )
-        result: Tasks | None = db.session.execute(stmt).scalar_one_or_none()
 
-        return result
+        return self.session.execute(stmt).scalar_one_or_none()
 
     def delete_task(self, task_id: int, user_id: int) -> bool:
         stmt = delete(Tasks).where(Tasks.task_id == task_id, Tasks.user_id == user_id)
-        result = db.session.execute(stmt)
+        result = self.session.execute(stmt)
 
-        if result.rowcount == 0:  # type: ignore
-            return False
-
-        return True
-
-    @staticmethod
-    def _apply_sort(stmt: Select, sort_fields):
-        columns = {"due_date": Tasks.due_date, "completed": Tasks.completed}
-
-        for field, is_desc in sort_fields:
-            column = columns[field]
-            stmt = stmt.order_by(desc(column) if is_desc else asc(column))
-
-        return stmt
+        return result.rowcount > 0  # type: ignore
 
     @staticmethod
     def _apply_data_filters(stmt: Select, filters: dict | None):

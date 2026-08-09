@@ -1,6 +1,6 @@
 import { AuthAPI } from "../api/auth.js";
+import { ACCESS_KEY } from "../api/base.js";
 
-const ACCESS_KEY = "access_token";
 const REFRESH_KEY = "refresh_token";
 
 const authApi = new AuthAPI();

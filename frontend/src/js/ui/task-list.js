@@ -1,5 +1,6 @@
 import { SafeRenderer, clearChildren } from "./dom-utils.js";
 import { showToast } from "./toast.js";
+import { showModal } from "./modal.js";
 
 export class TaskList {
     constructor(service, toastContainer, onEdit) {
@@ -7,7 +8,7 @@ export class TaskList {
         this.toastContainer = toastContainer;
         this.onEdit = onEdit;
         this.currentPage = 1;
-        this.perPage = 10;
+        this.perPage = 5;
         this.filters = { completed: "", title: "" };
         this.debounceTimer = null;
 
@@ -39,6 +40,7 @@ export class TaskList {
     }
 
     async load() {
+        this.renderSkeletons();
         try {
             const data = await this.service.load({
                 page: this.currentPage,
@@ -53,12 +55,27 @@ export class TaskList {
         }
     }
 
+    renderSkeletons() {
+        clearChildren(this.el.list);
+        this.el.emptyMsg.classList.add("hidden");
+        this.el.emptyMsg.style.display = "none";
+        for (let i = 0; i < 3; i++) {
+            const li = SafeRenderer.createElement("li", { className: "task-skeleton" });
+            li.appendChild(SafeRenderer.createElement("div", { className: "skeleton-line skeleton-title" }));
+            li.appendChild(SafeRenderer.createElement("div", { className: "skeleton-line skeleton-desc" }));
+            li.appendChild(SafeRenderer.createElement("div", { className: "skeleton-line skeleton-meta" }));
+            this.el.list.appendChild(li);
+        }
+    }
+
     renderList(tasks) {
         clearChildren(this.el.list);
         if (tasks.length === 0) {
+            this.el.emptyMsg.classList.remove("hidden");
             this.el.emptyMsg.style.display = "block";
             return;
         }
+        this.el.emptyMsg.classList.add("hidden");
         this.el.emptyMsg.style.display = "none";
         for (const task of tasks) {
             this.el.list.appendChild(this.buildTaskElement(task));
@@ -143,9 +160,12 @@ export class TaskList {
     }
 
     confirmDelete(task) {
-        if (confirm(`Are you sure you want to delete "${task.title}"?`)) {
-            this.deleteTask(task.task_id);
-        }
+        showModal({
+            title: "Delete task",
+            message: `Are you sure you want to delete "${task.title}"? This action cannot be undone.`,
+            confirmText: "Delete",
+            onConfirm: () => this.deleteTask(task.task_id),
+        });
     }
 
     async deleteTask(id) {
