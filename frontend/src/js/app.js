@@ -55,10 +55,16 @@ function init() {
     const form = new TaskForm(service, toastContainer, () => list.load());
     const list = new TaskList(service, toastContainer, (task) => form.startEdit(task));
 
+    const openCreateBtn = document.getElementById("open-create-task-btn");
+    if (openCreateBtn) {
+        openCreateBtn.addEventListener("click", () => form.open(false));
+    }
+
     const status = document.getElementById("auth-status");
     status.textContent = "Authenticated";
     status.style.color = "var(--success)";
     const logoutBtn = document.getElementById("logout-btn");
+    logoutBtn.classList.remove("hidden");
     logoutBtn.style.display = "inline-block";
     logoutBtn.addEventListener("click", () => goToLogin());
 

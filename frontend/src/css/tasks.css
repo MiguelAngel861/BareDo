@@ -1,4 +1,4 @@
-/* ===== Layout: mobile-first con doble columna en escritorio ===== */
+/* ===== Layout: mobile-first centrado a ancho completo ===== */
 body {
     max-width: 100%;
     margin: 0 auto;
@@ -7,8 +7,8 @@ body {
 
 @media (min-width: 60rem) {
     body {
-        max-width: 72rem;
-        padding: 2rem;
+        max-width: 56rem;
+        padding: 2.5rem 1.5rem;
     }
 }
 
@@ -47,25 +47,53 @@ body {
     color: var(--text-muted);
 }
 
-/* ===== Layout Asimétrico de doble columna (Escritorio) ===== */
+/* ===== Layout Centrado de Dashboard ===== */
 #main {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
 }
 
-@media (min-width: 60rem) {
-    #main {
-        display: grid;
-        grid-template-columns: 1fr 1.6fr;
-        align-items: start;
-        gap: 2.5rem;
-    }
+/* ===== Cabecera del Listado con Botón Disparador ===== */
+.section-header--minimal {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
 
-    #task-form-section {
-        position: sticky;
-        top: 2rem;
-    }
+.section-header-left {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+}
+
+.btn-create-task {
+    padding: 8px 18px;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    background-color: var(--text);
+    color: var(--bg);
+    border: 1px solid var(--text);
+    box-shadow: var(--shadow-hard);
+    min-height: 38px;
+}
+
+.btn-create-task:hover:not(:disabled) {
+    background-color: var(--surface);
+    color: var(--text);
+    transform: translate(-1px, -1px);
+    box-shadow: var(--shadow-hard-lg);
+}
+
+.btn-create-task:active:not(:disabled) {
+    transform: translate(1px, 1px);
+    box-shadow: var(--shadow-hard-hover);
 }
 
 /* ===== Secciones Brutalistas ===== */
@@ -81,16 +109,97 @@ section {
 section h2 {
     font-family: var(--font-display);
     font-weight: 800;
-    font-size: 1.25rem;
+    font-size: 1.35rem;
     letter-spacing: -0.02em;
     margin-bottom: 0.5rem;
     text-transform: uppercase;
 }
 
-.section-desc {
-    font-size: 0.8125rem;
+/* ===== Pop-out Modal Overlay (G1) ===== */
+.popout-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(3px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2500;
+    padding: 1rem;
+    animation: fadeIn 0.15s ease;
+}
+
+.popout-overlay.hidden {
+    display: none !important;
+}
+
+.popout-container {
+    background: var(--surface);
+    border: 1px solid var(--text);
+    box-shadow: var(--shadow-hard-lg);
+    width: 100%;
+    max-width: 520px;
+    max-height: 90dvh;
+    overflow-y: auto;
+    padding: 2rem;
+    position: relative;
+    animation: popIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.popout-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 1rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.popout-header h2 {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+.btn-close {
+    padding: 4px 10px;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border: 1px solid var(--text-muted);
+    background: transparent;
     color: var(--text-muted);
-    margin-bottom: 1.25rem;
+    box-shadow: none;
+    cursor: pointer;
+}
+
+.btn-close:hover {
+    background-color: var(--text);
+    border-color: var(--text);
+    color: var(--bg);
+}
+
+@keyframes popIn {
+    from {
+        transform: scale(0.96) translateY(8px);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .popout-overlay,
+    .popout-container {
+        animation: none;
+    }
 }
 
 /* ===== Botón Principal de Formulario (Create Task) ===== */

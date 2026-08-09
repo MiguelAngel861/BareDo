@@ -105,7 +105,7 @@ h1, h2, h3, h4, .site-title {
 }
 
 .hidden {
-    display: none;
+    display: none !important;
 }
 
 /* Skip link (accessibility) */
