@@ -5,7 +5,7 @@ from flask import Flask
 from app.api.v1.routes.auth import auth_bp
 from app.api.v1.routes.health import health_bp
 from app.api.v1.routes.tasks import tasks_bp
-from app.core.config import config
+from app.core.config import SQLITE_PATH, config
 from app.core.cors import setup_cors
 from app.core.extensions import db, init_alembic, init_limiter, jwt
 from app.core.logging import configure_logging
@@ -20,6 +20,9 @@ def create_app(config_name: str | None = None) -> Flask:
     app: Flask = Flask(__name__)
 
     app.config.from_object(config[config_name])
+
+    # Ensure the instance folder exists (sqlite default DB lives there)
+    os.makedirs(SQLITE_PATH.parent, exist_ok=True)
 
     # Flask-Pydantic: raise validation errors to be handled by custom error handlers
     app.config["FLASK_PYDANTIC_VALIDATION_ERROR_RAISE"] = True

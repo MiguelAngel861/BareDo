@@ -10,9 +10,6 @@ SQLITE_PATH = BASE_DIR / "instance" / "db.sqlite"
 
 
 def _default_db_url() -> str:
-    """Lazy default DB URL - only creates instance/ dir when called, not at import time."""
-    sqlite_dir = SQLITE_PATH.parent
-    sqlite_dir.mkdir(parents=True, exist_ok=True)
     return f"sqlite:///{SQLITE_PATH.as_posix()}"
 
 

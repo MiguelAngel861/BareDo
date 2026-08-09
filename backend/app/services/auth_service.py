@@ -1,4 +1,4 @@
-from flask_jwt_extended import get_jwt_identity
+from flask_jwt_extended import create_access_token, create_refresh_token, get_jwt_identity
 
 from app.core.db import transactional
 from app.models.users import Users
@@ -6,6 +6,12 @@ from app.repositories.users_repository import UsersRepository
 
 
 class AuthService:
+    def issue_access_token(self, user: Users) -> str:
+        return create_access_token(identity=str(user.user_id))
+
+    def issue_refresh_token(self, user: Users) -> str:
+        return create_refresh_token(identity=str(user.user_id))
+
     def register(self, username: str, password: str) -> Users:
         with transactional() as session:
             user = Users(username=username)

@@ -4,7 +4,12 @@ from flask_pydantic import ValidationError as FlaskPydanticValidationError
 from pydantic import ValidationError as PydanticValidationError
 from werkzeug.exceptions import HTTPException
 
-from app.errors.exceptions import DatabaseError, DataValidationError, NotFoundError
+from app.errors.exceptions import (
+    DatabaseError,
+    DataValidationError,
+    NotFoundError,
+    UnauthorizedError,
+)
 from app.errors.schemas import api_error
 
 
@@ -79,6 +84,15 @@ def register_error_handlers(app: Flask):
             code="NOT_FOUND",
             message=str(error) or "Resource Not Found",
             status=404,
+            details=None,
+        )
+
+    @app.errorhandler(UnauthorizedError)
+    def unauthorized_error_handler(error: UnauthorizedError):
+        return api_error(
+            code="AUTHENTICATION_ERROR",
+            message=str(error) or "Authentication Required",
+            status=401,
             details=None,
         )
 
