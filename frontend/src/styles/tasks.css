@@ -1,0 +1,674 @@
+/* ===== Layout: mobile-first centrado a ancho completo ===== */
+body {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+@media (min-width: 60rem) {
+  body {
+    max-width: 56rem;
+    padding: 2.5rem 1.5rem;
+  }
+}
+
+.site-header {
+  padding: 1rem 0;
+  border-bottom: 2px solid var(--text);
+  margin-bottom: 2rem;
+}
+
+.header-inner {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.site-title {
+  font-size: 2.25rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+#auth-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+#auth-status {
+  font-size: 0.8125rem;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+/* ===== Layout Centrado de Dashboard ===== */
+#main {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* ===== Cabecera del Listado con Botón Disparador ===== */
+.section-header--minimal {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.section-header-left {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.btn-create-task {
+  padding: 8px 18px;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background-color: var(--text);
+  color: var(--bg);
+  border: 1px solid var(--text);
+  box-shadow: var(--shadow-hard);
+  min-height: 38px;
+}
+
+.btn-create-task:hover:not(:disabled) {
+  background-color: var(--surface);
+  color: var(--text);
+  transform: translate(-1px, -1px);
+  box-shadow: var(--shadow-hard-lg);
+}
+
+.btn-create-task:active:not(:disabled) {
+  transform: translate(1px, 1px);
+  box-shadow: var(--shadow-hard-hover);
+}
+
+/* ===== Secciones Brutalistas ===== */
+section {
+  background: var(--surface);
+  border: 1px solid var(--text);
+  border-radius: 0;
+  padding: 1.75rem;
+  box-shadow: var(--shadow-hard);
+  position: relative;
+}
+
+section h2 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.35rem;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+}
+
+/* ===== Pop-out Modal Overlay (G1) ===== */
+.popout-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2500;
+  padding: 1rem;
+  animation: fadeIn 0.15s ease;
+}
+
+.popout-overlay.hidden {
+  display: none !important;
+}
+
+.popout-container {
+  background: var(--surface);
+  border: 1px solid var(--text);
+  box-shadow: var(--shadow-hard-lg);
+  width: 100%;
+  max-width: 520px;
+  max-height: 90dvh;
+  overflow-y: auto;
+  padding: 2rem;
+  position: relative;
+  animation: popIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.popout-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 1rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid var(--border);
+}
+
+.popout-header h2 {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.btn-close {
+  padding: 4px 10px;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border: 1px solid var(--text-muted);
+  background: transparent;
+  color: var(--text-muted);
+  box-shadow: none;
+  cursor: pointer;
+}
+
+.btn-close:hover {
+  background-color: var(--text);
+  border-color: var(--text);
+  color: var(--bg);
+}
+
+@keyframes popIn {
+  from {
+    transform: scale(0.96) translateY(8px);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .popout-overlay,
+  .popout-container {
+    animation: none;
+  }
+}
+
+/* ===== Botón Principal de Formulario (Create Task) ===== */
+.task-form button[type="submit"],
+#submit-btn {
+  width: 100%;
+  margin-top: 0.5rem;
+  padding: 10px 18px;
+  font-size: 0.875rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background-color: var(--text);
+  color: var(--bg);
+  border: 1px solid var(--text);
+  box-shadow: var(--shadow-hard-lg);
+  min-height: 42px;
+}
+
+.task-form button[type="submit"]:hover:not(:disabled),
+#submit-btn:hover:not(:disabled) {
+  background-color: var(--surface);
+  color: var(--text);
+  transform: translate(-1px, -1px);
+  box-shadow: 6px 6px 0px 0px var(--text);
+}
+
+.task-form button[type="submit"]:active:not(:disabled),
+#submit-btn:active:not(:disabled) {
+  transform: translate(2px, 2px);
+  box-shadow: var(--shadow-hard-hover);
+}
+
+#cancel-edit-btn {
+  width: 100%;
+  margin-top: 0.5rem;
+  min-height: 38px;
+}
+
+#form-error {
+  padding: 10px;
+  border: 2px solid var(--danger);
+  color: var(--danger);
+  display: none;
+}
+
+#form-error.visible {
+  display: block;
+}
+
+/* ===== Filtros (G3, G4) ===== */
+.filters-bar {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0.75rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.filter-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+.filter-group input,
+.filter-group select {
+  width: 100%;
+  padding: 8px 10px;
+  border: 2px solid var(--border);
+  border-radius: 0;
+  background-color: var(--surface);
+  color: var(--text);
+  font-size: 0.875rem;
+  transition: border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1), outline 0.2s ease;
+}
+
+.filter-group input:hover,
+.filter-group select:hover {
+  border-color: var(--text);
+}
+
+.filter-group input:focus-visible,
+.filter-group select:focus-visible {
+  border-color: var(--text);
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 1px;
+}
+
+.filter-group select option {
+  background-color: var(--surface);
+  color: var(--text);
+  padding: 6px 10px;
+  font-size: 0.875rem;
+}
+
+/* ===== Custom Dropdown ===== */
+.custom-dropdown {
+  position: relative;
+  width: 100%;
+}
+
+.dropdown-trigger {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 6px 10px;
+  border: 2px solid var(--border);
+  border-radius: 0;
+  background-color: var(--surface);
+  color: var(--text);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1), outline 0.2s ease;
+}
+
+.dropdown-trigger:hover {
+  border-color: var(--text);
+}
+
+.dropdown-trigger:active {
+  border-color: var(--text);
+}
+
+.dropdown-icon {
+  font-size: 0.625rem;
+  transition: transform 0.2s ease;
+}
+
+.custom-dropdown[aria-expanded="true"] .dropdown-icon {
+  transform: rotate(180deg);
+}
+
+.dropdown-options {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: var(--surface);
+  border: 2px solid var(--border);
+  border-top: none;
+  border-radius: 0;
+  z-index: 100;
+  display: none;
+  max-height: 200px;
+  overflow-y: auto;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.custom-dropdown[aria-expanded="true"] .dropdown-options {
+  display: block;
+}
+
+.dropdown-option {
+  padding: 6px 10px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  border-bottom: 2px solid var(--border);
+  background-color: var(--surface);
+  color: var(--text);
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.dropdown-option:last-child {
+  border-bottom: none;
+}
+
+.dropdown-option:hover {
+  background-color: var(--bg);
+}
+
+.dropdown-option.selected {
+  background-color: var(--text);
+  color: var(--bg);
+}
+
+.dropdown-option:focus {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: -2px;
+}
+
+/* Focus styles for accessibility */
+.custom-dropdown:focus-visible .dropdown-trigger {
+  border-color: var(--text);
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 1px;
+}
+
+@media (min-width: 40rem) {
+  .filter-group {
+    flex: none;
+    width: 200px;
+  }
+
+  .filter-group input,
+  .filter-group select {
+    width: 100%;
+  }
+}
+
+/* ===== Lista de tareas (G1, G3) ===== */
+#task-list {
+  list-style: none;
+}
+
+.task-item {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 1.25rem 1.75rem;
+  margin: 0 -1.75rem;
+  border-bottom: 2px solid var(--border);
+  transition: background-color 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.task-item:hover {
+  background-color: var(--bg);
+}
+
+.task-item:last-child {
+  border-bottom: none;
+}
+
+.task-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.task-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.0625rem;
+  letter-spacing: -0.01em;
+  margin-bottom: 4px;
+  word-break: break-word;
+  text-wrap: pretty;
+}
+
+.task-title.completed {
+  text-decoration: line-through;
+  color: var(--text-muted);
+  opacity: 0.65;
+}
+
+.task-description {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+  word-break: break-word;
+  text-wrap: pretty;
+}
+
+.task-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+.task-due-date {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ===== Botones de Acción Estilo Badge Textual (G3) ===== */
+.task-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.task-actions button {
+  padding: 5px 12px;
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  min-height: 32px;
+  border: 1px solid var(--text);
+  box-shadow: 2px 2px 0px 0px var(--text);
+}
+
+.task-actions button:hover:not(:disabled) {
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0px 0px var(--text);
+}
+
+.task-actions button:active:not(:disabled) {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0px 0px var(--text);
+}
+
+.task-actions button.secondary {
+  border-color: var(--border-strong);
+  background-color: transparent;
+  color: var(--text);
+  box-shadow: 2px 2px 0px 0px var(--border-strong);
+}
+
+.task-actions button.secondary:hover:not(:disabled) {
+  background-color: var(--text);
+  color: var(--bg);
+  box-shadow: 3px 3px 0px 0px var(--text);
+}
+
+.task-actions button.danger {
+  border-color: var(--danger);
+  color: var(--danger);
+  box-shadow: 2px 2px 0px 0px var(--danger);
+}
+
+.task-actions button.danger:hover:not(:disabled) {
+  background-color: var(--danger);
+  color: #ffffff;
+  box-shadow: 3px 3px 0px 0px var(--danger);
+}
+
+.task-actions button.danger:active:not(:disabled) {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0px 0px var(--danger);
+}
+
+@media (min-width: 40rem) {
+  .task-item {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+
+  .task-actions {
+    justify-content: flex-end;
+    flex-shrink: 0;
+  }
+}
+
+/* ===== Skeletons de Carga con Pulso (G6) ===== */
+.task-skeleton {
+  padding: 1.25rem 1.75rem;
+  margin: 0 -1.75rem;
+  border-bottom: 2px solid var(--border);
+  animation: pulseSkeleton 1.5s ease-in-out infinite;
+}
+
+.skeleton-line {
+  background-color: var(--border);
+  height: 12px;
+  margin-bottom: 8px;
+}
+
+.skeleton-title {
+  width: 45%;
+  height: 18px;
+  background-color: var(--text-muted);
+  opacity: 0.25;
+}
+
+.skeleton-desc {
+  width: 75%;
+  opacity: 0.15;
+}
+
+.skeleton-meta {
+  width: 25%;
+  height: 10px;
+  opacity: 0.15;
+}
+
+@keyframes pulseSkeleton {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .task-skeleton {
+    animation: none;
+  }
+}
+
+/* ===== Empty State Brutalista Tipográfico (G6) ===== */
+#empty-message {
+  text-align: left;
+  padding: 2.25rem 1.5rem;
+  border: 2px dashed var(--border);
+  background: var(--bg);
+  margin: 1.5rem 0;
+}
+
+.empty-state-tag {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 2px 8px;
+  background: var(--text);
+  color: var(--bg);
+  margin-bottom: 0.75rem;
+}
+
+.empty-state-title {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.empty-state-desc {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  font-style: normal;
+  max-width: 40ch;
+}
+
+#pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 2px solid var(--border);
+}
+
+#pagination button {
+  padding: 6px 14px;
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  min-height: 32px;
+  box-shadow: 2px 2px 0px 0px var(--text);
+}
+
+#page-indicator {
+  font-size: 0.8125rem;
+  font-family: var(--font-mono);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}

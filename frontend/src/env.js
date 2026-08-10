@@ -1,1 +1,0 @@
-window.__API_BASE_URL__ = "http://localhost:5000/api/v1";
