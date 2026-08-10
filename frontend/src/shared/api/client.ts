@@ -2,35 +2,48 @@ import ky from 'ky';
 import type { ZodSchema } from 'zod';
 import { ApiErrorClass } from './errors.ts';
 
-let isRefreshing = false;
-let refreshPromise: Promise<string> | null = null;
+let refreshPromise: Promise<void> | null = null;
 
-async function refreshAccessToken(): Promise<string> {
-  const refreshToken = localStorage.getItem('refresh_token');
-  if (!refreshToken) {
-    throw new Error('No refresh token');
+async function refreshAccessToken(): Promise<void> {
+  if (refreshPromise) {
+    return refreshPromise;
   }
 
-  const response = await ky.post('auth/refresh', {
-    prefixUrl: import.meta.env.VITE_API_BASE_URL || '/api/v1',
-    headers: {
-      Authorization: `Bearer ${refreshToken}`,
-    },
-  });
+  refreshPromise = (async () => {
+    const refreshToken = localStorage.getItem('refresh_token');
+    if (!refreshToken) {
+      throw new Error('No refresh token');
+    }
 
-  const data = await response.json<{
-    access_token: string;
-    refresh_token: string;
-  }>();
+    const response = await ky.post('auth/refresh', {
+      prefixUrl: import.meta.env.VITE_API_BASE_URL || '/api/v1',
+      headers: {
+        Authorization: `Bearer ${refreshToken}`,
+      },
+    });
 
-  localStorage.setItem('access_token', data.access_token);
-  localStorage.setItem('refresh_token', data.refresh_token);
+    const data = await response.json<{
+      access_token: string;
+      refresh_token: string;
+    }>();
 
-  return data.access_token;
+    localStorage.setItem('access_token', data.access_token);
+    localStorage.setItem('refresh_token', data.refresh_token);
+  })();
+
+  try {
+    await refreshPromise;
+  } finally {
+    refreshPromise = null;
+  }
 }
 
 export const kyInstance = ky.create({
   prefixUrl: import.meta.env.VITE_API_BASE_URL || '/api/v1',
+  retry: {
+    limit: 1,
+    statusCodes: [401],
+  },
   hooks: {
     beforeRequest: [
       async (request) => {
@@ -41,44 +54,21 @@ export const kyInstance = ky.create({
       },
     ],
     afterResponse: [
-      async (_request, _options, response) => {
-        if (response.status !== 401) {
+      async (request, _options, response, state) => {
+        if (response.status !== 401 || state.retryCount > 0) {
           return response;
-        }
-
-        // Don't try to refresh if this IS the refresh endpoint
-        if (_request.url.includes('auth/refresh')) {
-          localStorage.removeItem('access_token');
-          localStorage.removeItem('refresh_token');
-          window.location.href = '/pages/login.html';
-          return response;
-        }
-
-        // Start refresh if not already in progress
-        if (!isRefreshing) {
-          isRefreshing = true;
-          refreshPromise = refreshAccessToken().finally(() => {
-            isRefreshing = false;
-            refreshPromise = null;
-          });
         }
 
         try {
-          await refreshPromise;
-          // Retry the original request with the new token
+          await refreshAccessToken();
           const newToken = localStorage.getItem('access_token');
-          const retryRequest = new Request(_request.url, {
-            method: _request.method,
-            headers: {
-              ...Object.fromEntries(_request.headers.entries()),
-              Authorization: `Bearer ${newToken}`,
-            },
-            body:
-              _request.method !== 'GET' && _request.method !== 'HEAD'
-                ? (_request.body ?? null)
-                : null,
+          const headers = new Headers(request.headers);
+          headers.set('Authorization', `Bearer ${newToken}`);
+
+          return ky.retry({
+            request: new Request(request, { headers }),
+            code: 'TOKEN_REFRESHED',
           });
-          return fetch(retryRequest);
         } catch {
           localStorage.removeItem('access_token');
           localStorage.removeItem('refresh_token');
