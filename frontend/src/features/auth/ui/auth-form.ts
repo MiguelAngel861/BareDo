@@ -14,12 +14,15 @@ export class AuthFormHandler extends FormHandler {
 
   async execute(username: string, password: string): Promise<void> {
     this.setSubmitting(true, this.apiMethod === 'login' ? 'Logging in...' : 'Registering...');
+    console.log(`[auth] ${this.apiMethod} attempt for user: ${username}`);
 
     try {
       const response = await authApi[this.apiMethod](username, password);
+      console.log(`[auth] ${this.apiMethod} successful`);
       setTokens(response);
       window.location.href = this.successUrl;
     } catch (error) {
+      console.error(`[auth] ${this.apiMethod} failed:`, error);
       const message = error instanceof Error ? error.message : `${this.apiMethod} failed`;
       this.showGlobalError(message);
     } finally {

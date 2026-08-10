@@ -6,9 +6,11 @@ let refreshPromise: Promise<void> | null = null;
 
 async function refreshAccessToken(): Promise<void> {
   if (refreshPromise) {
+    console.log('[auth] reusing existing refresh promise');
     return refreshPromise;
   }
 
+  console.log('[auth] starting token refresh');
   refreshPromise = (async () => {
     const refreshToken = localStorage.getItem('refresh_token');
     if (!refreshToken) {
@@ -29,6 +31,7 @@ async function refreshAccessToken(): Promise<void> {
 
     localStorage.setItem('access_token', data.access_token);
     localStorage.setItem('refresh_token', data.refresh_token);
+    console.log('[auth] token refresh successful');
   })();
 
   try {
@@ -51,14 +54,18 @@ export const kyInstance = ky.create({
         if (token) {
           request.headers.set('Authorization', `Bearer ${token}`);
         }
+        console.log(`[api] ${request.method} ${request.url}`);
       },
     ],
     afterResponse: [
       async (request, _options, response, state) => {
+        console.log(`[api] ${response.status} ${request.url} (retry: ${state.retryCount})`);
+
         if (response.status !== 401 || state.retryCount > 0) {
           return response;
         }
 
+        console.log('[api] 401 detected, attempting token refresh');
         try {
           await refreshAccessToken();
           const newToken = localStorage.getItem('access_token');
@@ -69,7 +76,8 @@ export const kyInstance = ky.create({
             request: new Request(request, { headers }),
             code: 'TOKEN_REFRESHED',
           });
-        } catch {
+        } catch (error) {
+          console.error('[auth] refresh failed:', error);
           localStorage.removeItem('access_token');
           localStorage.removeItem('refresh_token');
           window.location.href = '/pages/login.html';
@@ -89,6 +97,7 @@ export async function validatedRequest<T>(
     return schema.parse(data);
   } catch (error) {
     if (error instanceof Error && error.name === 'ZodError') {
+      console.error('[api] response validation failed:', error.message);
       throw new ApiErrorClass({
         code: 'VALIDATION_ERROR',
         message: `Response validation failed: ${error.message}`,

@@ -197,6 +197,7 @@ export class TaskList {
   }
 
   async load(): Promise<void> {
+    console.log('[tasks] loading with filters:', this.filters);
     this.renderSkeletons();
     try {
       const data = await this.service.list({
@@ -206,11 +207,14 @@ export class TaskList {
         completed: this.filters.completed,
       });
       if (!data) {
+        console.warn('[tasks] load returned no data');
         return;
       }
+      console.log(`[tasks] loaded ${data.tasks.length} tasks`);
       this.renderList(data.tasks);
       this.updatePagination(data.meta);
     } catch (error) {
+      console.error('[tasks] load failed:', error);
       const message = error instanceof Error ? error.message : 'Failed to load tasks';
       showToast(this.toastContainer, `Failed to load tasks: ${message}`, 'error');
     }
