@@ -135,7 +135,7 @@ interface Filters {
   page: number;
   per_page: number;
   title?: string;
-  completed?: boolean;
+  completed?: boolean | undefined;
 }
 
 export class TaskList {
