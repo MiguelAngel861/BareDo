@@ -16,7 +16,7 @@ RUN pnpm build
 FROM nginx:alpine
 
 ENV PORT=80
-ENV API_UPSTREAM=api:5000
+ENV API_UPSTREAM=http://api:5000
 
 RUN apk add --no-cache gettext
 

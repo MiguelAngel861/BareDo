@@ -27,7 +27,7 @@ services:
     rootDir: frontend
     dockerfilePath: Dockerfile
     envVars:
-      - key: API_BASE_URL
+      - key: API_UPSTREAM
         value: https://baredo-api.onrender.com
 
 databases:
