@@ -1,160 +1,285 @@
-# Sistema de Diseño: Brutalismo Industrial Suizo (BareDo)
+# Design System — BareDo Frontend
 
-Guía oficial de diseño y estándares visuales para el frontend de BareDo. Todos los agentes y desarrolladores que agreguen componentes, páginas o modifiquen estilos en el frontend deben seguir estrictamente estas especificaciones.
-
----
-
-## 1. Filosofía y Principios Fundamentales
-
-El diseño de BareDo fusiona la **precisión tipográfica y reticular del Estilo Tipográfico Internacional (Escuela Suiza)** con el **Brutalismo Industrial Digital**. 
-
-* **Funcionalismo Radical**: Cada píxel cumple un propósito. Se eliminan ornamentos innecesarios (degradados llamativos, sombras difusas, bordes curvos genéricos).
-* **Ausencia Total de Redondez (`border-radius: 0`)**: Todo elemento de la interfaz —botones, modales, inputs, tarjetas, toasts, badges— posee esquinas ortogonales a 90 grados.
-* **Física Mecánica y Táctil**: Las interacciones imitan interruptores y componentes mecánicos analógicos mediante desplazamientos de traslación (`translate`) y sombras duras de bloque (*hard shadows*).
-* **Jerarquía Tipográfica Extrema**: Fuerte contraste entre tipografías display de alto impacto (pesos 800/900 con tracking negativo) y tipografías monoespaciadas técnicas para metadatos y controles.
-* **Textura de Material Analógico**: Fondo enriquecido con un micro-ruido de grano procedural que elimina la esterilidad digital.
+Estilo: **Swiss Industrial Brutalist** + **Premium Utilitarian Minimalism**
 
 ---
 
-## 2. Tokens de Diseño (CSS Custom Properties)
+## 1. Paleta de Colores
 
-Definidos en `src/css/base.css`. Los componentes deben consumir exclusivamente estos tokens:
+### Light Mode
+| Token | Valor | Uso |
+|---|---|---|
+| `--bg` | `#f7f7f7` | Fondo general (papel documentación) |
+| `--surface` | `#ffffff` | Superficies, cards, modales |
+| `--text` | `#111111` | Texto primario (tinta carbón) |
+| `--text-muted` | `#4b5563` | Texto secundario, metadata |
+| `--border` | `#d1d5db` | Bordes sutiles, divisores |
+| `--border-strong` | `#111111` | Bordes énfasis |
+| `--danger` | `#dc2626` | Errores, acciones destructivas |
+| `--success` | `#15803d` | Éxito, estados positivos |
+| `--focus-ring` | `#111111` | Outline de accesibilidad |
 
-### 2.1. Paleta de Color
+### Dark Mode (`prefers-color-scheme: dark`)
+| Token | Valor |
+|---|---|
+| `--bg` | `#0c0c0e` |
+| `--surface` | `#17171a` |
+| `--text` | `#f4f4f5` |
+| `--text-muted` | `#9ca3af` |
+| `--border` | `#333338` |
+| `--border-strong` | `#f4f4f5` |
+| `--danger` | `#f87171` |
+| `--success` | `#4ade80` |
 
-| Token | Light Mode | Dark Mode (`prefers-color-scheme: dark`) | Uso |
-| :--- | :--- | :--- | :--- |
-| `--bg` | `#f7f7f7` | `#0c0c0e` | Fondo principal de la aplicación |
-| `--surface` | `#ffffff` | `#17171a` | Superficie de tarjetas, modales e inputs |
-| `--text` | `#111111` | `#f4f4f5` | Texto principal y bordes fuertes |
-| `--text-muted` | `#4b5563` | `#9ca3af` | Subtítulos, descripciones secundarias, placeholders |
-| `--border` | `#d1d5db` | `#333338` | Divisores sutiles, bordes secundarios |
-| `--border-strong`| `#111111` | `#f4f4f5` | Bordes primarios de interacción |
-| `--danger` | `#dc2626` | `#f87171` | Acciones destructivas y errores |
-| `--success` | `#15803d` | `#4ade80` | Confirmaciones y estados exitosos |
-| `--focus-ring` | `#111111` | `#f4f4f5` | Anillo de accesibilidad para foco de teclado |
+### Reglas de Color
+- **Sin gradientes** — solo sólidos planos
+- **Sin glassmorphism** — solo bordes opacos
+- **Sin colores primarios en fondos** — el acento es solo texto/borde
+- El único color de acento funcional es `--danger` (rojo)
 
-### 2.2. Sombras Brutalistas (Hard Offset Shadows)
+---
 
-**Prohibido el uso de `blur` en sombras.** Solo se permiten sombras sólidas de desplazamiento:
+## 2. Tipografía
 
+### Stack de Fuentes
+| Rol | Familia | Pesos | Archivo |
+|---|---|---|---|
+| Display / Títulos | `"Satoshi"` | 700, 800, 900 | fontshare.com |
+| UI / Body | `"Outfit"` | 300, 400, 500, 600, 700 | Google Fonts |
+| Mono / Metadata | `"JetBrains Mono"` | 400, 700 | (sistema) |
+
+### Jerarquía Tipográfica
+| Elemento | Font | Peso | Tamaño | Tracking | Casing |
+|---|---|---|---|---|---|
+| `h1`–`h4` | Display | 800 | `clamp()` | `-0.03em` | Uppercase |
+| `.site-title` | Display | 800 | `2.25rem` | `-0.04em` | — |
+| `.task-title` | Display | 700 | `1.0625rem` | `-0.01em` | — |
+| Body | UI | 400 | `1rem` | normal | — |
+| Botones (acciones) | Mono | 700 | `0.75rem` | `0.06em` | Uppercase |
+| Botones (general) | Mono | 700 | `0.875rem` | `0.05em` | Uppercase |
+| Metadata/task-meta | Mono | 700 | `0.75rem` | `0.05em` | Uppercase |
+| Status/auth-status | Mono | 400 | `0.8125rem` | `0.05em` | Uppercase |
+| Errores | UI | 400 | `0.75rem` | normal | — |
+
+### Reglas Tipográficas
+- `letter-spacing` negativo en títulos (`-0.01em` a `-0.04em`)
+- `letter-spacing` positivo en metadata/botones mono (`0.05em+`)
+- `line-height: 1.6` para body, `1.1` para títulos grandes
+- `text-transform: uppercase` en botones, tags, metadata, empty-state
+- `font-variant-numeric: tabular-nums` en fechas y números
+- `text-wrap: balance` en títulos, `text-wrap: pretty` en descripciones
+
+---
+
+## 3. Sombras y Profundidad
+
+### Sombras de Bloque (Brutalist)
 ```css
---shadow-hard: 3px 3px 0px 0px var(--text);        /* Tarjetas, botones default */
---shadow-hard-lg: 5px 5px 0px 0px var(--text);     /* Modales, botones primarios */
---shadow-hard-hover: 1px 1px 0px 0px var(--text);  /* Estado presionado / active */
+--shadow-hard:      3px 3px 0px 0px var(--text);   /* Light: #111, Dark: #000 */
+--shadow-hard-lg:   5px 5px 0px 0px var(--text);
+--shadow-hard-hover: 1px 1px 0px 0px var(--text);
 ```
 
-*(En modo oscuro, las sombras usan `#000000` para contraste de profundidad).*
+### Física de Resorte (Botones)
+| Estado | Transform | Shadow |
+|---|---|---|
+| Default | `none` | `3px 3px 0px` (acciones: `2px 2px 0px`) |
+| Hover | `translate(-1px, -1px)` | `5px 5px 0px` (acciones: `3px 3px 0px`) |
+| Active | `translate(2px, 2px)` | `1px 1px 0px` |
 
-### 2.3. Tipografías
-
-```css
---font-display: "Satoshi", "Outfit", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
---font-ui: "Outfit", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
---font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
-```
-
-* **Display (`--font-display`)**: Para `h1`, `h2`, `h3` y el título de la marca. Peso `800` o `900`, `letter-spacing: -0.02em` a `-0.04em`.
-* **UI / Cuerpo (`--font-ui`)**: Para lectura general, formularios, etiquetas y contenido.
-* **Mono (`--font-mono`)**: Para badges, estados (`PENDING`, `COMPLETED`), fechas, contadores, paginación y botones de comando (`+ CREATE TASK`, `EDIT`, `DELETE`).
-
----
-
-## 3. Especificación de Componentes
-
-### 3.1. Botones y Física de Interacción
-
-Los botones emulan placas metálicas o interruptores con resorte mecánico:
-
-```css
-/* Botón Estándar */
-button {
-    font-family: var(--font-ui);
-    font-weight: 600;
-    padding: 8px 16px;
-    border: 1px solid var(--text);
-    border-radius: 0;
-    background-color: var(--surface);
-    color: var(--text);
-    box-shadow: var(--shadow-hard);
-    cursor: pointer;
-    transition: background-color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-                color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-                box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-                transform 0.15s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-/* Hover: El botón 'se levanta' hacia el usuario */
-button:hover:not(:disabled) {
-    background-color: var(--text);
-    color: var(--bg);
-    transform: translate(-1px, -1px);
-    box-shadow: var(--shadow-hard-lg);
-}
-
-/* Active / Click: El botón 'se hunde' al ser presionado */
-button:active:not(:disabled) {
-    transform: translate(2px, 2px);
-    box-shadow: var(--shadow-hard-hover);
-}
-```
-
-#### Variantes de Botones:
-* **Primario de Acción / CTA (`.btn-create-task`, `#submit-btn`)**: Tipografía monoespaciada en mayúsculas (`--font-mono`, `700`), fondo `var(--text)`, texto `var(--bg)`.
-* **Secundario (`button.secondary`)**: Fondo transparente, borde `var(--border-strong)`.
-* **Peligro (`button.danger`)**: Borde y sombra en `var(--danger)`. Hover invierte a fondo `var(--danger)` y texto blanco.
-* **Acciones en Listas (`.task-actions button`)**: Tamaño compacto (`padding: 5px 12px`, `font-size: 0.75rem`, `font-family: var(--font-mono)`).
-
-### 3.2. Contenedores y Secciones
-
-* **Bordes**: `1px solid var(--text)`.
-* **Radio**: `border-radius: 0`.
-* **Sombra**: `box-shadow: var(--shadow-hard)`.
-* **Fondo**: `background: var(--surface)`.
-
-### 3.3. Formularios e Inputs
-
-* **Campos (`input`, `textarea`, `select`)**: Fondo `var(--surface)`, borde `1px solid var(--border)`, `border-radius: 0`.
-* **Foco (`:focus-visible`)**:
-  ```css
-  border-color: var(--text);
-  outline: 2px solid var(--focus-ring);
-  outline-offset: 1px;
-  ```
-* **Etiquetas de Error**: Letra pequeña (`0.75rem`), color `var(--danger)`, espaciado superior sutil.
-
-### 3.4. Modales y Pop-outs (`.popout-overlay`)
-
-* **Backdrop**: `background: rgba(0, 0, 0, 0.65)` con `backdrop-filter: blur(3px)`.
-* **Caja Contenedora**: `max-width: 520px`, borde sólido, sombra grande `var(--shadow-hard-lg)`.
-* **Animación**: Entrada elástica `popIn` con `cubic-bezier(0.16, 1, 0.3, 1)`.
-
-### 3.5. Estados Vacíos (Empty States)
-
-Diseñados como etiquetas o manifiestos técnicos:
-* Badge de estado superior en mono invertido (`STATUS: 0 TASKS`).
-* Título contundente en mayúsculas (`NO TASKS FOUND`).
-* Borde discontinuo `2px dashed var(--border)`.
-
-### 3.6. Accesibilidad y Rendimiento
-
-* **Skip Link**: `<a href="#main" class="skip-link">Skip to content</a>`. Oculto fuera de pantalla con `position: absolute; top: -100%`, visible al recibir foco (`:focus { top: 0; }`).
-* **Focus Visible**: Todo elemento interactivo debe tener contorno de enfoque claro (`outline-offset: 2px`).
-* **Motion Reduction**: Bajo `@media (prefers-reduced-motion: reduce)`, desactivar animaciones `slideIn`, `popIn`, grano procedural y pulsos de skeletons.
+### Reglas de Sombra
+- **Sin `box-shadow` difuso** — solo bloques de 0px blur
+- Las sombras siempre usan `var(--text)` o `var(--danger)`
+- En dark mode, sombras usan `#000000`
+- `box-shadow: none` solo en botones disabled y btn-close
 
 ---
 
-## 4. Reglas Estrictas para Agentes (Do's & Don'ts)
+## 4. Bordes
 
-### ⛔ PROHIBIDO (Don'ts)
-1. **NO usar `border-radius`** mayor a 0 (nada de `rounded-md`, `rounded-full`, etc.).
-2. **NO usar gradientes decorativos** (`linear-gradient(...)`) en botones o fondos.
-3. **NO usar sombras suaves / difusas** (`box-shadow: 0 4px 6px rgba(0,0,0,0.1)`).
-4. **NO usar colores pastel suaves o arbitrarios** no contemplados en los tokens.
-5. **NO romper el Service Worker**: Al modificar estilos en `src/css/`, siempre se debe incrementar la versión de caché (`CACHE_NAME`) en `src/sw.js` para evitar discrepancias de caché en producción.
+### Anchos de Borde
+| Elemento | Ancho | Estilo |
+|---|---|---|
+| Headers, secciones | `2px solid` | `var(--text)` |
+| Cards, modales, auth | `1px solid` | `var(--text)` |
+| Inputs, selects, dropdowns | `2px solid` | `var(--border)` → hover/focus: `var(--text)` |
+| Divisores internos | `2px solid` | `var(--border)` |
+| Empty state | `2px dashed` | `var(--border)` |
+| Errores globales | `2px solid` | `var(--danger)` |
+| Task actions buttons | `1px solid` | `var(--text)` / `var(--danger)` |
 
-###  OBLIGATORIO (Do's)
-1. **Usar siempre variables CSS de `base.css`** para colores, fuentes y sombras.
-2. **Aplicar la física de traslación** (`translate(-1px, -1px)` en hover y `translate(2px, 2px)` en active) a nuevos botones.
-3. **Mantener tipografía `--font-mono` en mayúsculas** para metadatos, contadores y badges.
-4. **Respetar el modo oscuro** utilizando únicamente los tokens semánticos definidos.
+### Reglas
+- **`border-radius: 0`** en TODO — esquinas cuadradas absolutas
+- Separadores: `border-bottom: 2px solid var(--border)`
+- Hover en inputs: `border-color: var(--text)`
+- Focus en inputs: `border-color: var(--text)` + `outline: 2px solid var(--focus-ring)` + `outline-offset: 1px`
+
+---
+
+## 5. Layout y Espaciado
+
+### Estructura
+- **Mobile-first**: `max-width: 100%` → `56rem` en desktop (`min-width: 60rem`)
+- **Contenido centrado**: `margin: 0 auto`
+- **Padding generoso**: `1.5rem–2.5rem` en desktop
+- **Gap consistente**: `0.5rem–1.5rem` entre elementos
+
+### Breakpoints
+| Breakpoint | Uso |
+|---|---|
+| `40rem` (640px) | Desktop task layout (row), filter widths |
+| `60rem` (960px) | Contenedor principal centrado |
+
+### Patrones de Layout
+| Patrón | Uso |
+|---|---|
+| `flex` + `gap` | Headers, formularios, acciones, filters |
+| `flex-direction: column` | Task items (mobile), sections, form groups |
+| `flex-direction: row` | Task items (desktop ≥40rem), header |
+| `flex-wrap: wrap` | Filtros, task-meta |
+
+---
+
+## 6. Componentes
+
+### Botones (base)
+- Font: Mono, uppercase, `0.875rem`, `letter-spacing: 0.05em`
+- Padding: `8px 16px`
+- Border: `1px solid var(--text)`
+- Shadow: `var(--shadow-hard)` (3px 3px 0px)
+- Física: translate + shadow en hover/active
+
+### Botones de Acción (task-actions)
+- Font: Mono, uppercase, `0.75rem`, `letter-spacing: 0.06em`
+- Padding: `5px 12px`
+- Border: `1px solid var(--text)`
+- Shadow: `2px 2px 0px 0px var(--text)`
+- Variantes: `.secondary` (border-strong), `.danger` (danger)
+
+### Botón Crear (btn-create-task)
+- Font: Mono, uppercase, `0.8125rem`, `letter-spacing: 0.06em`
+- Background: `var(--text)` invertido
+- Padding: `8px 18px`, `min-height: 38px`
+
+### Botón Submit (form)
+- Background: `var(--text)` invertido
+- Padding: `10px 18px`, `min-height: 42px`
+- Shadow: `var(--shadow-hard-lg)` (5px 5px 0px)
+- Hover shadow: `6px 6px 0px 0px var(--text)`
+
+### Inputs / Forms
+- Font: inherit (UI)
+- Border: `2px solid var(--border)`
+- Border-radius: `0`
+- Hover: `border-color: var(--text)`
+- Focus: `border-color: var(--text)` + `outline: 2px solid var(--focus-ring)` + `outline-offset: 1px`
+- Padding: `8px 12px`
+
+### Dropdown Custom
+- Trigger: flex, `2px solid var(--border)`, `6px 10px`
+- Options: absolute, `2px solid var(--border)`, `border-top: none`
+- Option padding: `6px 10px`
+- Selected: `background: var(--text)`, `color: var(--bg)`
+
+### Modales
+- Overlay: `rgba(0,0,0,0.65)` + `backdrop-filter: blur(3px)`
+- Container: `border: 1px solid var(--text)` + `shadow-hard-lg`
+- Header: flex con `border-bottom: 2px solid var(--border)`
+- Animación: `scale(0.96) → 1` + `translateY(8px → 0)`
+- Padding: `2rem`
+
+### Toasts
+- Posición: `fixed top: 20px right: 20px`
+- Border: `1px solid var(--border)`
+- Shadow: `shadow-hard`
+- Variantes: `.success` (verde), `.error` (rojo), `.info` (muted)
+- Animación: `slideIn` desde derecha
+
+### Skeletons
+- Bloques de `var(--border)` con opacidad variable
+- Animación: pulse `0.4 → 0.9` opacidad
+- Tamaños: `.skeleton-title` (45%), `.skeleton-desc` (75%), `.skeleton-meta` (25%)
+
+### Empty State
+- Border: `2px dashed var(--border)`
+- Background: `var(--bg)`
+- Tag: Mono, uppercase, `0.6875rem`, bg `var(--text)`
+- Title: Display, `1.5rem`, weight 900
+- Description: `0.875rem`, `var(--text-muted)`, `max-width: 40ch`
+
+### Checkbox Custom
+- Hidden input + custom box (`18px`)
+- Border: `1px solid var(--text)`
+- Checked: `background: var(--bg)`, inner square `10px`
+
+---
+
+## 7. Textura y Efectos
+
+### Ruido Analógico (SVG)
+```css
+body::before {
+  opacity: 0.035; /* 0.045 en dark mode */
+  background-image: url("data:image/svg+xml,...fractalNoise...");
+  pointer-events: none;
+  z-index: 9999;
+}
+```
+
+### Reglas de Textura
+- Solo ruido SVG sutil en body
+- `prefers-reduced-motion: reduce` → desactivar textura (`display: none`)
+
+---
+
+## 8. Accesibilidad
+
+- **Skip link**: `position: absolute top: -100%` → `top: 0` en focus
+- **Focus visible**: `outline: 2px solid var(--focus-ring)` + `outline-offset: 1px` (inputs) / `2px` (botones)
+- **Reduced motion**: desactivar animaciones (`animation: none`)
+- **aria-live**: en contadores de tareas y estado de auth
+- **aria-expanded**: en dropdowns custom
+- **aria-modal**: en modales
+- **user-select: none**: en labels de checkbox
+
+---
+
+## 9. Animaciones
+
+| Elemento | Animación | Timing |
+|---|---|---|
+| Toast | `slideIn` (translateX 100% → 0) | `0.3s cubic-bezier(0.16, 1, 0.3, 1)` |
+| Modal | `fadeIn` (opacity 0 → 1) | `0.15s ease` |
+| Pop-out | `popIn` (scale 0.96 → 1 + translateY 8px → 0) | `0.2s cubic-bezier(0.16, 1, 0.3, 1)` |
+| Skeleton | `pulseSkeleton` (opacity 0.4 → 0.9) | `1.5s ease-in-out infinite` |
+| Button hover | transform + shadow | `0.2s cubic-bezier(0.16, 1, 0.3, 1)` |
+| Dropdown icon | rotate 180deg | `0.2s ease` |
+
+### Reglas de Animación
+- Solo `transform` y `opacity` (nunca `width`, `height`, `top`)
+- Cubic-bezier: `(0.16, 1, 0.3, 1)` para easing suave
+- Respetar `prefers-reduced-motion` → `animation: none`
+- Sin scroll-driven animations
+
+---
+
+## 10. Scrollbar
+
+- Width: `6px`
+- Track: `var(--bg)`
+- Thumb: `var(--border)` → hover: `var(--text-muted)`
+
+---
+
+## 11. Prohibiciones (NO hacer)
+
+- ❌ `border-radius` en ningún elemento
+- ❌ `box-shadow` con blur (> 0px)
+- ❌ Gradientes en fondos o botones
+- ❌ Glassmorphism / backdrop-filter en elementos (excepto modales)
+- ❌ Colores primarios (azul, verde) en fondos de sección
+- ❌ Emojis en UI
+- ❌ Fuentes Inter, Roboto, Open Sans
+- ❌ Sombras difusas (`shadow-md`, `shadow-lg` de Tailwind)
+- ❌ `rounded-full` en cards o botones principales
+- ❌ Texto negro puro `#000000` — usar `#111111`
