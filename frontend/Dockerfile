@@ -16,11 +16,10 @@ RUN pnpm build
 FROM nginx:alpine
 
 ENV PORT=80
-ENV API_UPSTREAM=http://api:5000
 
 RUN apk add --no-cache gettext
 
 COPY nginx.conf /etc/nginx/conf.d/default.conf.template
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-CMD ["sh", "-c", "echo \"[boot] PORT=$PORT API_UPSTREAM=$API_UPSTREAM\" && envsubst '${PORT} ${API_UPSTREAM}' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && cat /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"]
+CMD ["sh", "-c", "envsubst '${PORT}' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"]
