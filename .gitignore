@@ -5,7 +5,8 @@
 
 # C extensions
 *.so
-
+frontend/node_modules/
+frontend/dist/
 # Distribution / packaging
 .Python
 build/

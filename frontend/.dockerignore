@@ -1,6 +1,10 @@
-*
-!src
-!src/**
-!nginx.conf
-!env.js.template
-!docker-entrypoint.sh
+node_modules
+dist
+.git
+.gitignore
+.env
+.env.example
+.env.local
+*.log
+.DS_Store
+

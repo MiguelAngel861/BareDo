@@ -67,6 +67,8 @@ class TaskListQuery(BaseModel):
     @classmethod
     def validate_completed(cls, v):
         if isinstance(v, str):
+            if v == "":
+                return None
             lower = v.lower()
             if lower == "true":
                 return True
@@ -74,4 +76,11 @@ class TaskListQuery(BaseModel):
                 return False
             else:
                 raise ValueError(f"Invalid value for completed: '{v}'. Must be 'true' or 'false'.")
+        return v
+
+    @field_validator("title", mode="before")
+    @classmethod
+    def validate_title(cls, v):
+        if isinstance(v, str) and v.strip() == "":
+            return None
         return v
