@@ -50,7 +50,7 @@ La idea es iterar por fases. Cada fase deja el proyecto en un estado “presenta
 	- [x] crear/listar/editar/eliminar
 	- [x] casos negativos: `404`, payload inválido, etc.
 - [x] Coverage como métrica orientativa (`>= 80%`).
-- [x] Tests stratificados: smoke/api + repositories + services (49 tests, 87%)
+- [x] Tests stratificados: smoke/api + repositories + services (59 tests, 86%)
 
 ### Fase 4 — Auth y multiusuario ✅
 
@@ -106,6 +106,7 @@ La idea es iterar por fases. Cada fase deja el proyecto en un estado “presenta
 	- [x] `Dockerfile` (backend + frontend nginx)
 	- [x] `docker-compose.yml` (app + Postgres para dev local)
 	- [x] `docker-entrypoint.sh` (genera `env.js` y config de nginx en runtime)
+	- [x] Nginx reverse proxy para API (`BACKEND_URL`)
 - [x] Servidor WSGI (gunicorn) y config por entorno (`config.py`).
 - [x] GitHub Actions:
 	- [x] lint (`ruff check` + `ruff format --check`) en cada PR/push
@@ -113,5 +114,32 @@ La idea es iterar por fases. Cada fase deja el proyecto en un estado “presenta
 - [x] Deploy público en Render:
 	- [x] `baredo-api` (backend Flask + Gunicorn)
 	- [x] `baredo` (frontend nginx + docker-entrypoint)
-	- [x] CORS_ORIGINS configurado
+	- [x] CORS_ORIGINS configurado (fallback)
+	- [x] Nginx reverse proxy (`BACKEND_URL=https://baredo-api.onrender.com`)
 	- [x] URL en README
+
+### Fase 8 — Refactor BaseRepository + BaseService ✅
+
+- [x] BaseRepository con CRUD genérico:
+	- [x] `get_all()` con paginación, filtros y sort
+	- [x] `get_by_id()` con extra_filters opcionales
+	- [x] `create()`, `update()`, `delete()` genéricos
+	- [x] Protocolo `sortable_columns` y `apply_filters`
+- [x] Refactor repositorios:
+	- [x] `TasksRepository` delega CRUD a base, solo define sort/filtros
+	- [x] `UsersRepository` añade sortable_columns y apply_filters
+- [x] BaseService con transacciones:
+	- [x] `_execute_in_transaction()` centraliza commit/rollback
+	- [x] `repository_class` property para inyección de dependencias
+	- [x] `TasksService` y `AuthService` heredan de BaseService
+- [x] Nginx reverse proxy:
+	- [x] Proxy `/api` a backend via `$BACKEND_URL`
+	- [x] Compatible con Docker Compose y Render
+	- [x] CORS se mantiene como fallback
+
+### Fase 9 — Frontend TypeScript ✅
+
+- [x] Migración de JavaScript a TypeScript
+- [x] Arquitectura modular con aliases (`@/features`, `@/shared`)
+- [x] Configuración de paths en `tsconfig.json`
+- [x] Vite como bundler
