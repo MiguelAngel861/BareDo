@@ -1,0 +1,539 @@
+{
+  "$schema": "../templates/plan.schema.json",
+  "plan": {
+    "id": "backend-003-repository-service-standardization",
+    "nombre": "Estandarización de BaseRepository y BaseService",
+    "tipo": "refactor",
+    "version": "1.0.0",
+    "fecha_creacion": "2026-08-10",
+    "fecha_actualizacion": "2026-08-24",
+    "autor": "damian",
+    "estado": "done",
+    "branches_prefix": "refactor/f",
+    "tags": ["backend", "repository", "service", "base-classes", "standardization"]
+  },
+  "alcance": {
+    "objetivo": "Eliminar duplicación de código en repositorios y services moviendo lógica CRUD genérica, paginación, filtrado y ordenación a clases base, y estandarizar el patrón de transacciones en services.",
+    "contexto": "BaseRepository actual solo tiene get_by_id, add y _apply_sort (27 líneas). TasksRepository duplica lógica completa de paginación, count, filtros y CRUD (81 líneas). UsersRepository apenas usa la base (15 líneas). Services repiten boilerplate de transacciones y manejo de errores.",
+    "in_scope": [
+      "Extender BaseRepository con get_all (paginación, filtros, sort), get_by_id con extra_filters, create, update, delete genéricos",
+      "Definir protocolo apply_filters/sortable_columns para subclases",
+      "Refactor TasksRepository delegando a base, solo lógica específica de Tasks",
+      "Añadir sortable_columns y apply_filters a UsersRepository (Opción C)",
+      "Crear BaseService con _execute_in_transaction, repository_class property, error handling",
+      "Refactor TasksService y AuthService heredando de BaseService",
+      "Validar: tests repositorios/services/smoke + lint + format"
+    ],
+    "out_of_scope": [
+      "Cambiar modelos SQLAlchemy (Tasks, Users)",
+      "Modificar esquemas Pydantic de API",
+      "Cambiar endpoints o contratos de API",
+      "Modificar frontend",
+      "Añadir nuevos endpoints o funcionalidades",
+      "Migraciones de base de datos"
+    ],
+    "stakeholders": ["damian"]
+  },
+  "decisiones": [
+    {
+      "id": "G1",
+      "categoria": "arquitectura",
+      "titulo": "BaseRepository expone CRUD genérico completo",
+      "opcion_elegida": "Añadir get_all, get_by_id(extra_filters), create, update, delete a BaseRepository. Subclases definen sortable_columns y apply_filters.",
+      "opciones": [
+        {
+          "label": "CRUD completo en base",
+          "descripcion": "get_all con paginación/filtros/sort, get_by_id con extra_filters, create/update/delete genéricos",
+          "elegida": true
+        },
+        {
+          "label": "Solo get_all en base",
+          "descripcion": "Mover solo paginación y sort, mantener create/update/delete en subclases"
+        },
+        {
+          "label": "Mixin separado",
+          "descripcion": "Crear PaginationMixin, FilterMixin, CRUDMixin y componer"
+        }
+      ],
+      "justificacion": "CRUD completo en base elimina máxima duplicación. TasksRepository pasa de 81 a ~25 líneas. UsersRepository gana get_all gratis. Protocol apply_filters mantiene flexibilidad.",
+      "impacto": "alto",
+      "archivos_afectados": [
+        "backend/app/repositories/base.py",
+        "backend/app/repositories/tasks_repository.py",
+        "backend/app/repositories/users_repository.py"
+      ]
+    },
+    {
+      "id": "G2",
+      "categoria": "arquitectura",
+      "titulo": "Firma de get_by_id con extra_filters opcionales",
+      "opcion_elegida": "get_by_id(self, entity_id, **extra_filters) -> T | None. Permite user_id sin romper compatibilidad.",
+      "opciones": [
+        {
+          "label": "**extra_filters en base",
+          "descripcion": "get_by_id(entity_id, **extra_filters) construye WHERE dinámicamente",
+          "elegida": true
+        },
+        {
+          "label": "Sobrecarga en subclase",
+          "descripcion": "TasksRepository.get_by_id(task_id, user_id) sigue existiendo, llama a super()"
+        },
+        {
+          "label": "Query object pattern",
+          "descripcion": "Pasar SQLAlchemy Select ya construido con filtros"
+        }
+      ],
+      "justificacion": "**extra_filters es simple, no rompe llamadas existentes (kwargs opcionales), y evita sobrescribir get_by_id en TasksRepository. Service pasa user_id como kwarg.",
+      "impacto": "medio",
+      "archivos_afectados": [
+        "backend/app/repositories/base.py",
+        "backend/app/repositories/tasks_repository.py",
+        "backend/app/services/tasks_service.py"
+      ]
+    },
+    {
+      "id": "G3",
+      "categoria": "arquitectura",
+      "titulo": "create/update/delete en BaseRepository usan entidades, no dicts",
+      "opcion_elegida": "create(entity: T), update(entity_id, data: dict, **extra_filters), delete(entity_id, **extra_filters). Service construye entidad antes de llamar.",
+      "opciones": [
+        {
+          "label": "Entidades en base",
+          "descripcion": "create(entity), update(entity_id, data, **extra_filters), delete(entity_id, **extra_filters)",
+          "elegida": true
+        },
+        {
+          "label": "Dicts en base",
+          "descripcion": "create(data, **extra_filters), update(entity_id, data, **extra_filters)"
+        },
+        {
+          "label": "Mantener add(entity) y añadir create(dict)",
+          "descripcion": "BaseRepository.add(entity) se queda, añadir create(dict) para compatibilidad"
+        }
+      ],
+      "justificacion": "Entidades en base mantiene consistencia con SQLAlchemy (session.add(entity)). Service convierte dict -> entidad antes de llamar. TasksRepository.add_task(dict, user_id) se adapta en service.",
+      "impacto": "medio",
+      "archivos_afectados": [
+        "backend/app/repositories/base.py",
+        "backend/app/repositories/tasks_repository.py",
+        "backend/app/services/tasks_service.py"
+      ]
+    },
+    {
+      "id": "G4",
+      "categoria": "arquitectura",
+      "titulo": "UsersRepository adopta Opción C: sortable_columns + apply_filters",
+      "opcion_elegida": "Definir sortable_columns = {username, created_at} y apply_filters con filtro username ilike. Hereda get_all, create, update, delete gratis.",
+      "opciones": [
+        {
+          "label": "Opción C completa",
+          "descripcion": "sortable_columns + apply_filters, hereda todo CRUD genérico",
+          "elegida": true
+        },
+        {
+          "label": "Opción B mínima",
+          "descripcion": "Solo usar repo.create(user) en AuthService.register"
+        },
+        {
+          "label": "Opción A sin cambios",
+          "descripcion": "UsersRepository se queda igual, solo hereda get_by_id"
+        }
+      ],
+      "justificacion": "Costo marginal bajo (~10 líneas). Prepara listado paginado de usuarios para futuro. AuthService.register simplifica a repo.create(user).",
+      "impacto": "bajo",
+      "archivos_afectados": [
+        "backend/app/repositories/users_repository.py",
+        "backend/app/services/auth_service.py"
+      ]
+    },
+    {
+      "id": "G5",
+      "categoria": "arquitectura",
+      "titulo": "BaseService concreta (no ABC) con repository_class property",
+      "opcion_elegida": "Clase BaseService con repository_class: type[BaseRepository] (property abstracta), _execute_in_transaction(fn), _get_repo(session). TasksService y AuthService heredan.",
+      "opciones": [
+        {
+          "label": "Clase concreta con property abstracta",
+          "descripcion": "BaseService implementa _execute_in_transaction, subclases definen repository_class",
+          "elegida": true
+        },
+        {
+          "label": "ABC con @abstractmethod",
+          "descripcion": "from abc import ABC, abstractmethod; forzar implementación"
+        },
+        {
+          "label": "Protocol + composición",
+          "descripcion": "ServiceProtocol con repository_class, functions externas para transacciones"
+        }
+      ],
+      "justificacion": "Clase concreta es más simple que ABC. property abstracta (raise NotImplementedError) obliga a definir repository_class sin imports de abc. _execute_in_transaction encapsula try/except/commit/rollback + mapeo NotFoundError/DatabaseError.",
+      "impacto": "alto",
+      "archivos_afectados": [
+        "backend/app/services/base.py",
+        "backend/app/services/tasks_service.py",
+        "backend/app/services/auth_service.py"
+      ]
+    },
+    {
+      "id": "G6",
+      "categoria": "arquitectura",
+      "titulo": "Service methods delegan a lambda repo: repo.method(...)",
+      "opcion_elegida": "Cada método del service: return self._execute_in_transaction(lambda repo: repo.get_all(...))",
+      "opciones": [
+        {
+          "label": "Lambda pattern",
+          "descripcion": "self._execute_in_transaction(lambda repo: repo.get_all(page, per_page, filters, sort, user_id=user_id))",
+          "elegida": true
+        },
+        {
+          "label": "Helper methods en BaseService",
+          "descripcion": "BaseService.get_all(page, per_page, filters, sort, **extra_filters) -> delega a repo"
+        },
+        {
+          "label": "Mantener with transactional() en cada método",
+          "descripcion": "No crear BaseService, solo estandarizar repo"
+        }
+      ],
+      "justificacion": "Lambda pattern es flexible (permite cualquier llamada a repo), mantiene service methods delgados, y _execute_in_transaction centraliza error handling. Evita crear helpers en BaseService para cada operación.",
+      "impacto": "medio",
+      "archivos_afectados": [
+        "backend/app/services/base.py",
+        "backend/app/services/tasks_service.py",
+        "backend/app/services/auth_service.py"
+      ]
+    }
+  ],
+  "estructura": {
+    "arbol": "backend/\n  app/\n    repositories/\n      base.py                    # MODIFICADO: CRUD genérico + protocol\n      tasks_repository.py          # MODIFICADO: delega a base, solo lógica Tasks\n      users_repository.py          # MODIFICADO: sortable_columns + apply_filters\n    services/\n      base.py                      # NUEVO: BaseService con _execute_in_transaction\n      tasks_service.py             # MODIFICADO: hereda BaseService, lambda pattern\n      auth_service.py              # MODIFICADO: hereda BaseService, usa repo.create\n    api/v1/routes/\n      tasks.py                     # SIN CAMBIOS (usa TasksService)\n      auth.py                      # SIN CAMBIOS (usa AuthService)",
+    "contrato_dependencias": [
+      {
+        "capa": "repositories",
+        "puede_importar": ["models", "sqlalchemy", "app.core.pagination"],
+        "no_puede_importar": ["services", "api", "schemas"]
+      },
+      {
+        "capa": "services",
+        "puede_importar": ["repositories", "models", "errors", "app.core.db"],
+        "no_puede_importar": ["api", "schemas"]
+      },
+      {
+        "capa": "api",
+        "puede_importar": ["services", "schemas", "errors"],
+        "no_puede_importar": ["repositories", "models"]
+      }
+    ],
+    "archivos_nuevos": [
+      {
+        "ruta": "backend/app/services/base.py",
+        "responsabilidad": "BaseService con repository_class property, _execute_in_transaction, _get_repo, mapeo de excepciones",
+        "decisiones_ref": ["G5", "G6"]
+      }
+    ],
+    "archivos_modificados": [
+      {
+        "ruta": "backend/app/repositories/base.py",
+        "responsabilidad": "Añadir get_all, get_by_id(**extra_filters), create, update, delete genéricos. Definir sortable_columns property y apply_filters method.",
+        "decisiones_ref": ["G1", "G2", "G3"]
+      },
+      {
+        "ruta": "backend/app/repositories/tasks_repository.py",
+        "responsabilidad": "Eliminar get_all, get_by_id, add_task, update_task, delete_task, _apply_data_filters. Definir sortable_columns y apply_filters. Delegar todo a base.",
+        "decisiones_ref": ["G1", "G2", "G3"]
+      },
+      {
+        "ruta": "backend/app/repositories/users_repository.py",
+        "responsabilidad": "Añadir sortable_columns = {username, created_at} y apply_filters con filtro username ilike.",
+        "decisiones_ref": ["G4"]
+      },
+      {
+        "ruta": "backend/app/services/tasks_service.py",
+        "responsabilidad": "Heredar BaseService, definir repository_class = TasksRepository. Métodos usan _execute_in_transaction(lambda repo: repo.method(...)). Ajustar create para construir entidad Tasks.",
+        "decisiones_ref": ["G5", "G6", "G3"]
+      },
+      {
+        "ruta": "backend/app/services/auth_service.py",
+        "responsabilidad": "Heredar BaseService, definir repository_class = UsersRepository. register usa repo.create(user). login/get_user_by_id usan repo.get_by_id/get_by_username.",
+        "decisiones_ref": ["G5", "G6", "G4"]
+      }
+    ],
+    "archivos_eliminados": []
+  },
+  "fases": [
+    {
+      "id": "F1",
+      "nombre": "Extender BaseRepository con CRUD genérico",
+      "rama": "refactor/f1-extend-base-repository",
+      "objetivo": "Implementar get_all, get_by_id(extra_filters), create, update, delete en BaseRepository. Definir protocol sortable_columns/apply_filters.",
+      "tareas": [
+        {
+          "id": "F1.1",
+          "accion": "Añadir imports: Sequence, func, select, update, delete, Pagination. Definir sortable_columns = {} y apply_filters(self, stmt, filters) -> stmt en BaseRepository.",
+          "archivos": ["backend/app/repositories/base.py"],
+          "decisiones_ref": ["G1"]
+        },
+        {
+          "id": "F1.2",
+          "accion": "Implementar get_all(page, per_page, filters, sort_fields, **extra_filters) -> tuple[Sequence[T], Pagination]: aplica extra_filters, apply_filters, sort, paginación, count.",
+          "archivos": ["backend/app/repositories/base.py"],
+          "decisiones_ref": ["G1"]
+        },
+        {
+          "id": "F1.3",
+          "accion": "Modificar get_by_id(entity_id, **extra_filters) -> T | None: construye stmt con where(model.id == entity_id) + extra_filters.",
+          "archivos": ["backend/app/repositories/base.py"],
+          "decisiones_ref": ["G2"]
+        },
+        {
+          "id": "F1.4",
+          "accion": "Implementar create(entity: T) -> T (session.add + return), update(entity_id, data: dict, **extra_filters) -> T | None (update returning), delete(entity_id, **extra_filters) -> bool (delete + rowcount).",
+          "archivos": ["backend/app/repositories/base.py"],
+          "decisiones_ref": ["G3"]
+        },
+        {
+          "id": "F1.5",
+          "accion": "Ejecutar tests de repositorios para verificar que BaseRepository funciona: cd backend && uv run pytest tests/repositories -v",
+          "archivos": [],
+          "decisiones_ref": []
+        },
+        {
+          "id": "F1.6",
+          "accion": "Merge de refactor/f1-extend-base-repository a dev y eliminación de la rama local y remota.",
+          "archivos": [],
+          "decisiones_ref": []
+        }
+      ],
+      "gate": {
+        "criterios": [
+          "BaseRepository tiene get_all, get_by_id(**extra_filters), create, update, delete",
+          "sortable_columns y apply_filters definidos como protocol en base",
+          "Tests de repositorios pasan (tests/repositories)",
+          "La app arranca: cd backend && uv run python wsgi.py",
+          "Rama refactor/f1-extend-base-repository fusionada a dev y eliminada; solo dev y main visibles"
+        ],
+        "bloqueante": true,
+        "cobertura_minima": null
+      },
+      "depende_de": []
+    },
+    {
+      "id": "F2",
+      "nombre": "Refactor TasksRepository y UsersRepository",
+      "rama": "refactor/f2-refactor-repositories",
+      "objetivo": "TasksRepository delega a BaseRepository, solo define sortable_columns y apply_filters. UsersRepository añade sortable_columns y apply_filters.",
+      "tareas": [
+        {
+          "id": "F2.1",
+          "accion": "TasksRepository: definir sortable_columns = {'due_date': Tasks.due_date, 'completed': Tasks.completed}. Implementar apply_filters con title, description, completed ilike/equals.",
+          "archivos": ["backend/app/repositories/tasks_repository.py"],
+          "decisiones_ref": ["G1"]
+        },
+        {
+          "id": "F2.2",
+          "accion": "TasksRepository: eliminar get_all, get_by_id, add_task, update_task, delete_task, _apply_data_filters. Mantener solo __init__ y propiedades/métodos nuevos.",
+          "archivos": ["backend/app/repositories/tasks_repository.py"],
+          "decisiones_ref": ["G1", "G2", "G3"]
+        },
+        {
+          "id": "F2.3",
+          "accion": "UsersRepository: definir sortable_columns = {'username': Users.username, 'created_at': Users.created_at}. Implementar apply_filters con username ilike.",
+          "archivos": ["backend/app/repositories/users_repository.py"],
+          "decisiones_ref": ["G4"]
+        },
+        {
+          "id": "F2.4",
+          "accion": "Ejecutar tests de repositorios: cd backend && uv run pytest tests/repositories -v",
+          "archivos": [],
+          "decisiones_ref": []
+        },
+        {
+          "id": "F2.5",
+          "accion": "Merge de refactor/f2-refactor-repositories a dev y eliminación de la rama local y remota.",
+          "archivos": [],
+          "decisiones_ref": []
+        }
+      ],
+      "gate": {
+        "criterios": [
+          "TasksRepository solo tiene __init__, sortable_columns, apply_filters (~25 líneas)",
+          "UsersRepository tiene sortable_columns y apply_filters además de get_by_username",
+          "Tests de repositorios pasan completamente",
+          "Rama refactor/f2-refactor-repositories fusionada a dev y eliminada; solo dev y main visibles"
+        ],
+        "bloqueante": true,
+        "cobertura_minima": null
+      },
+      "depende_de": ["F1"]
+    },
+    {
+      "id": "F3",
+      "nombre": "Crear BaseService y migrar Services",
+      "rama": "refactor/f3-create-base-service",
+      "objetivo": "Crear BaseService con _execute_in_transaction. Migrar TasksService y AuthService heredando de BaseService.",
+      "tareas": [
+        {
+          "id": "F3.1",
+          "accion": "Crear backend/app/services/base.py: BaseService con repository_class property (raise NotImplementedError), _get_repo(session), _execute_in_transaction(fn) con try/except/commit/rollback + mapeo NotFoundError/DatabaseError.",
+          "archivos": ["backend/app/services/base.py"],
+          "decisiones_ref": ["G5"]
+        },
+        {
+          "id": "F3.2",
+          "accion": "TasksService: heredar BaseService, repository_class = TasksService. Refactor get_all_tasks, get_task_by_id, add_new_task, update_task, delete_task usando _execute_in_transaction(lambda repo: repo.method(...)). add_new_task construye entidad Tasks(data) antes de repo.create.",
+          "archivos": ["backend/app/services/tasks_service.py", "backend/app/services/base.py"],
+          "decisiones_ref": ["G5", "G6", "G3"]
+        },
+        {
+          "id": "F3.3",
+          "accion": "AuthService: heredar BaseService, repository_class = UsersRepository. register usa repo.create(user). login/get_user_by_id/get_current_user usan repo.get_by_id/get_by_username.",
+          "archivos": ["backend/app/services/auth_service.py", "backend/app/services/base.py"],
+          "decisiones_ref": ["G5", "G6", "G4"]
+        },
+        {
+          "id": "F3.4",
+          "accion": "Ejecutar tests de services: cd backend && uv run pytest tests/services -v",
+          "archivos": [],
+          "decisiones_ref": []
+        },
+        {
+          "id": "F3.5",
+          "accion": "Merge de refactor/f3-create-base-service a dev y eliminación de la rama local y remota.",
+          "archivos": [],
+          "decisiones_ref": []
+        }
+      ],
+      "gate": {
+        "criterios": [
+          "BaseService existe con _execute_in_transaction funcionando",
+          "TasksService y AuthService heredan de BaseService",
+          "TasksService.add_new_task construye entidad Tasks y usa repo.create",
+          "AuthService.register usa repo.create(user)",
+          "Tests de services pasan completamente",
+          "Rama refactor/f3-create-base-service fusionada a dev y eliminada; solo dev y main visibles"
+        ],
+        "bloqueante": true,
+        "cobertura_minima": null
+      },
+      "depende_de": ["F2"]
+    },
+    {
+      "id": "F4",
+      "nombre": "Validación completa: tests integración, lint, format",
+      "rama": "refactor/f4-validation",
+      "objetivo": "Ejecutar suite completa (repositorios, services, smoke), lint y format. Corregir cualquier regresión.",
+      "tareas": [
+        {
+          "id": "F4.1",
+          "accion": "Ejecutar tests de repositorios y services: cd backend && uv run pytest tests/repositories tests/services -v",
+          "archivos": [],
+          "decisiones_ref": []
+        },
+        {
+          "id": "F4.2",
+          "accion": "Ejecutar tests de integración (smoke): cd backend && uv run pytest tests/smoke -v",
+          "archivos": [],
+          "decisiones_ref": []
+        },
+        {
+          "id": "F4.3",
+          "accion": "Ejecutar lint y format: cd backend && uv run ruff check && uv run ruff format",
+          "archivos": [],
+          "decisiones_ref": []
+        },
+        {
+          "id": "F4.4",
+          "accion": "Ejecutar suite completa: cd backend && uv run pytest",
+          "archivos": [],
+          "decisiones_ref": []
+        },
+        {
+          "id": "F4.5",
+          "accion": "Merge de refactor/f4-validation a dev y eliminación de la rama local y remota.",
+          "archivos": [],
+          "decisiones_ref": []
+        }
+      ],
+      "gate": {
+        "criterios": [
+          "Todos los tests pasan (repositorios, services, smoke)",
+          "ruff check limpio (sin warnings ni errors)",
+          "ruff format aplicado",
+          "Suite completa pasa",
+          "Rama refactor/f4-validation fusionada a dev y eliminada; solo dev y main visibles"
+        ],
+        "bloqueante": true,
+        "cobertura_minima": null
+      },
+      "depende_de": ["F3"]
+    }
+  ],
+  "tests": {
+    "stack": ["pytest", "pytest-flask", "pytest-cov"],
+    "estructura_carpetas": "backend/tests/{smoke,services,repositories}",
+    "fixtures": ["db_session", "make_user", "make_task"],
+    "config_pytest": {
+      "testpaths": ["tests"]
+    },
+    "config_ruff": {
+      "target-version": "py313",
+      "line-length": 100
+    },
+    "cobertura": {
+      "gate_minimo": 80,
+      "aplica_desde_fase": "F4"
+    }
+  },
+  "riesgos": [
+    {
+      "id": "R1",
+      "descripcion": "Cambio de firma get_by_id(**extra_filters) rompe código que lo llame directamente con positional args",
+      "probabilidad": "baja",
+      "impacto": "medio",
+      "mitigacion": "Verificar grep -r 'get_by_id(' en todo el proyecto antes de F1.3. Solo services lo usan, y se adaptan en F3."
+    },
+    {
+      "id": "R2",
+      "descripcion": "TasksRepository.add_task esperaba (data: dict, user_id) y create espera entidad Tasks completa",
+      "probabilidad": "alta",
+      "impacto": "medio",
+      "mitigacion": "En F3.2, TasksService.add_new_task construye Tasks(**data, user_id=user_id) antes de repo.create(entity). Test existente verifica comportamiento."
+    },
+    {
+      "id": "R3",
+      "descripcion": "BaseService introduce abstracción nueva que puede complicar testing (mocking de _execute_in_transaction)",
+      "probabilidad": "media",
+      "impacto": "bajo",
+      "mitigacion": "Tests de services mockearon transactional() antes; ahora mockean _execute_in_transaction o repo directamente. Verificar en F3.4 y F4.1."
+    },
+    {
+      "id": "R4",
+      "descripcion": "apply_filters en base usa **filters dict genérico; subclases deben validar claves permitidas",
+      "probabilidad": "baja",
+      "impacto": "bajo",
+      "mitigacion": "apply_filters en subclases ignora claves desconocidas (if key in filters:). Documentar en docstring."
+    }
+  ],
+  "metricas_exito": [
+    "TasksRepository reducido de 81 a ~25 líneas (eliminado get_all, get_by_id, add_task, update_task, delete_task, _apply_data_filters)",
+    "UsersRepository gana get_all, create, update, delete genéricos sin código extra",
+    "TasksService y AuthService eliminan todo boilerplate de transactional() + repo instantiation",
+    "BaseRepository centraliza paginación, count, sort, filtros, CRUD",
+    "BaseService centraliza transacciones, error handling, repo instantiation",
+    "Todos los tests pasan (repositorios, services, smoke)",
+    "ruff check y ruff format limpios",
+    "No hay imports rotos ni dependencias circulares"
+  ],
+  "historial": [
+    {
+      "fecha": "2026-08-10",
+      "version": "1.0.0",
+      "cambio": "Creación del plan. Grilling: 6 decisiones (G1-G6), 4 fases, 4 riesgos. Opción C para UsersRepository confirmada.",
+      "autor": "damian"
+    },
+    {
+      "fecha": "2026-08-24",
+      "version": "1.1.0",
+      "cambio": "Plan completado. F1-F4 ejecutadas: BaseRepository CRUD genérico, TasksRepository/UsersRepository refactorizados, BaseService con _execute_in_transaction, services migrados. 59 tests pasan, coverage 86.40%, ruff limpio.",
+      "autor": "damian"
+    }
+  ]
+}
