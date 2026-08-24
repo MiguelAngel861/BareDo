@@ -1,7 +1,9 @@
 import uuid
+from datetime import date
 
 import pytest
 
+from app.models.tasks import Tasks
 from app.repositories.tasks_repository import TasksRepository
 
 
@@ -51,8 +53,6 @@ def test_get_all_filters_completed(make_user, make_task, tasks_repo):
 
 
 def test_get_all_sort_by_due_date_desc(make_user, make_task, tasks_repo):
-    from datetime import date
-
     user = make_user(**unique_user())
     make_task(user.user_id, due_date=date(2026, 1, 1))
     make_task(user.user_id, due_date=date(2026, 12, 31))
@@ -91,24 +91,22 @@ def test_get_by_id_scoped_to_user(make_user, make_task, tasks_repo):
     user_b = make_user(**unique_user())
     task = make_task(user_a.user_id, title="private")
 
-    assert tasks_repo.get_by_id(task.task_id, user_a.user_id).title == "private"
-    assert tasks_repo.get_by_id(task.task_id, user_b.user_id) is None
+    assert tasks_repo.get_by_id(task.task_id, user_id=user_a.user_id).title == "private"
+    assert tasks_repo.get_by_id(task.task_id, user_id=user_b.user_id) is None
 
 
 def test_add_task_assigns_user(make_user, tasks_repo):
-    from datetime import date
-
     user = make_user(**unique_user())
 
-    task = tasks_repo.add_task(
-        {
-            "title": "Task title",
-            "description": "Task description",
-            "priority": 1,
-            "due_date": date(2026, 8, 10),
-            "completed": False,
-        },
-        user.user_id,
+    task = tasks_repo.create(
+        Tasks(
+            title="Task title",
+            description="Task description",
+            priority=1,
+            due_date=date(2026, 8, 10),
+            completed=False,
+            user_id=user.user_id,
+        )
     )
 
     assert task is not None
@@ -120,7 +118,7 @@ def test_update_task_returns_updated(make_user, make_task, tasks_repo):
     user = make_user(**unique_user())
     task = make_task(user.user_id)
 
-    updated = tasks_repo.update_task(task.task_id, {"title": "Renamed"}, user.user_id)
+    updated = tasks_repo.update(task.task_id, {"title": "Renamed"}, user_id=user.user_id)
 
     assert updated is not None
     assert updated.title == "Renamed"
@@ -129,7 +127,7 @@ def test_update_task_returns_updated(make_user, make_task, tasks_repo):
 def test_update_task_unknown_returns_none(make_user, tasks_repo):
     user = make_user(**unique_user())
 
-    assert tasks_repo.update_task(99999, {"title": "x"}, user.user_id) is None
+    assert tasks_repo.update(99999, {"title": "x"}, user_id=user.user_id) is None
 
 
 def test_delete_task_only_owner(make_user, make_task, tasks_repo):
@@ -137,5 +135,5 @@ def test_delete_task_only_owner(make_user, make_task, tasks_repo):
     user_b = make_user(**unique_user())
     task = make_task(user_a.user_id)
 
-    assert tasks_repo.delete_task(task.task_id, user_b.user_id) is False
-    assert tasks_repo.delete_task(task.task_id, user_a.user_id) is True
+    assert tasks_repo.delete(task.task_id, user_id=user_b.user_id) is False
+    assert tasks_repo.delete(task.task_id, user_id=user_a.user_id) is True
