@@ -26,9 +26,9 @@ services:
     plan: free
     rootDir: frontend
     dockerfilePath: Dockerfile
-    buildArgs:
-      - key: VITE_API_BASE_URL
-        value: https://baredo-api.onrender.com/api/v1
+    envVars:
+      - key: BACKEND_URL
+        value: https://baredo-api.onrender.com
 
 databases:
   - name: baredo-db
