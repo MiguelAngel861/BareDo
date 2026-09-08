@@ -46,7 +46,16 @@ def _cors_origins_from_env() -> list[str]:
 def _sqlalchemy_engines() -> dict[str, str | dict]:
     url = _db_url_from_env() or _default_db_url()
     if url.startswith("postgresql"):
-        return {"default": {"url": url, "pool_pre_ping": True, "pool_recycle": 300}}
+        return {
+            "default": {
+                "url": url,
+                "pool_pre_ping": True,
+                "pool_recycle": 300,
+                "pool_timeout": 30,
+                "pool_size": 5,
+                "max_overflow": 2,
+            }
+        }
     return {"default": url}
 
 
