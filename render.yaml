@@ -16,9 +16,7 @@ services:
       - key: CORS_ORIGINS
         value: https://baredo.onrender.com
       - key: DATABASE_URL
-        fromDatabase:
-          name: baredo-db
-          property: connectionString
+        sync: false
 
   - type: web
     name: baredo
@@ -29,9 +27,3 @@ services:
     envVars:
       - key: BACKEND_URL
         value: https://baredo-api.onrender.com
-
-databases:
-  - name: baredo-db
-    plan: free
-    databaseName: baredo
-    user: baredo
