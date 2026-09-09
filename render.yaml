@@ -21,7 +21,6 @@ services:
   - type: web
     runtime: static
     name: baredo
-    plan: free
     rootDir: frontend
     buildCommand: corepack enable && pnpm install && pnpm build
     staticPublishPath: dist
