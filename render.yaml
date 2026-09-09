@@ -18,12 +18,16 @@ services:
       - key: DATABASE_URL
         sync: false
 
-  - type: web
+  - type: static
     name: baredo
-    runtime: docker
     plan: free
     rootDir: frontend
-    dockerfilePath: Dockerfile
+    buildCommand: corepack enable && pnpm install && pnpm build
+    staticPublishPath: dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
     envVars:
-      - key: BACKEND_URL
-        value: https://baredo-api.onrender.com
+      - key: VITE_API_BASE_URL
+        value: https://baredo-api.onrender.com/api/v1

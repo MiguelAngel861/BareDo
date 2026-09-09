@@ -1,6 +1,6 @@
 # BareDo
 
-API REST + frontend para gestión de tareas. Backend en Python/Flask en capas (`app/{api,services,repositories,...}`), frontend en TypeScript vanilla con Vite, servido por nginx como reverse proxy.
+API REST + frontend para gestión de tareas. Backend en Python/Flask en capas (`app/{api,services,repositories,...}`), frontend en TypeScript vanilla con Vite.
 
 **Demo:** https://baredo.onrender.com
 
@@ -14,12 +14,12 @@ API REST + frontend para gestión de tareas. Backend en Python/Flask en capas (`
 ## Arquitectura
 
 ```
-Navegador ──► nginx ──┬── /api/* ──► Flask API (gunicorn)
-                      └── /*          archivos estáticos (Vite build)
+Navegador ──┬── /api/* ──► Flask API (gunicorn)
+            └── /*          archivos estáticos (Vite build)
 ```
 
-- El frontend habla siempre a `/api/v1` (mismo origen); nginx hace proxy al backend vía `BACKEND_URL`.
-- CORS permanece en el backend como feature opcional (p. ej. desarrollo sin proxy).
+- En desarrollo, el frontend usa el proxy de Vite para hablar a `/api/v1`.
+- En producción (Render), el frontend es un Static Site y habla directamente al backend vía URL completa.
 
 ## Instalación
 
@@ -58,11 +58,11 @@ cd frontend && pnpm dev
 docker compose up --build
 ```
 
-Levanta: `db` (Postgres 16 en `localhost:5433`), `api` (`http://localhost:5000`, hot-reload) y `web` (nginx + reverse proxy en `http://localhost:8080`, `BACKEND_URL=http://api:5000`). El backend corre las migraciones al arrancar.
+Levanta: `db` (Postgres 16 en `localhost:5433`) y `api` (`http://localhost:5000`, hot-reload). El backend corre las migraciones al arrancar. El frontend se ejecuta por separado con `pnpm dev`.
 
 ## Despliegue (Render)
 
-Blueprint via `render.yaml`: Web Service `baredo-api` (Flask + gunicorn, migraciones en start.sh), Web Service `baredo` (nginx sirviendo el build de Vite y proxyeando `/api` a `https://baredo-api.onrender.com`) y Postgres gestionado. Los secretos `SECRET_KEY` y `JWT_SECRET_KEY` se definen en el dashboard de Render.
+Blueprint via `render.yaml`: Web Service `baredo-api` (Flask + gunicorn, migraciones en start.sh), Static Site `baredo` (build de Vite servido en CDN) y Postgres gestionado. Los secretos `SECRET_KEY` y `JWT_SECRET_KEY` se definen en el dashboard de Render.
 
 ## API
 
@@ -131,5 +131,4 @@ cd frontend && pnpm test:run
 
 | Variable | Default | Descripción |
 |---|---|---|
-| `VITE_API_BASE_URL` | `/api/v1` | Base URL de la API (relativa = pasa por el proxy) |
-| `BACKEND_URL` | — | Solo contenedor web: destino del reverse proxy de nginx (ej. `http://api:5000`) |
+| `VITE_API_BASE_URL` | `/api/v1` | Base URL de la API (relativa en dev, absoluta en prod) |
