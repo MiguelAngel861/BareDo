@@ -5,6 +5,12 @@ body {
   padding: 1rem;
 }
 
+@media (min-width: 25rem) {
+  body {
+    padding: 1.25rem;
+  }
+}
+
 @media (min-width: 60rem) {
   body {
     max-width: 56rem;
@@ -277,7 +283,7 @@ section h2 {
 .filter-group input,
 .filter-group select {
   width: 100%;
-  padding: 8px 10px;
+  padding: 8.6px 10px;
   border: 2px solid var(--border);
   border-radius: 0;
   background-color: var(--surface);

@@ -11,7 +11,7 @@
 @font-face {
   font-family: "Satoshi";
   src: url("./fonts/satoshi-black.woff2") format("woff2");
-  font-weight: 900;
+  font-weight: 800 900;
   font-display: swap;
   font-style: normal;
 }
@@ -83,7 +83,7 @@ body {
   color: var(--text);
   background-color: var(--bg);
   position: relative;
-  min-height: 100vh;
+  min-height: 100dvh;
 }
 
 /* Textura de grano/ruido analógico sutil de fondo */
@@ -147,9 +147,10 @@ h4,
 
 /* ===== Botones: Brutalismo industrial con física de resorte y sombra de bloque ===== */
 button {
-  font-family: var(--font-ui);
-  font-weight: 600;
-  letter-spacing: 0.01em;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
   padding: 8px 16px;
   border: 1px solid var(--text);
   border-radius: 0;
@@ -417,7 +418,8 @@ button:focus-visible {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(3px);
   display: flex;
   align-items: center;
   justify-content: center;
