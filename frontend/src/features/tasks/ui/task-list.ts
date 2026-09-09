@@ -144,7 +144,7 @@ export class TaskList {
   private readonly onEdit: (task: Task) => void;
   private currentPage = 1;
   private readonly perPage = 5;
-  private filters: Filters = { page: 1, per_page: 5, title: '', completed: false };
+  private filters: Filters = { page: 1, per_page: 5, title: '', completed: undefined };
   private debounceTimer: ReturnType<typeof setTimeout> | null = null;
   private readonly elements: TaskListElements;
 
