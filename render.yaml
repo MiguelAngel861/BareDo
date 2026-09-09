@@ -22,7 +22,7 @@ services:
     runtime: static
     name: baredo
     rootDir: frontend
-    buildCommand: corepack enable && pnpm install && pnpm build
+    buildCommand: pnpm install && pnpm build
     staticPublishPath: dist
     routes:
       - type: rewrite
