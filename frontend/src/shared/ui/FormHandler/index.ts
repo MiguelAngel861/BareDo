@@ -122,6 +122,7 @@ export class FormHandler {
     this.isSubmitting = submitting;
     if (this.submitBtn) {
       this.submitBtn.disabled = submitting;
+      this.submitBtn.classList.toggle('is-submitting', submitting);
       if (text) {
         this.submitBtn.textContent = text;
       }

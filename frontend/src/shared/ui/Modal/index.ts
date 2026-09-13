@@ -40,6 +40,8 @@ export function showModal({
     activeModal.remove();
   }
 
+  const previousFocus = document.activeElement as HTMLElement;
+
   const overlay = SafeRenderer.createElement('div', { className: 'modal-overlay' });
   const dialog = SafeRenderer.createElement('div', { className: 'modal' });
 
@@ -60,21 +62,35 @@ export function showModal({
     textContent: confirmText,
   });
 
-  cancelBtn.addEventListener('click', () => overlay.remove());
+  cancelBtn.addEventListener('click', () => {
+    overlay.remove();
+    if (previousFocus && typeof previousFocus.focus === 'function') {
+      previousFocus.focus();
+    }
+  });
   confirmBtn.addEventListener('click', () => {
     overlay.remove();
+    if (previousFocus && typeof previousFocus.focus === 'function') {
+      previousFocus.focus();
+    }
     onConfirm();
   });
 
   overlay.addEventListener('click', (e) => {
     if (e.target === overlay) {
       overlay.remove();
+      if (previousFocus && typeof previousFocus.focus === 'function') {
+        previousFocus.focus();
+      }
     }
   });
 
   overlay.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
       overlay.remove();
+      if (previousFocus && typeof previousFocus.focus === 'function') {
+        previousFocus.focus();
+      }
     }
   });
 

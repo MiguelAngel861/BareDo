@@ -34,19 +34,36 @@
             <div id="filters-bar" class="filters-bar" role="search" aria-label="Task filters">
                 <div class="filter-group">
                     <label for="search-title" class="visually-hidden">Search Title</label>
-                    <input type="search" id="search-title" placeholder="Search tasks...">
+                    <input type="search" id="search-title" placeholder="Search tasks..." autocomplete="off">
                 </div>
                 <div class="filter-group">
                     <label id="filter-completed-label" class="visually-hidden">Filter by status</label>
-                    <div class="custom-dropdown" id="filter-completed" role="listbox" aria-labelledby="filter-completed-label" aria-expanded="false" aria-haspopup="listbox" tabindex="0" data-value="">
-                        <div class="dropdown-trigger">
+                    <div class="custom-dropdown" id="filter-completed" data-value="">
+                        <button type="button" class="dropdown-trigger" aria-expanded="false" aria-haspopup="listbox">
                             <span class="dropdown-value">All</span>
                             <span class="dropdown-icon">▼</span>
+                        </button>
+                        <div class="dropdown-options" role="listbox" aria-labelledby="filter-completed-label">
+                            <div class="dropdown-option selected" data-value="" role="option" aria-selected="true" tabindex="-1">All</div>
+                            <div class="dropdown-option" data-value="true" role="option" aria-selected="false" tabindex="-1">Completed</div>
+                            <div class="dropdown-option" data-value="false" role="option" aria-selected="false" tabindex="-1">Pending</div>
                         </div>
-                        <div class="dropdown-options">
-                            <div class="dropdown-option selected" data-value="" role="option" aria-selected="true">All</div>
-                            <div class="dropdown-option" data-value="true" role="option" aria-selected="false">Completed</div>
-                            <div class="dropdown-option" data-value="false" role="option" aria-selected="false">Pending</div>
+                    </div>
+                </div>
+                <div class="filter-group">
+                    <label id="filter-priority-label" class="visually-hidden">Filter by priority</label>
+                    <div class="custom-dropdown" id="filter-priority" data-value="">
+                        <button type="button" class="dropdown-trigger" aria-expanded="false" aria-haspopup="listbox">
+                            <span class="dropdown-value">All Priorities</span>
+                            <span class="dropdown-icon">▼</span>
+                        </button>
+                        <div class="dropdown-options" role="listbox" aria-labelledby="filter-priority-label">
+                            <div class="dropdown-option selected" data-value="" role="option" aria-selected="true" tabindex="-1">All Priorities</div>
+                            <div class="dropdown-option" data-value="1" role="option" aria-selected="false" tabindex="-1">Low</div>
+                            <div class="dropdown-option" data-value="2" role="option" aria-selected="false" tabindex="-1">Medium-Low</div>
+                            <div class="dropdown-option" data-value="3" role="option" aria-selected="false" tabindex="-1">Medium</div>
+                            <div class="dropdown-option" data-value="4" role="option" aria-selected="false" tabindex="-1">Medium-High</div>
+                            <div class="dropdown-option" data-value="5" role="option" aria-selected="false" tabindex="-1">High</div>
                         </div>
                     </div>
                 </div>
@@ -87,8 +104,26 @@
                 </div>
                 <div class="form-group">
                     <label for="due_date">Due Date</label>
-                    <input type="date" id="due_date" name="due_date">
+                    <input type="date" id="due_date" name="due_date" inputmode="numeric">
                     <span class="error-message" id="due_date-error"></span>
+                </div>
+                <div class="form-group">
+                    <label id="priority-label" for="priority-select">Priority</label>
+                    <div class="custom-dropdown" id="priority-select" data-value="3">
+                        <button type="button" class="dropdown-trigger" aria-expanded="false" aria-haspopup="listbox">
+                            <span class="dropdown-value">Medium</span>
+                            <span class="dropdown-icon">&#9660;</span>
+                        </button>
+                        <div class="dropdown-options" role="listbox" aria-labelledby="priority-label">
+                            <div class="dropdown-option" data-value="1" role="option" aria-selected="false" tabindex="-1">Low</div>
+                            <div class="dropdown-option" data-value="2" role="option" aria-selected="false" tabindex="-1">Medium-Low</div>
+                            <div class="dropdown-option selected" data-value="3" role="option" aria-selected="true" tabindex="-1">Medium</div>
+                            <div class="dropdown-option" data-value="4" role="option" aria-selected="false" tabindex="-1">Medium-High</div>
+                            <div class="dropdown-option" data-value="5" role="option" aria-selected="false" tabindex="-1">High</div>
+                        </div>
+                    </div>
+                    <span class="priority-helper" id="priority-helper"></span>
+                    <span class="error-message" id="priority_id-error"></span>
                 </div>
                 <div class="form-group">
                     <label class="checkbox-label" for="completed">
@@ -104,6 +139,7 @@
         </div>
     </div>
 
+    <script type="module" src="/app/entries/not-found.ts"></script>
     <script type="module" src="/app/entries/main.ts"></script>
 </body>
 </html>

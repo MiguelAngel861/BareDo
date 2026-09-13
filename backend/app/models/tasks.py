@@ -13,7 +13,9 @@ class Tasks(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("users.user_id"), nullable=False)
     title: Mapped[str] = mapped_column(String(40), nullable=False)
     description: Mapped[str] = mapped_column(String(500), nullable=True)
-    priority: Mapped[int] = mapped_column(nullable=False, default=1, server_default="1")
+    priority_id: Mapped[int] = mapped_column(
+        ForeignKey("priorities.priority_id"), nullable=False, default=3, server_default="3"
+    )
     due_date: Mapped[datetime] = mapped_column(
         nullable=False, default=date.today, server_default=func.current_date()
     )

@@ -7,6 +7,8 @@ interface SearchParams {
   per_page?: string;
   title?: string;
   completed?: string;
+  priority_id?: string;
+  sort?: string;
   [key: string]: string | undefined;
 }
 
@@ -24,6 +26,12 @@ function toSearchParams(params: TaskListParams): SearchParams {
   if (params.completed !== undefined) {
     result.completed = String(params.completed);
   }
+  if (params.priority_id !== undefined) {
+    result.priority_id = String(params.priority_id);
+  }
+  if (params.sort) {
+    result.sort = params.sort;
+  }
   return result;
 }
 
@@ -35,6 +43,8 @@ function mergeParams(params: Partial<TaskListParams>): TaskListParams {
     per_page: params.per_page ?? DEFAULT_PARAMS.per_page,
     title: params.title,
     completed: params.completed,
+    priority_id: params.priority_id,
+    sort: params.sort,
   };
 }
 

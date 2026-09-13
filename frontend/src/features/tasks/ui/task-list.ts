@@ -1,3 +1,4 @@
+import { prioritiesApi } from '@/features/priorities/api.ts';
 import { showModal } from '@/shared/ui/Modal/index.ts';
 import { showToast } from '@/shared/ui/Toast/index.ts';
 import { SafeRenderer, clearChildren } from '@/shared/utils/dom-utils.ts';
@@ -6,7 +7,7 @@ import type { Task } from '../types.ts';
 
 class CustomDropdown {
   private readonly element: HTMLElement;
-  private readonly trigger: HTMLElement | null;
+  private readonly trigger: HTMLButtonElement | null;
   private readonly options: NodeListOf<Element>;
   private value: string;
   private readonly onSelect: (value: string) => void;
@@ -34,13 +35,13 @@ class CustomDropdown {
       });
     }
 
-    this.element.addEventListener('keydown', (e) => this.handleKeyboard(e as KeyboardEvent));
+    this.trigger?.addEventListener('keydown', (e) => this.handleKeyboard(e as KeyboardEvent));
 
     document.addEventListener('click', () => this.close());
   }
 
   toggle(): void {
-    const isExpanded = this.element.getAttribute('aria-expanded') === 'true';
+    const isExpanded = this.trigger?.getAttribute('aria-expanded') === 'true';
     if (isExpanded) {
       this.close();
     } else {
@@ -49,11 +50,11 @@ class CustomDropdown {
   }
 
   open(): void {
-    this.element.setAttribute('aria-expanded', 'true');
+    this.trigger?.setAttribute('aria-expanded', 'true');
   }
 
   close(): void {
-    this.element.setAttribute('aria-expanded', 'false');
+    this.trigger?.setAttribute('aria-expanded', 'false');
   }
 
   select(option: HTMLElement): void {
@@ -89,7 +90,7 @@ class CustomDropdown {
         break;
       case 'ArrowDown':
         e.preventDefault();
-        if (this.element.getAttribute('aria-expanded') === 'false') {
+        if (this.trigger?.getAttribute('aria-expanded') === 'false') {
           this.open();
         } else {
           this.focusNextOption();
@@ -129,6 +130,7 @@ interface TaskListElements {
   pageIndicator: HTMLElement | null;
   searchInput: HTMLInputElement | null;
   filterSelect: HTMLElement | null;
+  filterPriority: HTMLElement | null;
 }
 
 interface Filters {
@@ -136,6 +138,7 @@ interface Filters {
   per_page: number;
   title?: string;
   completed?: boolean | undefined;
+  priority_id?: number | undefined;
 }
 
 export class TaskList {
@@ -147,6 +150,7 @@ export class TaskList {
   private filters: Filters = { page: 1, per_page: 5, title: '', completed: undefined };
   private debounceTimer: ReturnType<typeof setTimeout> | null = null;
   private readonly elements: TaskListElements;
+  private priorityDescriptions = new Map<number, string>();
 
   constructor(toastContainer: HTMLElement, onEdit: (task: Task) => void) {
     this.toastContainer = toastContainer;
@@ -160,6 +164,7 @@ export class TaskList {
       pageIndicator: document.getElementById('page-indicator'),
       searchInput: document.getElementById('search-title') as HTMLInputElement | null,
       filterSelect: document.getElementById('filter-completed'),
+      filterPriority: document.getElementById('filter-priority'),
     };
 
     this.elements.prevBtn?.addEventListener('click', () => this.changePage(this.currentPage - 1));
@@ -171,6 +176,25 @@ export class TaskList {
     new CustomDropdown(this.elements.filterSelect as HTMLElement, (value) => {
       this.setFilter('completed', value);
     });
+
+    new CustomDropdown(this.elements.filterPriority as HTMLElement, (value) => {
+      this.setFilter('priority_id', value);
+    });
+
+    this.loadPriorities();
+  }
+
+  private async loadPriorities(): Promise<void> {
+    try {
+      const data = await prioritiesApi.list();
+      if (data?.priorities) {
+        for (const p of data.priorities) {
+          this.priorityDescriptions.set(p.priority_id, p.description || '');
+        }
+      }
+    } catch {
+      // silently ignore - descriptions are optional
+    }
   }
 
   debounceSearch(value: string): void {
@@ -191,6 +215,12 @@ export class TaskList {
       } else {
         this.filters.completed = value === 'true';
       }
+    } else if (key === 'priority_id') {
+      if (value === '' || value === undefined) {
+        this.filters.priority_id = undefined;
+      } else {
+        this.filters.priority_id = Number(value);
+      }
     }
     this.currentPage = 1;
     this.load();
@@ -205,6 +235,7 @@ export class TaskList {
         per_page: this.perPage,
         title: this.filters.title,
         completed: this.filters.completed,
+        priority_id: this.filters.priority_id,
       });
       if (!data) {
         console.warn('[tasks] load returned no data');
@@ -227,6 +258,7 @@ export class TaskList {
         per_page: this.perPage,
         title: this.filters.title,
         completed: this.filters.completed,
+        priority_id: this.filters.priority_id,
       });
       if (!data) {
         return;
@@ -295,6 +327,16 @@ export class TaskList {
     }
 
     const meta = SafeRenderer.createElement('div', { className: 'task-meta' });
+    const priorityLabel = this.getPriorityLabel(task.priority_id);
+    const priorityDesc = this.priorityDescriptions.get(task.priority_id) || '';
+    const priorityBadge = SafeRenderer.createElement('span', {
+      className: `task-priority task-priority-${task.priority_id}`,
+      textContent: priorityLabel,
+    });
+    if (priorityDesc) {
+      priorityBadge.setAttribute('title', priorityDesc);
+    }
+    meta.appendChild(priorityBadge);
     if (task.due_date) {
       meta.appendChild(
         SafeRenderer.createElement('span', {
@@ -340,6 +382,17 @@ export class TaskList {
     return li;
   }
 
+  private getPriorityLabel(priorityId: number): string {
+    const labels: Record<number, string> = {
+      1: 'Low',
+      2: 'Medium-Low',
+      3: 'Medium',
+      4: 'Medium-High',
+      5: 'High',
+    };
+    return labels[priorityId] || 'Medium';
+  }
+
   updatePagination(meta: {
     page: number;
     total_pages: number;
@@ -377,7 +430,7 @@ export class TaskList {
       await this.service.update(task.task_id, {
         title: task.title,
         description: task.description || '',
-        priority: task.priority,
+        priority_id: task.priority_id,
         due_date: task.due_date,
         completed: !task.completed,
       });

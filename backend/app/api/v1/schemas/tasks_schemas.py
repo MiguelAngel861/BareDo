@@ -6,7 +6,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 class TaskBase(BaseModel):
     title: str = Field(min_length=5, max_length=40)
     description: str = Field(default="", min_length=0, max_length=500)
-    priority: int = Field(default=1, ge=1, le=3)
+    priority_id: int = Field(default=3, ge=1, le=5)
 
 
 class TaskBody(TaskBase):
@@ -47,7 +47,7 @@ class TaskPatch(BaseModel):
     title: str | None = Field(default=None, min_length=5, max_length=40)
     description: str | None = Field(default=None, min_length=0, max_length=500)
     completed: bool | None = None
-    priority: int | None = Field(default=None, ge=1, le=3)
+    priority_id: int | None = Field(default=None, ge=1, le=5)
     due_date: datetime | None = None
 
     model_config = ConfigDict(extra="forbid")
@@ -60,6 +60,7 @@ class TaskListQuery(BaseModel):
     title: str | None = None
     description: str | None = None
     completed: bool | None = None
+    priority_id: int | None = Field(default=None, ge=1, le=5)
 
     model_config = ConfigDict(extra="forbid")
 

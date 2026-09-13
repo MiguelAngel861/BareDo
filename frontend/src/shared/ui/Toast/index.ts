@@ -17,7 +17,8 @@ function scheduleDismiss(toast: HTMLElement, delay: number): void {
   setTimeout(() => {
     toast.style.opacity = '0';
     toast.style.transform = 'translateX(100%)';
-    toast.style.transition = 'opacity 0.3s, transform 0.3s';
+    toast.style.transition =
+      'opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)';
     setTimeout(() => toast.remove(), 300);
   }, delay);
 }

@@ -21,7 +21,7 @@ class TasksService(BaseService):
                 page=page,
                 per_page=per_page,
                 filters=filters,
-                sort_fields=parse_sort(sort, allowed_fields=["completed", "due_date"]),
+                sort_fields=parse_sort(sort, allowed_fields=["completed", "due_date", "priority"]),
                 user_id=user_id,
             )
         )
