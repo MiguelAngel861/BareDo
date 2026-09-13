@@ -5,7 +5,7 @@ def test_create_task(client, auth_headers):
         json={
             "title": "New Task",
             "description": "Task description",
-            "priority": 2,
+            "priority_id": 4,
             "due_date": "2026-12-31",
         },
         headers=headers,
@@ -14,7 +14,7 @@ def test_create_task(client, auth_headers):
     data = resp.get_json()
     assert data["title"] == "New Task"
     assert data["description"] == "Task description"
-    assert data["priority"] == 2
+    assert data["priority_id"] == 4
     assert data["completed"] is False
     assert "task_id" in data
 
@@ -30,7 +30,7 @@ def test_create_task_minimal(client, auth_headers):
     data = resp.get_json()
     assert data["title"] == "Minimal Task"
     assert data["description"] == ""
-    assert data["priority"] == 1
+    assert data["priority_id"] == 3
 
 
 def test_list_tasks(client, auth_headers, make_task):
@@ -112,7 +112,7 @@ def test_create_task_validation_error(client, auth_headers):
     headers, _ = auth_headers
     resp = client.post(
         "/api/v1/tasks",
-        json={"title": "ab", "priority": 99},
+        json={"title": "ab", "priority_id": 99},
         headers=headers,
     )
     assert resp.status_code == 422
@@ -122,7 +122,7 @@ def test_create_task_validation_error(client, auth_headers):
     body_errors = data["details"]["body_params"]
     locs = [e["loc"][0] for e in body_errors]
     assert "title" in locs  # min_length
-    assert "priority" in locs  # le=3
+    assert "priority_id" in locs  # le=5
 
 
 def test_update_task_validation_error(client, auth_headers, make_task):
@@ -146,7 +146,7 @@ def test_patch_task_validation_error(client, auth_headers, make_task):
     task = make_task(user_id, title="Original")
     resp = client.patch(
         f"/api/v1/tasks/{task.task_id}",
-        json={"priority": 99},
+        json={"priority_id": 99},
         headers=headers,
     )
     assert resp.status_code == 422

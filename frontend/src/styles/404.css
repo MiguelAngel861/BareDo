@@ -1,0 +1,201 @@
+.error-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100dvh;
+  padding: 2rem 1.5rem;
+  overflow: hidden;
+}
+
+.error-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  max-width: 480px;
+  width: 100%;
+  opacity: 0;
+  animation: errorFadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards;
+}
+
+/* ── Macro-typography: massive industrial numeral ── */
+.error-code {
+  font-family: var(--font-display);
+  font-size: clamp(6rem, 22vw, 14rem);
+  font-weight: 900;
+  line-height: 0.85;
+  letter-spacing: -0.05em;
+  color: var(--text);
+  text-align: center;
+  user-select: none;
+  position: relative;
+}
+
+/* ── Structural divider ── */
+.error-divider {
+  width: 100%;
+  height: 2px;
+  background-color: var(--text);
+  margin: 1.5rem 0;
+  transform: scaleX(0);
+  transform-origin: left;
+  animation: dividerExpand 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards;
+}
+
+/* ── Info block ── */
+.error-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  text-align: center;
+}
+
+.error-tag {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--bg);
+  background-color: var(--danger);
+  padding: 3px 10px;
+  display: inline-block;
+}
+
+.error-info h1 {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+
+.error-description {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  max-width: 36ch;
+  text-wrap: pretty;
+}
+
+/* ── Metadata row ── */
+.error-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.meta-separator {
+  color: var(--border);
+}
+
+/* ── CTA button — matches existing button system ── */
+.error-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 2rem;
+  padding: 10px 24px;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--bg);
+  background-color: var(--text);
+  border: 1px solid var(--text);
+  border-radius: 0;
+  box-shadow: var(--shadow-hard);
+  cursor: pointer;
+  transition:
+    background-color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+    color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.error-action:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: var(--shadow-hard-lg);
+}
+
+.error-action:active {
+  transform: translate(2px, 2px);
+  box-shadow: var(--shadow-hard-hover);
+}
+
+.error-action:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.action-arrow {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.error-action:hover .action-arrow {
+  transform: translateX(3px);
+}
+
+/* ── Animations ── */
+@keyframes errorFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes dividerExpand {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .error-content {
+    animation: none;
+    opacity: 1;
+  }
+
+  .error-divider {
+    animation: none;
+    transform: scaleX(1);
+  }
+}
+
+/* ── Responsive ── */
+@media (max-width: 400px) {
+  .error-code {
+    font-size: 5rem;
+  }
+
+  .error-info h1 {
+    font-size: 1.25rem;
+  }
+
+  .error-meta {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .meta-separator {
+    display: none;
+  }
+}

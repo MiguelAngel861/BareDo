@@ -3,8 +3,17 @@ import pytest
 from app import create_app
 from app.core.extensions import Base
 from app.core.extensions import db as _db
+from app.models.priorities import Priorities
 from app.models.tasks import Tasks
 from app.models.users import Users
+
+PRIORITIES_SEED = [
+    {"name": "Low", "level": 1, "description": "No urgency"},
+    {"name": "Medium-Low", "level": 2, "description": "Can wait but not too long"},
+    {"name": "Medium", "level": 3, "description": "Standard priority"},
+    {"name": "Medium-High", "level": 4, "description": "Important, do not postpone"},
+    {"name": "High", "level": 5, "description": "Urgent, immediate attention"},
+]
 
 
 @pytest.fixture(scope="session")
@@ -12,8 +21,17 @@ def app():
     _app = create_app("testing")
     with _app.app_context():
         Base.metadata.create_all(_db.get_engine())
+        _seed_priorities()
         yield _app
         Base.metadata.drop_all(_db.get_engine())
+
+
+def _seed_priorities():
+    existing = _db.session.query(Priorities).count()
+    if existing == 0:
+        for data in PRIORITIES_SEED:
+            _db.session.add(Priorities(**data))
+        _db.session.commit()
 
 
 @pytest.fixture(scope="function")
@@ -56,7 +74,7 @@ def make_task(db_session):
             "user_id": user_id,
             "title": "Test Task",
             "description": "Test Description",
-            "priority": 1,
+            "priority_id": 3,
             "due_date": date.today(),
             "completed": False,
         }

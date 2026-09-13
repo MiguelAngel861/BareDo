@@ -21,7 +21,7 @@ def task_payload(**overrides):
     payload = {
         "title": "Service task",
         "description": "description",
-        "priority": 1,
+        "priority_id": 3,
         "due_date": datetime.now(UTC),
         "completed": False,
     }

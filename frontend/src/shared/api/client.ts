@@ -1,5 +1,6 @@
 import ky from 'ky';
 import type { ZodSchema } from 'zod';
+import { isAccessTokenExpired } from '../auth-session.ts';
 import { ApiErrorClass } from './errors.ts';
 
 let refreshPromise: Promise<void> | null = null;
@@ -50,6 +51,15 @@ export const kyInstance = ky.create({
   hooks: {
     beforeRequest: [
       async (request) => {
+        if (isAccessTokenExpired()) {
+          console.log('[auth] access token expired, refreshing proactively');
+          try {
+            await refreshAccessToken();
+          } catch {
+            console.error('[auth] proactive refresh failed');
+          }
+        }
+
         const token = localStorage.getItem('access_token');
         if (token) {
           request.headers.set('Authorization', `Bearer ${token}`);

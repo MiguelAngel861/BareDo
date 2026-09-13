@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark">
+    <title>BareDo - 404 Not Found</title>
+    <link rel="stylesheet" href="../styles/base.css">
+    <link rel="stylesheet" href="../styles/404.css">
+</head>
+<body>
+    <main class="error-page" role="main">
+        <div class="error-content">
+            <div class="error-code" aria-hidden="true">404</div>
+            <div class="error-divider"></div>
+            <div class="error-info">
+                <span class="error-tag">ERROR</span>
+                <h1>Page Not Found</h1>
+                <p class="error-description">The resource you requested does not exist or has been moved.</p>
+                <div class="error-meta">
+                    <span class="meta-item">STATUS: 404</span>
+                    <span class="meta-separator">/</span>
+                    <span class="meta-item">RESOURCE: MISSING</span>
+                </div>
+            </div>
+            <a href="/" class="error-action" role="button">
+                <span class="action-label">Return Home</span>
+                <span class="action-arrow">&rarr;</span>
+            </a>
+        </div>
+    </main>
+
+    <script type="module" src="../app/entries/404.ts"></script>
+</body>
+</html>

@@ -102,7 +102,7 @@ def test_add_task_assigns_user(make_user, tasks_repo):
         Tasks(
             title="Task title",
             description="Task description",
-            priority=1,
+            priority_id=3,
             due_date=date(2026, 8, 10),
             completed=False,
             user_id=user.user_id,
@@ -137,3 +137,58 @@ def test_delete_task_only_owner(make_user, make_task, tasks_repo):
 
     assert tasks_repo.delete(task.task_id, user_id=user_b.user_id) is False
     assert tasks_repo.delete(task.task_id, user_id=user_a.user_id) is True
+
+
+def test_get_all_filters_by_priority_id(make_user, make_task, tasks_repo):
+    user = make_user(**unique_user())
+    make_task(user.user_id, title="Tarea prioridad baja", priority_id=1)
+    make_task(user.user_id, title="Tarea prioridad alta", priority_id=5)
+    make_task(user.user_id, title="Tarea prioridad media", priority_id=3)
+
+    tasks, pagination = tasks_repo.get_all(
+        page=1,
+        per_page=10,
+        filters={"priority_id": 5},
+        sort_fields=[],
+        user_id=user.user_id,
+    )
+
+    assert pagination.total == 1
+    assert tasks[0].title == "Tarea prioridad alta"
+    assert tasks[0].priority_id == 5
+
+
+def test_get_all_sort_by_priority_desc(make_user, make_task, tasks_repo):
+    user = make_user(**unique_user())
+    make_task(user.user_id, title="Tarea baja", priority_id=1)
+    make_task(user.user_id, title="Tarea alta", priority_id=5)
+    make_task(user.user_id, title="Tarea media", priority_id=3)
+
+    tasks, pagination = tasks_repo.get_all(
+        page=1,
+        per_page=10,
+        filters=None,
+        sort_fields=[("priority", True)],
+        user_id=user.user_id,
+    )
+
+    assert pagination.total == 3
+    assert [t.priority_id for t in tasks] == [5, 3, 1]
+
+
+def test_get_all_sort_by_priority_asc(make_user, make_task, tasks_repo):
+    user = make_user(**unique_user())
+    make_task(user.user_id, title="Tarea alta", priority_id=5)
+    make_task(user.user_id, title="Tarea baja", priority_id=1)
+    make_task(user.user_id, title="Tarea media", priority_id=3)
+
+    tasks, pagination = tasks_repo.get_all(
+        page=1,
+        per_page=10,
+        filters=None,
+        sort_fields=[("priority", False)],
+        user_id=user.user_id,
+    )
+
+    assert pagination.total == 3
+    assert [t.priority_id for t in tasks] == [1, 3, 5]

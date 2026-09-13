@@ -3,6 +3,7 @@ import { z } from 'zod';
 export const TaskCreateSchema = z.object({
   title: z.string().min(1).max(40),
   description: z.string().max(200).nullable().optional(),
+  priority_id: z.number().int().positive().default(3),
   due_date: z.string().date().nullable().optional(),
   completed: z.boolean().default(false),
 });
@@ -10,7 +11,7 @@ export const TaskCreateSchema = z.object({
 export const TaskUpdateSchema = z.object({
   title: z.string().min(1).max(40).optional(),
   description: z.string().max(200).nullable().optional(),
-  priority: z.number().int().positive().optional(),
+  priority_id: z.number().int().positive().optional(),
   due_date: z.string().date().nullable().optional(),
   completed: z.boolean().optional(),
 });
@@ -19,7 +20,7 @@ export const TaskResponseSchema = z.object({
   task_id: z.coerce.string(),
   title: z.string(),
   description: z.string().nullable(),
-  priority: z.number().int().positive(),
+  priority_id: z.number().int().positive(),
   due_date: z.string().nullable(),
   completed: z.boolean(),
   created_at: z.string(),
@@ -31,6 +32,8 @@ export const TaskListParamsSchema = z.object({
   per_page: z.number().int().positive().max(100).default(5),
   title: z.string().optional(),
   completed: z.boolean().optional(),
+  priority_id: z.number().int().positive().optional(),
+  sort: z.string().optional(),
 });
 
 export const PaginationMetaSchema = z.object({

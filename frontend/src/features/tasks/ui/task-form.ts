@@ -1,3 +1,4 @@
+import { prioritiesApi } from '@/features/priorities/api.ts';
 import { FormHandler } from '@/shared/ui/FormHandler/index.ts';
 import { showToast } from '@/shared/ui/Toast/index.ts';
 import { tasksApi } from '../api.ts';
@@ -10,6 +11,8 @@ interface TaskFormElements {
   cancelBtn: HTMLButtonElement | null;
   completedInput: HTMLInputElement | null;
   idInput: HTMLInputElement | null;
+  prioritySelect: HTMLElement | null;
+  priorityHelper: HTMLElement | null;
 }
 
 export class TaskForm extends FormHandler {
@@ -22,6 +25,7 @@ export class TaskForm extends FormHandler {
   private readonly elements: TaskFormElements;
   private readonly onKeyDown: (e: KeyboardEvent) => void;
   private focusTrapHandler: ((e: KeyboardEvent) => void) | null = null;
+  private priorityDescriptions = new Map<number, string>();
 
   constructor(toastContainer: HTMLElement, onSaved: () => void) {
     super('task-form');
@@ -41,6 +45,8 @@ export class TaskForm extends FormHandler {
       cancelBtn: document.getElementById('cancel-edit-btn') as HTMLButtonElement | null,
       completedInput: document.getElementById('completed') as HTMLInputElement | null,
       idInput: document.getElementById('task-id') as HTMLInputElement | null,
+      prioritySelect: document.getElementById('priority-select'),
+      priorityHelper: document.getElementById('priority-helper'),
     };
 
     this.handleSubmit(() => this.onSubmit());
@@ -55,6 +61,9 @@ export class TaskForm extends FormHandler {
       });
     }
 
+    this.loadPriorities();
+    this.initPriorityDropdown();
+
     this.onKeyDown = (e) => {
       if (
         e.key === 'Escape' &&
@@ -65,6 +74,96 @@ export class TaskForm extends FormHandler {
         this.close();
       }
     };
+  }
+
+  private async loadPriorities(): Promise<void> {
+    try {
+      const data = await prioritiesApi.list();
+      if (data?.priorities) {
+        for (const p of data.priorities) {
+          this.priorityDescriptions.set(p.priority_id, p.description || '');
+        }
+      }
+    } catch {
+      // silently ignore - descriptions are optional
+    }
+  }
+
+  private initPriorityDropdown(): void {
+    const dropdown = this.elements.prioritySelect;
+    if (!dropdown) {
+      return;
+    }
+
+    const trigger = dropdown.querySelector('.dropdown-trigger') as HTMLButtonElement | null;
+    const options = dropdown.querySelectorAll('.dropdown-option');
+
+    trigger?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isExpanded = trigger.getAttribute('aria-expanded') === 'true';
+      trigger.setAttribute('aria-expanded', String(!isExpanded));
+    });
+
+    for (const option of options) {
+      option.addEventListener('click', (e) => {
+        e.stopPropagation();
+        for (const opt of options) {
+          opt.classList.remove('selected');
+          opt.setAttribute('aria-selected', 'false');
+        }
+        option.classList.add('selected');
+        option.setAttribute('aria-selected', 'true');
+        const valueEl = trigger?.querySelector('.dropdown-value');
+        if (valueEl) {
+          valueEl.textContent = option.textContent;
+        }
+        dropdown.dataset.value = option.getAttribute('data-value') || '3';
+        trigger?.setAttribute('aria-expanded', 'false');
+        this.updatePriorityHelper(dropdown.dataset.value);
+      });
+    }
+
+    document.addEventListener('click', () => {
+      trigger?.setAttribute('aria-expanded', 'false');
+    });
+
+    this.updatePriorityHelper(dropdown.dataset.value || '3');
+  }
+
+  private updatePriorityHelper(value: string): void {
+    const helper = this.elements.priorityHelper;
+    if (!helper) {
+      return;
+    }
+    const desc = this.priorityDescriptions.get(Number(value));
+    helper.textContent = desc || '';
+  }
+
+  private getPriorityValue(): number {
+    return Number(this.elements.prioritySelect?.dataset.value || '3');
+  }
+
+  private setPriorityValue(value: number): void {
+    const dropdown = this.elements.prioritySelect;
+    if (!dropdown) {
+      return;
+    }
+    const trigger = dropdown.querySelector('.dropdown-trigger') as HTMLButtonElement | null;
+    const options = dropdown.querySelectorAll('.dropdown-option');
+    for (const option of options) {
+      option.classList.remove('selected');
+      option.setAttribute('aria-selected', 'false');
+      if (option.getAttribute('data-value') === String(value)) {
+        option.classList.add('selected');
+        option.setAttribute('aria-selected', 'true');
+        const valueEl = trigger?.querySelector('.dropdown-value');
+        if (valueEl) {
+          valueEl.textContent = option.textContent;
+        }
+      }
+    }
+    dropdown.dataset.value = String(value);
+    this.updatePriorityHelper(String(value));
   }
 
   open(isEdit = false): void {
@@ -185,6 +284,7 @@ export class TaskForm extends FormHandler {
     return {
       title: this.getFieldValue('title'),
       description: this.getFieldValue('description') || null,
+      priority_id: this.getPriorityValue(),
       due_date: this.fields.due_date?.input?.value || null,
       completed: this.elements.completedInput?.checked ?? false,
     };
@@ -195,7 +295,7 @@ export class TaskForm extends FormHandler {
     return {
       title: this.getFieldValue('title'),
       description: this.getFieldValue('description') || '',
-      priority: this.editingTask?.priority ?? 1,
+      priority_id: this.getPriorityValue(),
       due_date: dueDateValue ?? this.editingTask?.due_date ?? null,
       completed: this.elements.completedInput?.checked ?? false,
     };
@@ -266,6 +366,7 @@ export class TaskForm extends FormHandler {
     if (this.fields.due_date?.input) {
       this.fields.due_date.input.value = task.due_date ? task.due_date.substring(0, 10) : '';
     }
+    this.setPriorityValue(task.priority_id);
     if (this.elements.completedInput) {
       this.elements.completedInput.checked = task.completed;
     }
@@ -285,6 +386,7 @@ export class TaskForm extends FormHandler {
       this.elements.idInput.value = '';
     }
     this.form.reset();
+    this.setPriorityValue(3);
     this.clearAllErrors();
     if (this.submitBtn) {
       this.submitBtn.textContent = 'Create Task';

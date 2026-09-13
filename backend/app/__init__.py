@@ -4,6 +4,7 @@ from flask import Flask
 
 from app.api.v1.routes.auth import auth_bp
 from app.api.v1.routes.health import health_bp
+from app.api.v1.routes.priorities import priorities_bp
 from app.api.v1.routes.tasks import tasks_bp
 from app.core.config import SQLITE_PATH, config
 from app.core.cors import setup_cors
@@ -46,6 +47,7 @@ def create_app(config_name: str | None = None) -> Flask:
 
     # Register blueprints
     app.register_blueprint(tasks_bp, url_prefix="/api/v1")
+    app.register_blueprint(priorities_bp, url_prefix="/api/v1")
     app.register_blueprint(auth_bp, url_prefix="/api/v1/auth")
     app.register_blueprint(health_bp)
 

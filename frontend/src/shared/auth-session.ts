@@ -25,3 +25,18 @@ export function getAccessToken(): string | null {
 export function getRefreshToken(): string | null {
   return localStorage.getItem(REFRESH_KEY);
 }
+
+export function isAccessTokenExpired(): boolean {
+  const token = localStorage.getItem(ACCESS_KEY);
+  if (!token) return true;
+
+  try {
+    const parts = token.split('.');
+    if (parts.length !== 3 || !parts[1]) return true;
+    const payload = JSON.parse(atob(parts[1]));
+    const expiresAt = payload.exp * 1000;
+    return Date.now() >= expiresAt;
+  } catch {
+    return true;
+  }
+}

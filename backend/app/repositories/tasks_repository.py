@@ -3,7 +3,11 @@ from app.repositories.base import BaseRepository
 
 
 class TasksRepository(BaseRepository[Tasks]):
-    sortable_columns = {"due_date": Tasks.due_date, "completed": Tasks.completed}
+    sortable_columns = {
+        "due_date": Tasks.due_date,
+        "completed": Tasks.completed,
+        "priority": Tasks.priority_id,
+    }
 
     def __init__(self, session) -> None:
         super().__init__(session, Tasks)
@@ -21,5 +25,9 @@ class TasksRepository(BaseRepository[Tasks]):
         completed = filters.get("completed")
         if completed is not None:
             stmt = stmt.where(Tasks.completed == completed)
+
+        priority_id = filters.get("priority_id")
+        if priority_id is not None:
+            stmt = stmt.where(Tasks.priority_id == priority_id)
 
         return stmt

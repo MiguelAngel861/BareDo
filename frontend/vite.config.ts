@@ -19,6 +19,7 @@ export default defineConfig({
         main: path.resolve(__dirname, 'src/index.html'),
         login: path.resolve(__dirname, 'src/pages/login.html'),
         register: path.resolve(__dirname, 'src/pages/register.html'),
+        '404': path.resolve(__dirname, 'src/pages/404.html'),
       },
     },
   },
