@@ -1,6 +1,7 @@
 import os
 
-from flask import Flask
+from flask_openapi4 import Info, OpenAPI
+from pydantic import BaseModel
 
 from app.api.v1.routes.auth import auth_bp
 from app.api.v1.routes.health import health_bp
@@ -11,22 +12,39 @@ from app.core.cors import setup_cors
 from app.core.extensions import db, init_alembic, init_limiter, jwt
 from app.core.logging import configure_logging
 from app.core.middleware import register_middleware
-from app.errors.handlers import register_error_handlers, register_jwt_handlers
+from app.errors.handlers import (
+    openapi_validation_error_callback,
+    register_error_handlers,
+    register_jwt_handlers,
+)
 
 
-def create_app(config_name: str | None = None) -> Flask:
+class BareDoApp(OpenAPI):
+    """OpenAPI subclass that automatically serializes Pydantic models in responses."""
+
+    def make_response(self, rv):
+        if isinstance(rv, tuple) and len(rv) > 0 and isinstance(rv[0], BaseModel):
+            rv = (rv[0].model_dump(mode="json"), *rv[1:])
+        elif isinstance(rv, BaseModel):
+            rv = rv.model_dump(mode="json")
+        return super().make_response(rv)
+
+
+def create_app(config_name: str | None = None) -> BareDoApp:
     if config_name is None:
         config_name = os.environ.get("FLASK_ENV", "default")
 
-    app: Flask = Flask(__name__)
+    info = Info(title="BareDo API", version="1.3.0", description="Backend de BareDo")
+    app: BareDoApp = BareDoApp(
+        __name__,
+        info=info,
+        validation_error_callback=openapi_validation_error_callback,
+    )
 
     app.config.from_object(config[config_name])
 
     # Ensure the instance folder exists (sqlite default DB lives there)
     os.makedirs(SQLITE_PATH.parent, exist_ok=True)
-
-    # Flask-Pydantic: raise validation errors to be handled by custom error handlers
-    app.config["FLASK_PYDANTIC_VALIDATION_ERROR_RAISE"] = True
 
     # Configure logging
     configure_logging(app)
@@ -46,9 +64,9 @@ def create_app(config_name: str | None = None) -> Flask:
     register_middleware(app)
 
     # Register blueprints
-    app.register_blueprint(tasks_bp, url_prefix="/api/v1")
-    app.register_blueprint(priorities_bp, url_prefix="/api/v1")
-    app.register_blueprint(auth_bp, url_prefix="/api/v1/auth")
-    app.register_blueprint(health_bp)
+    app.register_api(tasks_bp)
+    app.register_api(priorities_bp)
+    app.register_api(auth_bp)
+    app.register_api(health_bp)
 
     return app

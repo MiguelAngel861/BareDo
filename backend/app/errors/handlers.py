@@ -1,6 +1,8 @@
-from flask import Flask
+import inspect
+import typing
+
+from flask import Flask, current_app, make_response, request
 from flask_jwt_extended import JWTManager
-from flask_pydantic import ValidationError as FlaskPydanticValidationError
 from pydantic import ValidationError as PydanticValidationError
 from werkzeug.exceptions import HTTPException
 
@@ -11,6 +13,48 @@ from app.errors.exceptions import (
     UnauthorizedError,
 )
 from app.errors.schemas import api_error
+
+
+def _sanitize_pydantic_errors(errors: list[dict]) -> list[dict]:
+    clean = []
+    for err in errors:
+        c = dict(err)
+        if "ctx" in c and isinstance(c["ctx"], dict):
+            c["ctx"] = {k: str(v) if isinstance(v, Exception) else v for k, v in c["ctx"].items()}
+        clean.append(c)
+    return clean
+
+
+def openapi_validation_error_callback(error: PydanticValidationError):
+    hints = {}
+    if request.endpoint and request.endpoint in current_app.view_functions:
+        vf = current_app.view_functions[request.endpoint]
+        original = inspect.unwrap(vf)
+        try:
+            hints = typing.get_type_hints(original)
+        except Exception:
+            hints = {}
+
+    param_type = "body_params"
+    for k, v in hints.items():
+        if getattr(v, "__name__", "") == error.title:
+            param_type = f"{k}_params"
+            break
+
+    raw_errors = _sanitize_pydantic_errors(error.errors())
+    details = {
+        "body_params": raw_errors if param_type == "body_params" else None,
+        "query_params": raw_errors if param_type == "query_params" else None,
+        "path_params": raw_errors if param_type == "path_params" else None,
+        "form_params": raw_errors if param_type == "form_params" else None,
+    }
+    res, status = api_error(
+        code="VALIDATION_ERROR",
+        message="Request validation failed",
+        status=422,
+        details=details,
+    )
+    return make_response(res, status)
 
 
 def register_error_handlers(app: Flask):
@@ -45,20 +89,6 @@ def register_error_handlers(app: Flask):
         message = error.description or "Internal Server Error"
 
         return api_error(code="INTERNAL_ERROR", message=message, status=500, details=str(error))
-
-    @app.errorhandler(FlaskPydanticValidationError)
-    def flask_pydantic_validation_error_handler(error: FlaskPydanticValidationError):
-        return api_error(
-            code="VALIDATION_ERROR",
-            message="Request validation failed",
-            status=422,
-            details={
-                "body_params": error.body_params,
-                "query_params": error.query_params,
-                "path_params": error.path_params,
-                "form_params": error.form_params,
-            },
-        )
 
     @app.errorhandler(PydanticValidationError)
     def validation_error_handler(error: PydanticValidationError):

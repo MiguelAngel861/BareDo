@@ -1,19 +1,17 @@
-from flask import Blueprint
 from flask_jwt_extended import jwt_required
-from flask_pydantic import validate
 
+from app.api.blueprint import BareDoBlueprint
 from app.api.helpers import get_current_user_id
 from app.api.v1.schemas.auth_schemas import TokenResponse, UserCreate, UserLogin, UserResponse
 from app.core.extensions import limiter
 from app.errors.exceptions import NotFoundError, UnauthorizedError
 from app.services.auth_service import AuthService
 
-auth_bp = Blueprint("auth", __name__)
+auth_bp = BareDoBlueprint("auth", __name__, url_prefix="/api/v1/auth")
 auth_service = AuthService()
 
 
 @auth_bp.post("/register")
-@validate(body=UserCreate)
 def register(body: UserCreate):
     """Register a new user."""
     user = auth_service.register(body.username, body.password)
@@ -26,7 +24,6 @@ def register(body: UserCreate):
 
 @auth_bp.post("/login")
 @limiter.limit("5 per minute")
-@validate(body=UserLogin)
 def login(body: UserLogin):
     """Login and get tokens."""
     user = auth_service.login(body.username, body.password)
@@ -41,7 +38,6 @@ def login(body: UserLogin):
 
 @auth_bp.post("/refresh")
 @jwt_required(refresh=True)
-@validate()
 def refresh():
     """Refresh access token."""
     user_id = get_current_user_id()
@@ -57,7 +53,6 @@ def refresh():
 
 @auth_bp.get("/me")
 @jwt_required()
-@validate()
 def get_me():
     """Get current user profile."""
     user = auth_service.get_current_user()

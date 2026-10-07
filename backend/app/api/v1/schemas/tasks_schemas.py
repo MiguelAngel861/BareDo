@@ -85,3 +85,7 @@ class TaskListQuery(BaseModel):
         if isinstance(v, str) and v.strip() == "":
             return None
         return v
+
+
+class TaskPath(BaseModel):
+    task_id: int = Field(description="ID of the task")

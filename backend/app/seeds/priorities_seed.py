@@ -6,10 +6,7 @@ PRIORITIES_SEED = [
         "level": 1,
         "description": "Can do when I have time",
     },
-    {
-        "name": "Medium-Low",
-        "level": 2,
-        "description": "Can wait but not too long"},
+    {"name": "Medium-Low", "level": 2, "description": "Can wait but not too long"},
     {
         "name": "Medium",
         "level": 3,

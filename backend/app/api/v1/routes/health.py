@@ -1,6 +1,7 @@
-from flask import Blueprint, jsonify
+from flask import jsonify
+from flask_openapi4 import APIBlueprint
 
-health_bp = Blueprint("health", __name__)
+health_bp = APIBlueprint("health", __name__)
 
 
 @health_bp.get("/health")
