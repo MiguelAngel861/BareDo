@@ -1,3 +1,4 @@
+import mimetypes
 import os
 
 from flask_openapi4 import Info, OpenAPI
@@ -31,6 +32,10 @@ class BareDoApp(OpenAPI):
 
 
 def create_app(config_name: str | None = None) -> BareDoApp:
+    # Ensure Windows registry doesn't cause text/plain MIME types for JS/CSS assets
+    mimetypes.add_type("application/javascript", ".js")
+    mimetypes.add_type("text/css", ".css")
+
     if config_name is None:
         config_name = os.environ.get("FLASK_ENV", "default")
 
