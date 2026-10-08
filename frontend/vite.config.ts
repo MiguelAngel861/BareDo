@@ -1,3 +1,4 @@
+import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vite';
@@ -5,8 +6,29 @@ import { defineConfig } from 'vite';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
+  appType: 'mpa',
   root: path.resolve(__dirname, 'src'),
   publicDir: '../public',
+  plugins: [
+    {
+      name: 'dev-404-fallback',
+      configureServer(server) {
+        server.middlewares.use((req, _res, next) => {
+          if (req.method === 'GET' && req.headers.accept?.includes('text/html')) {
+            const cleanUrl = req.url?.split('?')[0] || '';
+            const relativePath = cleanUrl === '/' ? 'index.html' : cleanUrl.replace(/^\//, '');
+            const targetPath = path.resolve(__dirname, 'src', relativePath);
+            const exists = fs.existsSync(targetPath) || fs.existsSync(`${targetPath}.html`);
+
+            if (!exists && !cleanUrl.startsWith('/api') && !cleanUrl.includes('.')) {
+              req.url = '/pages/404.html';
+            }
+          }
+          next();
+        });
+      },
+    },
+  ],
   build: {
     outDir: '../dist',
     emptyOutDir: true,

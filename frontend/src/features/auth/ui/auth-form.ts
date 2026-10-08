@@ -3,7 +3,7 @@ import { FormHandler } from '@/shared/ui/FormHandler/index.ts';
 import { authApi } from '../api.ts';
 
 export class AuthFormHandler extends FormHandler {
-  constructor(formId: string, apiMethod: 'login' | 'register', successUrl = '/index.html') {
+  constructor(formId: string, apiMethod: 'login' | 'register', successUrl = '/') {
     super(formId);
     this.apiMethod = apiMethod;
     this.successUrl = successUrl;

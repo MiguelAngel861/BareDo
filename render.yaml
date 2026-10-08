@@ -27,7 +27,7 @@ services:
     routes:
       - type: rewrite
         source: /*
-        destination: /index.html
+        destination: /pages/404.html
     envVars:
       - key: VITE_API_BASE_URL
         value: https://baredo-api.onrender.com/api/v1
