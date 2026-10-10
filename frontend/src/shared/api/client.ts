@@ -77,6 +77,10 @@ export const kyInstance = ky.create({
       async (request, _options, response, state) => {
         console.log(`[api] ${response.status} ${request.url} (retry: ${state.retryCount})`);
 
+        if (response.ok) {
+          window.dispatchEvent(new CustomEvent('server-ready'));
+        }
+
         if (response.status !== 401 || state.retryCount > 0) {
           return response;
         }

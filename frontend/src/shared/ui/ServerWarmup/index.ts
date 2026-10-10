@@ -10,16 +10,26 @@ export function initServerWarmup(): void {
   }
 
   const isTestMode = new URLSearchParams(window.location.search).has('test-warmup');
-  const apiBase = import.meta.env.VITE_API_BASE_URL || '';
-  const origin = apiBase ? apiBase.replace(/\/api\/v1\/?$/, '') : '';
-  const healthUrl = `${origin}/health`;
+  const apiBase = (import.meta.env.VITE_API_BASE_URL || '/api/v1').replace(/\/+$/, '');
+  const healthUrl = `${apiBase}/health`;
 
   let overlayElement: HTMLElement | null = null;
   let isResolved = false;
   let timerInterval: number | null = null;
   let pollTimeout: number | null = null;
+  let delayTimer: number | null = null;
   let attempts = 0;
   let elapsedSeconds = 0;
+
+  const onServerReady = () => {
+    if (!isResolved) {
+      if (delayTimer) {
+        clearTimeout(delayTimer);
+      }
+      completeWarmup(true);
+    }
+  };
+  window.addEventListener('server-ready', onServerReady);
 
   const formatTimer = (totalSec: number): string => {
     if (totalSec < 60) {
@@ -147,6 +157,11 @@ export function initServerWarmup(): void {
 
   const completeWarmup = (success: boolean) => {
     isResolved = true;
+    window.removeEventListener('server-ready', onServerReady);
+    if (delayTimer) {
+      clearTimeout(delayTimer);
+      delayTimer = null;
+    }
     if (timerInterval) {
       clearInterval(timerInterval);
     }
@@ -221,7 +236,7 @@ export function initServerWarmup(): void {
     return;
   }
 
-  const delayTimer = setTimeout(showOverlay, DELAY_THRESHOLD_MS);
+  delayTimer = window.setTimeout(showOverlay, DELAY_THRESHOLD_MS);
 
   const checkHealth = async () => {
     if (isResolved) {
@@ -237,15 +252,21 @@ export function initServerWarmup(): void {
     try {
       const res = await fetch(healthUrl, { method: 'GET', cache: 'no-store' });
       if (res.ok) {
-        clearTimeout(delayTimer);
+        if (delayTimer) {
+          clearTimeout(delayTimer);
+          delayTimer = null;
+        }
         completeWarmup(true);
         return;
       }
-    } catch {
-      // Server warming up or network error
+    } catch (err) {
+      console.warn('[warmup] Health check probe failed:', err);
     }
 
-    clearTimeout(delayTimer);
+    if (delayTimer) {
+      clearTimeout(delayTimer);
+      delayTimer = null;
+    }
     showOverlay();
 
     if (attempts < MAX_ATTEMPTS) {

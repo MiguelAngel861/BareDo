@@ -44,7 +44,7 @@ def register_middleware(app: Flask):
 
     @app.after_request
     def log_response(response):
-        if request.path == "/health":
+        if request.path in ("/health", "/api/v1/health"):
             return response
 
         request_id = getattr(g, "request_id", None)
