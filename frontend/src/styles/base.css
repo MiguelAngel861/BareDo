@@ -20,6 +20,7 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* Custom minimalist scrollbar */
@@ -52,6 +53,9 @@
   --shadow-hard: 3px 3px 0px 0px var(--text);
   --shadow-hard-lg: 5px 5px 0px 0px var(--text);
   --shadow-hard-hover: 1px 1px 0px 0px var(--text);
+  --shadow-action: 2px 2px 0px 0px var(--text);
+  --shadow-action-hover: 3px 3px 0px 0px var(--text);
+  --shadow-action-active: 1px 1px 0px 0px var(--text);
   --font-display: "Satoshi", "Outfit", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-ui: "Outfit", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
@@ -73,6 +77,9 @@
     --shadow-hard: 3px 3px 0px 0px #000000;
     --shadow-hard-lg: 5px 5px 0px 0px #000000;
     --shadow-hard-hover: 1px 1px 0px 0px #000000;
+    --shadow-action: 2px 2px 0px 0px #000000;
+    --shadow-action-hover: 3px 3px 0px 0px #000000;
+    --shadow-action-active: 1px 1px 0px 0px #000000;
   }
 }
 
@@ -167,11 +174,27 @@ button {
     transform 0.15s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-button:hover:not(:disabled) {
-  background-color: var(--text);
-  color: var(--bg);
-  transform: translate(-1px, -1px);
-  box-shadow: var(--shadow-hard-lg);
+@media (hover: hover) {
+  button:hover:not(:disabled) {
+    background-color: var(--text);
+    color: var(--bg);
+    transform: translate(-1px, -1px);
+    box-shadow: var(--shadow-hard-lg);
+  }
+
+  button.secondary:hover:not(:disabled) {
+    background-color: var(--text);
+    border-color: var(--text);
+    color: var(--bg);
+    transform: translate(-1px, -1px);
+    box-shadow: var(--shadow-hard-lg);
+  }
+
+  button.danger:hover:not(:disabled) {
+    background-color: var(--danger);
+    color: var(--bg);
+    box-shadow: 4px 4px 0px 0px var(--danger);
+  }
 }
 
 button:active:not(:disabled) {
@@ -192,26 +215,14 @@ button:disabled {
 
 button.secondary {
   border-color: var(--border-strong);
-  background-color: transparent;
+  background-color: var(--surface);
   color: var(--text);
-}
-
-button.secondary:hover:not(:disabled) {
-  background-color: var(--text-muted);
-  border-color: var(--text-muted);
-  color: var(--bg);
 }
 
 button.danger {
   border-color: var(--danger);
   color: var(--danger);
   box-shadow: 3px 3px 0px 0px var(--danger);
-}
-
-button.danger:hover:not(:disabled) {
-  background-color: var(--danger);
-  color: var(--bg);
-  box-shadow: 4px 4px 0px 0px var(--danger);
 }
 
 button.danger:active:not(:disabled) {
@@ -221,9 +232,22 @@ button.danger:active:not(:disabled) {
   box-shadow: 1px 1px 0px 0px var(--danger);
 }
 
+button:focus {
+  outline: none;
+}
+
+button:focus:not(:focus-visible) {
+  outline: none;
+}
+
 button:focus-visible {
   outline: 2px solid var(--focus-ring);
-  outline-offset: 2px;
+  outline-offset: 0;
+}
+
+button.secondary:focus,
+button.secondary:focus-visible {
+  outline: none;
 }
 
 button.is-submitting {

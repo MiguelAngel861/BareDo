@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- BareDo Swiss Industrial Monolithic Tile (Strict 0px radius, universal high contrast) -->
+  <rect width="32" height="32" fill="#0c0c0e"/>
+  <rect x="0.5" y="0.5" width="31" height="31" fill="none" stroke="#333338" stroke-width="1"/>
+  <!-- The 6-Pointed Razor Star -->
+  <path fill="#f4f4f5" fill-rule="evenodd" clip-rule="evenodd" d="M 16.0,5.0 L 18.4,11.84 L 25.53,10.5 L 20.8,16.0 L 25.53,21.5 L 18.4,20.16 L 16.0,27.0 L 13.6,20.16 L 6.47,21.5 L 11.2,16.0 L 6.47,10.5 L 13.6,11.84 Z M 17.0,14.27 L 18.0,16.0 L 17.0,17.73 L 15.0,17.73 L 14.0,16.0 L 15.0,14.27 Z"/>
+</svg>

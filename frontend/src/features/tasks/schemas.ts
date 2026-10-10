@@ -50,6 +50,10 @@ export const TaskListResponseSchema = z.object({
   meta: PaginationMetaSchema,
 });
 
-export const DeleteResponseSchema = z.object({
-  message: z.string(),
-});
+export const DeleteResponseSchema = z.union([
+  z.object({ message: z.string() }),
+  z.string(),
+  z.null(),
+  z.undefined(),
+  z.void(),
+]);

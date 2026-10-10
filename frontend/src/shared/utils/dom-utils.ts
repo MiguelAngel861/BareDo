@@ -28,3 +28,31 @@ export function clearChildren(el: HTMLElement): void {
     el.removeChild(el.firstChild);
   }
 }
+
+export function trapFocus(container: HTMLElement): () => void {
+  const focusableSelector =
+    'button:not([disabled]), [href], input:not([type="hidden"]):not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+  const onKeyDown = (e: KeyboardEvent) => {
+    if (e.key !== 'Tab') {
+      return;
+    }
+    const focusable = container.querySelectorAll(focusableSelector);
+    if (!focusable.length) {
+      return;
+    }
+    const first = focusable[0] as HTMLElement;
+    const last = focusable[focusable.length - 1] as HTMLElement;
+
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
+  };
+
+  container.addEventListener('keydown', onKeyDown);
+  return () => container.removeEventListener('keydown', onKeyDown);
+}

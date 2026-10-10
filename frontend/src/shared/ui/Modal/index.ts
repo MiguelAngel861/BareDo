@@ -1,27 +1,6 @@
-import { SafeRenderer } from '../../utils/dom-utils.ts';
+import { SafeRenderer, trapFocus } from '../../utils/dom-utils.ts';
 
 let activeModal: HTMLElement | null = null;
-
-function trapFocus(modal: HTMLElement): void {
-  const focusable = modal.querySelectorAll(
-    'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-  );
-  const first = focusable[0] as HTMLElement;
-  const last = focusable[focusable.length - 1] as HTMLElement;
-
-  modal.addEventListener('keydown', (e) => {
-    if (e.key !== 'Tab') {
-      return;
-    }
-    if (e.shiftKey && document.activeElement === first) {
-      e.preventDefault();
-      last.focus();
-    } else if (!e.shiftKey && document.activeElement === last) {
-      e.preventDefault();
-      first.focus();
-    }
-  });
-}
 
 export interface ModalOptions {
   title: string;

@@ -90,11 +90,13 @@ body {
   min-height: 38px;
 }
 
-.btn-create-task:hover:not(:disabled) {
-  background-color: var(--surface);
-  color: var(--text);
-  transform: translate(-1px, -1px);
-  box-shadow: var(--shadow-hard-lg);
+@media (hover: hover) {
+  .btn-create-task:hover:not(:disabled) {
+    background-color: var(--surface);
+    color: var(--text);
+    transform: translate(-1px, -1px);
+    box-shadow: var(--shadow-hard-lg);
+  }
 }
 
 .btn-create-task:active:not(:disabled) {
@@ -246,6 +248,23 @@ section h2 {
   min-height: 38px;
 }
 
+@media (hover: hover) {
+  #cancel-edit-btn:hover:not(:disabled) {
+    background-color: var(--text);
+    border-color: var(--text);
+    color: var(--bg);
+    transform: translate(-1px, -1px);
+    box-shadow: var(--shadow-hard-lg);
+  }
+}
+
+#cancel-edit-btn:active:not(:disabled) {
+  background-color: var(--text);
+  color: var(--bg);
+  transform: translate(2px, 2px);
+  box-shadow: var(--shadow-hard-hover);
+}
+
 #form-error {
   padding: 10px;
   border: 2px solid var(--danger);
@@ -372,6 +391,10 @@ section h2 {
   margin: 0;
   padding: 0;
   list-style: none;
+}
+
+#priority-select .dropdown-options {
+  max-height: 132px;
 }
 
 .custom-dropdown:has(.dropdown-trigger[aria-expanded="true"]) .dropdown-options {
@@ -572,47 +595,63 @@ section h2 {
   letter-spacing: 0.06em;
   min-height: 32px;
   border: 1px solid var(--text);
-  box-shadow: 2px 2px 0px 0px var(--text);
+  box-shadow: var(--shadow-action);
 }
 
-.task-actions button:hover:not(:disabled) {
-  transform: translate(-1px, -1px);
-  box-shadow: 3px 3px 0px 0px var(--text);
+.task-actions button:focus,
+.task-actions button:focus-visible,
+.task-actions button.secondary:focus,
+.task-actions button.secondary:focus-visible {
+  outline: none;
+}
+
+@media (hover: hover) {
+  .task-actions button:hover:not(:disabled) {
+    transform: translate(-1px, -1px);
+    box-shadow: var(--shadow-action-hover);
+  }
+
+  .task-actions button.secondary:hover:not(:disabled) {
+    background-color: var(--text);
+    color: var(--bg);
+    box-shadow: var(--shadow-action-hover);
+  }
+
+  .task-actions button.danger:hover:not(:disabled) {
+    background-color: var(--danger);
+    color: var(--bg);
+    box-shadow: var(--shadow-action-hover);
+  }
 }
 
 .task-actions button:active:not(:disabled) {
   transform: translate(1px, 1px);
-  box-shadow: 1px 1px 0px 0px var(--text);
+  box-shadow: var(--shadow-action-active);
 }
 
 .task-actions button.secondary {
   border-color: var(--border-strong);
-  background-color: transparent;
+  background-color: var(--surface);
   color: var(--text);
-  box-shadow: 2px 2px 0px 0px var(--border-strong);
+  box-shadow: var(--shadow-action);
 }
 
-.task-actions button.secondary:hover:not(:disabled) {
+.task-actions button.secondary:active:not(:disabled) {
   background-color: var(--text);
   color: var(--bg);
-  box-shadow: 3px 3px 0px 0px var(--text);
+  transform: translate(1px, 1px);
+  box-shadow: var(--shadow-action-active);
 }
 
 .task-actions button.danger {
   border-color: var(--danger);
   color: var(--danger);
-  box-shadow: 2px 2px 0px 0px var(--danger);
-}
-
-.task-actions button.danger:hover:not(:disabled) {
-  background-color: var(--danger);
-  color: var(--bg);
-  box-shadow: 3px 3px 0px 0px var(--danger);
+  box-shadow: var(--shadow-action);
 }
 
 .task-actions button.danger:active:not(:disabled) {
   transform: translate(1px, 1px);
-  box-shadow: 1px 1px 0px 0px var(--danger);
+  box-shadow: var(--shadow-action-active);
 }
 
 @media (min-width: 40rem) {
@@ -733,7 +772,7 @@ section h2 {
   text-transform: uppercase;
   letter-spacing: 0.06em;
   min-height: 32px;
-  box-shadow: 2px 2px 0px 0px var(--text);
+  box-shadow: var(--shadow-action);
 }
 
 #page-indicator {

@@ -1,22 +1,15 @@
-import { AuthFormHandler } from '@/features/auth/ui/auth-form.ts';
-import {
-  PASSWORD_RULES,
-  USERNAME_RULES,
-  confirmPasswordRules,
-} from '@/shared/utils/validations.ts';
+import { AuthFormHandler } from '@/features/auth/index.ts';
+import { initServerWarmup } from '@/shared/ui/index.ts';
+import { confirmPasswordRules } from '@/shared/utils/index.ts';
+
+initServerWarmup();
 
 class RegisterPage extends AuthFormHandler {
   constructor() {
     super('register-form', 'register');
-
-    this.registerField('username', 'username', 'username-error');
-    this.registerField('password', 'password', 'password-error');
+    this.initAuthFields();
     this.registerField('confirmPassword', 'confirm-password', 'confirm-password-error');
-    this.registerGlobalError('global-error');
-    this.registerSubmitButton('submit-btn');
 
-    this.validateOnBlur('username', USERNAME_RULES);
-    this.validateOnBlur('password', PASSWORD_RULES);
     this.validateOnBlur(
       'confirmPassword',
       confirmPasswordRules(() => this.getFieldValue('password'))
@@ -28,14 +21,13 @@ class RegisterPage extends AuthFormHandler {
   }
 
   async validateAndSubmit(): Promise<void> {
-    const usernameValid = this.validateField('username', USERNAME_RULES);
-    const passwordValid = this.validateField('password', PASSWORD_RULES);
+    const credsValid = this.validateCredentials();
     const confirmValid = this.validateField(
       'confirmPassword',
       confirmPasswordRules(() => this.getFieldValue('password'))
     );
 
-    if (!usernameValid || !passwordValid || !confirmValid) {
+    if (!credsValid || !confirmValid) {
       return;
     }
 

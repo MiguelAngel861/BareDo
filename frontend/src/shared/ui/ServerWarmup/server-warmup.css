@@ -1,0 +1,296 @@
+/* ==========================================================================
+   ServerWarmup - Tactical Telemetry & Industrial Brutalism Styles
+   ========================================================================== */
+
+.warmup-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  background-color: rgba(12, 12, 14, 0.78);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  opacity: 1;
+  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: warmupFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.warmup-overlay.is-closing {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.warmup-terminal {
+  width: 100%;
+  max-width: 440px;
+  background-color: var(--surface);
+  border: 2px solid var(--text);
+  box-shadow: var(--shadow-hard-lg);
+  position: relative;
+  overflow: hidden;
+  animation: warmupPopIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-origin: center center;
+}
+
+.warmup-overlay.is-closing .warmup-terminal {
+  transform: scale(0.97) translateY(-4px);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Header de Telemetría */
+.warmup-terminal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.625rem 0.875rem;
+  background-color: var(--bg);
+  border-bottom: 2px solid var(--border);
+}
+
+.warmup-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  line-height: 1;
+}
+
+/* Indicador de estado (Status Dot) estático y perfectamente alineado */
+.warmup-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  background-color: #f59e0b;
+  flex-shrink: 0;
+}
+
+.warmup-indicator.is-online {
+  background-color: var(--success);
+}
+
+.warmup-indicator.is-error {
+  background-color: var(--danger);
+}
+
+.warmup-tag-text {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  line-height: 1;
+}
+
+/* Badge de Estado */
+.warmup-status-code {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border: 1px solid var(--border-strong);
+  background-color: var(--surface);
+  color: var(--text);
+  line-height: 1.4;
+}
+
+.warmup-status-code.is-online {
+  border-color: var(--success);
+  color: var(--success);
+  background-color: rgba(34, 197, 94, 0.12);
+}
+
+.warmup-status-code.is-error {
+  border-color: var(--danger);
+  color: var(--danger);
+  background-color: rgba(239, 68, 68, 0.12);
+}
+
+/* Cuerpo de la terminal */
+.warmup-terminal-body {
+  padding: 1.25rem 1rem 1rem;
+}
+
+.warmup-heading {
+  font-family: var(--font-display);
+  font-size: 1.1875rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: var(--text);
+  margin: 0 0 0.375rem 0;
+}
+
+.warmup-desc {
+  font-family: var(--font-ui);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+  margin: 0 0 1rem 0;
+}
+
+/* Matriz de Telemetría Modular */
+.warmup-grid {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg);
+  border: 1px solid var(--border);
+  margin-bottom: 1rem;
+}
+
+.warmup-grid-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.4375rem 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.78125rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.warmup-grid-row:last-child {
+  border-bottom: none;
+}
+
+.warmup-label {
+  color: var(--text-muted);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.warmup-value {
+  color: var(--text);
+  font-weight: 700;
+  text-align: right;
+}
+
+.warmup-value.is-online {
+  color: var(--success);
+}
+
+.warmup-value.is-error {
+  color: var(--danger);
+}
+
+/* Barra de calibración / escaneo analógico */
+.warmup-tracker {
+  height: 4px;
+  width: 100%;
+  background-color: var(--border);
+  overflow: hidden;
+  position: relative;
+}
+
+.warmup-tracker-bar {
+  height: 100%;
+  width: 35%;
+  background-color: var(--text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translateX(-100%);
+  will-change: transform;
+  animation: warmupScan 1.8s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+
+.warmup-tracker-bar.is-online {
+  transform: translateX(0) scaleX(1) !important;
+  background-color: var(--success);
+  animation: none;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s ease;
+}
+
+/* Footer & Botón de reintento */
+.warmup-terminal-footer {
+  padding: 0 1rem 1rem;
+}
+
+.warmup-retry-btn {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 14px;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background-color: var(--text);
+  color: var(--bg);
+  border: 1px solid var(--text);
+  box-shadow: var(--shadow-action);
+  cursor: pointer;
+  transition: transform 0.1s ease, box-shadow 0.1s ease, background-color 0.15s ease, color 0.15s
+    ease;
+}
+
+@media (hover: hover) {
+  .warmup-retry-btn:hover:not(:disabled) {
+    transform: translate(-1px, -1px);
+    box-shadow: var(--shadow-action-hover);
+    background-color: var(--surface);
+    color: var(--text);
+  }
+}
+
+.warmup-retry-btn:active:not(:disabled) {
+  transform: translate(1px, 1px);
+  box-shadow: var(--shadow-action-active);
+}
+
+.warmup-retry-btn:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* Animaciones */
+@keyframes warmupFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes warmupPopIn {
+  from {
+    transform: scale(0.96) translateY(6px);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes warmupScan {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(300%);
+  }
+}
+
+/* Accesibilidad: Reducción de movimiento */
+@media (prefers-reduced-motion: reduce) {
+  .warmup-overlay,
+  .warmup-terminal,
+  .warmup-tracker-bar {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .warmup-tracker-bar {
+    width: 100%;
+    transform: translateX(0);
+    opacity: 0.7;
+  }
+}

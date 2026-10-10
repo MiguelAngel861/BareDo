@@ -80,7 +80,13 @@ export const tasksApi = {
     ),
 
   delete: (id: string) =>
-    validatedRequest(() => kyInstance.delete(`tasks/${id}`).json<unknown>(), DeleteResponseSchema),
+    validatedRequest(
+      () =>
+        kyInstance
+          .delete(`tasks/${id}`)
+          .then((res) => (res.status === 204 ? undefined : res.json<unknown>())),
+      DeleteResponseSchema
+    ),
 
   toggle: (id: string, completed: boolean) =>
     validatedRequest(

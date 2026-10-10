@@ -1,126 +1,8 @@
-import { prioritiesApi } from '@/features/priorities/api.ts';
-import { showModal } from '@/shared/ui/Modal/index.ts';
-import { showToast } from '@/shared/ui/Toast/index.ts';
+import { getPriorityLabel, prioritiesApi } from '@/features/priorities/index.ts';
+import { CustomDropdown, showModal, showToast } from '@/shared/ui/index.ts';
 import { SafeRenderer, clearChildren } from '@/shared/utils/dom-utils.ts';
 import { tasksApi } from '../api.ts';
 import type { Task } from '../types.ts';
-
-class CustomDropdown {
-  private readonly element: HTMLElement;
-  private readonly trigger: HTMLButtonElement | null;
-  private readonly options: NodeListOf<Element>;
-  private value: string;
-  private readonly onSelect: (value: string) => void;
-
-  constructor(element: HTMLElement, onSelect: (value: string) => void) {
-    this.element = element;
-    this.trigger = element.querySelector('.dropdown-trigger');
-    this.options = element.querySelectorAll('.dropdown-option');
-    this.value = element.dataset.value || '';
-    this.onSelect = onSelect;
-
-    this.init();
-  }
-
-  init(): void {
-    this.trigger?.addEventListener('click', (e) => {
-      e.stopPropagation();
-      this.toggle();
-    });
-
-    for (const option of this.options) {
-      option.addEventListener('click', (e) => {
-        e.stopPropagation();
-        this.select(option as HTMLElement);
-      });
-    }
-
-    this.trigger?.addEventListener('keydown', (e) => this.handleKeyboard(e as KeyboardEvent));
-
-    document.addEventListener('click', () => this.close());
-  }
-
-  toggle(): void {
-    const isExpanded = this.trigger?.getAttribute('aria-expanded') === 'true';
-    if (isExpanded) {
-      this.close();
-    } else {
-      this.open();
-    }
-  }
-
-  open(): void {
-    this.trigger?.setAttribute('aria-expanded', 'true');
-  }
-
-  close(): void {
-    this.trigger?.setAttribute('aria-expanded', 'false');
-  }
-
-  select(option: HTMLElement): void {
-    for (const opt of this.options) {
-      opt.classList.remove('selected');
-      opt.setAttribute('aria-selected', 'false');
-    }
-
-    option.classList.add('selected');
-    option.setAttribute('aria-selected', 'true');
-
-    const valueEl = this.trigger?.querySelector('.dropdown-value');
-    if (valueEl) {
-      valueEl.textContent = option.textContent;
-    }
-
-    this.value = option.dataset.value || '';
-    this.element.dataset.value = this.value;
-
-    this.close();
-
-    if (this.onSelect) {
-      this.onSelect(this.value);
-    }
-  }
-
-  handleKeyboard(e: KeyboardEvent): void {
-    switch (e.key) {
-      case 'Enter':
-      case ' ':
-        e.preventDefault();
-        this.toggle();
-        break;
-      case 'ArrowDown':
-        e.preventDefault();
-        if (this.trigger?.getAttribute('aria-expanded') === 'false') {
-          this.open();
-        } else {
-          this.focusNextOption();
-        }
-        break;
-      case 'ArrowUp':
-        e.preventDefault();
-        this.focusPrevOption();
-        break;
-      case 'Escape':
-        this.close();
-        this.trigger?.focus();
-        break;
-    }
-  }
-
-  focusNextOption(): void {
-    const options = Array.from(this.options);
-    const currentIndex = options.findIndex((opt) => opt === document.activeElement);
-    const nextIndex = currentIndex < options.length - 1 ? currentIndex + 1 : 0;
-    (options[nextIndex] as HTMLElement).focus();
-  }
-
-  focusPrevOption(): void {
-    const options = Array.from(this.options);
-    const currentIndex = options.findIndex((opt) => opt === document.activeElement);
-    const prevIndex = currentIndex > 0 ? currentIndex - 1 : options.length - 1;
-    (options[prevIndex] as HTMLElement).focus();
-  }
-}
 
 interface TaskListElements {
   list: HTMLElement | null;
@@ -185,16 +67,7 @@ export class TaskList {
   }
 
   private async loadPriorities(): Promise<void> {
-    try {
-      const data = await prioritiesApi.list();
-      if (data?.priorities) {
-        for (const p of data.priorities) {
-          this.priorityDescriptions.set(p.priority_id, p.description || '');
-        }
-      }
-    } catch {
-      // silently ignore - descriptions are optional
-    }
+    this.priorityDescriptions = await prioritiesApi.getDescriptions();
   }
 
   debounceSearch(value: string): void {
@@ -226,9 +99,13 @@ export class TaskList {
     this.load();
   }
 
-  async load(): Promise<void> {
-    console.log('[tasks] loading with filters:', this.filters);
-    this.renderSkeletons();
+  private async fetchTasks(
+    options: { showSkeletons?: boolean; showToastOnError?: boolean } = {}
+  ): Promise<void> {
+    const { showSkeletons = false, showToastOnError = false } = options;
+    if (showSkeletons) {
+      this.renderSkeletons();
+    }
     try {
       const data = await this.service.list({
         page: this.currentPage,
@@ -238,36 +115,25 @@ export class TaskList {
         priority_id: this.filters.priority_id,
       });
       if (!data) {
-        console.warn('[tasks] load returned no data');
         return;
       }
-      console.log(`[tasks] loaded ${data.tasks.length} tasks`);
       this.renderList(data.tasks);
       this.updatePagination(data.meta);
     } catch (error) {
-      console.error('[tasks] load failed:', error);
-      const message = error instanceof Error ? error.message : 'Failed to load tasks';
-      showToast(this.toastContainer, `Failed to load tasks: ${message}`, 'error');
+      if (showToastOnError) {
+        console.error('[tasks] load failed:', error);
+        const message = error instanceof Error ? error.message : 'Failed to load tasks';
+        showToast(this.toastContainer, `Failed to load tasks: ${message}`, 'error');
+      }
     }
   }
 
+  async load(): Promise<void> {
+    await this.fetchTasks({ showSkeletons: true, showToastOnError: true });
+  }
+
   async loadRetry(): Promise<void> {
-    try {
-      const data = await this.service.list({
-        page: this.currentPage,
-        per_page: this.perPage,
-        title: this.filters.title,
-        completed: this.filters.completed,
-        priority_id: this.filters.priority_id,
-      });
-      if (!data) {
-        return;
-      }
-      this.renderList(data.tasks);
-      this.updatePagination(data.meta);
-    } catch {
-      // silently ignore - edit was already saved
-    }
+    await this.fetchTasks({ showSkeletons: false, showToastOnError: false });
   }
 
   renderSkeletons(): void {
@@ -327,7 +193,7 @@ export class TaskList {
     }
 
     const meta = SafeRenderer.createElement('div', { className: 'task-meta' });
-    const priorityLabel = this.getPriorityLabel(task.priority_id);
+    const priorityLabel = getPriorityLabel(task.priority_id);
     const priorityDesc = this.priorityDescriptions.get(task.priority_id) || '';
     const priorityBadge = SafeRenderer.createElement('span', {
       className: `task-priority task-priority-${task.priority_id}`,
@@ -382,17 +248,6 @@ export class TaskList {
     return li;
   }
 
-  private getPriorityLabel(priorityId: number): string {
-    const labels: Record<number, string> = {
-      1: 'Low',
-      2: 'Medium-Low',
-      3: 'Medium',
-      4: 'Medium-High',
-      5: 'High',
-    };
-    return labels[priorityId] || 'Medium';
-  }
-
   updatePagination(meta: {
     page: number;
     total_pages: number;
@@ -427,13 +282,7 @@ export class TaskList {
 
   async toggleComplete(task: Task): Promise<void> {
     try {
-      await this.service.update(task.task_id, {
-        title: task.title,
-        description: task.description || '',
-        priority_id: task.priority_id,
-        due_date: task.due_date,
-        completed: !task.completed,
-      });
+      await this.service.toggle(task.task_id, !task.completed);
       showToast(
         this.toastContainer,
         task.completed ? 'Task marked as pending' : 'Task marked as complete',

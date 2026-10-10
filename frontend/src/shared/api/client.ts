@@ -1,6 +1,12 @@
 import ky from 'ky';
 import type { ZodSchema } from 'zod';
-import { isAccessTokenExpired } from '../auth-session.ts';
+import {
+  clear,
+  getAccessToken,
+  getRefreshToken,
+  isAccessTokenExpired,
+  setTokens,
+} from '../auth-session.ts';
 import { ApiErrorClass } from './errors.ts';
 
 let refreshPromise: Promise<void> | null = null;
@@ -13,7 +19,7 @@ async function refreshAccessToken(): Promise<void> {
 
   console.log('[auth] starting token refresh');
   refreshPromise = (async () => {
-    const refreshToken = localStorage.getItem('refresh_token');
+    const refreshToken = getRefreshToken();
     if (!refreshToken) {
       throw new Error('No refresh token');
     }
@@ -30,8 +36,7 @@ async function refreshAccessToken(): Promise<void> {
       refresh_token: string;
     }>();
 
-    localStorage.setItem('access_token', data.access_token);
-    localStorage.setItem('refresh_token', data.refresh_token);
+    setTokens(data);
     console.log('[auth] token refresh successful');
   })();
 
@@ -44,6 +49,7 @@ async function refreshAccessToken(): Promise<void> {
 
 export const kyInstance = ky.create({
   prefixUrl: import.meta.env.VITE_API_BASE_URL || '/api/v1',
+  timeout: 60000,
   retry: {
     limit: 1,
     statusCodes: [401],
@@ -60,7 +66,7 @@ export const kyInstance = ky.create({
           }
         }
 
-        const token = localStorage.getItem('access_token');
+        const token = getAccessToken();
         if (token) {
           request.headers.set('Authorization', `Bearer ${token}`);
         }
@@ -78,9 +84,11 @@ export const kyInstance = ky.create({
         console.log('[api] 401 detected, attempting token refresh');
         try {
           await refreshAccessToken();
-          const newToken = localStorage.getItem('access_token');
+          const newToken = getAccessToken();
           const headers = new Headers(request.headers);
-          headers.set('Authorization', `Bearer ${newToken}`);
+          if (newToken) {
+            headers.set('Authorization', `Bearer ${newToken}`);
+          }
 
           return ky.retry({
             request: new Request(request, { headers }),
@@ -88,8 +96,7 @@ export const kyInstance = ky.create({
           });
         } catch (error) {
           console.error('[auth] refresh failed:', error);
-          localStorage.removeItem('access_token');
-          localStorage.removeItem('refresh_token');
+          clear();
           window.location.href = '/pages/login.html';
           return response;
         }

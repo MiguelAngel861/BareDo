@@ -1,6 +1,7 @@
-import { prioritiesApi } from '@/features/priorities/api.ts';
-import { FormHandler } from '@/shared/ui/FormHandler/index.ts';
-import { showToast } from '@/shared/ui/Toast/index.ts';
+import { prioritiesApi } from '@/features/priorities/index.ts';
+import { isApiError } from '@/shared/api/errors.ts';
+import { CustomDropdown, FormHandler, showToast } from '@/shared/ui/index.ts';
+import { trapFocus } from '@/shared/utils/dom-utils.ts';
 import { tasksApi } from '../api.ts';
 import type { Task, TaskCreate, TaskUpdate } from '../types.ts';
 
@@ -24,7 +25,8 @@ export class TaskForm extends FormHandler {
   private lastFocusedElement: HTMLElement | null = null;
   private readonly elements: TaskFormElements;
   private readonly onKeyDown: (e: KeyboardEvent) => void;
-  private focusTrapHandler: ((e: KeyboardEvent) => void) | null = null;
+  private removeFocusTrap: (() => void) | null = null;
+  private priorityDropdown: CustomDropdown | null = null;
   private priorityDescriptions = new Map<number, string>();
 
   constructor(toastContainer: HTMLElement, onSaved: () => void) {
@@ -61,8 +63,13 @@ export class TaskForm extends FormHandler {
       });
     }
 
+    if (this.elements.prioritySelect) {
+      this.priorityDropdown = new CustomDropdown(this.elements.prioritySelect, (value) => {
+        this.updatePriorityHelper(value);
+      });
+    }
+
     this.loadPriorities();
-    this.initPriorityDropdown();
 
     this.onKeyDown = (e) => {
       if (
@@ -77,57 +84,8 @@ export class TaskForm extends FormHandler {
   }
 
   private async loadPriorities(): Promise<void> {
-    try {
-      const data = await prioritiesApi.list();
-      if (data?.priorities) {
-        for (const p of data.priorities) {
-          this.priorityDescriptions.set(p.priority_id, p.description || '');
-        }
-      }
-    } catch {
-      // silently ignore - descriptions are optional
-    }
-  }
-
-  private initPriorityDropdown(): void {
-    const dropdown = this.elements.prioritySelect;
-    if (!dropdown) {
-      return;
-    }
-
-    const trigger = dropdown.querySelector('.dropdown-trigger') as HTMLButtonElement | null;
-    const options = dropdown.querySelectorAll('.dropdown-option');
-
-    trigger?.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const isExpanded = trigger.getAttribute('aria-expanded') === 'true';
-      trigger.setAttribute('aria-expanded', String(!isExpanded));
-    });
-
-    for (const option of options) {
-      option.addEventListener('click', (e) => {
-        e.stopPropagation();
-        for (const opt of options) {
-          opt.classList.remove('selected');
-          opt.setAttribute('aria-selected', 'false');
-        }
-        option.classList.add('selected');
-        option.setAttribute('aria-selected', 'true');
-        const valueEl = trigger?.querySelector('.dropdown-value');
-        if (valueEl) {
-          valueEl.textContent = option.textContent;
-        }
-        dropdown.dataset.value = option.getAttribute('data-value') || '3';
-        trigger?.setAttribute('aria-expanded', 'false');
-        this.updatePriorityHelper(dropdown.dataset.value);
-      });
-    }
-
-    document.addEventListener('click', () => {
-      trigger?.setAttribute('aria-expanded', 'false');
-    });
-
-    this.updatePriorityHelper(dropdown.dataset.value || '3');
+    this.priorityDescriptions = await prioritiesApi.getDescriptions();
+    this.updatePriorityHelper(String(this.getPriorityValue()));
   }
 
   private updatePriorityHelper(value: string): void {
@@ -140,29 +98,13 @@ export class TaskForm extends FormHandler {
   }
 
   private getPriorityValue(): number {
-    return Number(this.elements.prioritySelect?.dataset.value || '3');
+    return Number(
+      this.priorityDropdown?.getValue() || this.elements.prioritySelect?.dataset.value || '3'
+    );
   }
 
   private setPriorityValue(value: number): void {
-    const dropdown = this.elements.prioritySelect;
-    if (!dropdown) {
-      return;
-    }
-    const trigger = dropdown.querySelector('.dropdown-trigger') as HTMLButtonElement | null;
-    const options = dropdown.querySelectorAll('.dropdown-option');
-    for (const option of options) {
-      option.classList.remove('selected');
-      option.setAttribute('aria-selected', 'false');
-      if (option.getAttribute('data-value') === String(value)) {
-        option.classList.add('selected');
-        option.setAttribute('aria-selected', 'true');
-        const valueEl = trigger?.querySelector('.dropdown-value');
-        if (valueEl) {
-          valueEl.textContent = option.textContent;
-        }
-      }
-    }
-    dropdown.dataset.value = String(value);
+    this.priorityDropdown?.setValue(String(value));
     this.updatePriorityHelper(String(value));
   }
 
@@ -180,7 +122,7 @@ export class TaskForm extends FormHandler {
     if (this.elements.overlay) {
       this.elements.overlay.classList.remove('hidden');
       document.addEventListener('keydown', this.onKeyDown);
-      this.setupFocusTrap();
+      this.removeFocusTrap = trapFocus(this.elements.overlay);
       setTimeout(() => {
         if (this.fields.title?.input) {
           this.fields.title.input.focus();
@@ -193,43 +135,13 @@ export class TaskForm extends FormHandler {
     if (this.elements.overlay) {
       this.elements.overlay.classList.add('hidden');
       document.removeEventListener('keydown', this.onKeyDown);
-      if (this.focusTrapHandler) {
-        this.elements.overlay.removeEventListener('keydown', this.focusTrapHandler);
-        this.focusTrapHandler = null;
-      }
+      this.removeFocusTrap?.();
+      this.removeFocusTrap = null;
     }
     this.resetForm();
     if (this.lastFocusedElement && typeof this.lastFocusedElement.focus === 'function') {
       this.lastFocusedElement.focus();
     }
-  }
-
-  private setupFocusTrap(): void {
-    if (this.focusTrapHandler && this.elements.overlay) {
-      this.elements.overlay.removeEventListener('keydown', this.focusTrapHandler);
-    }
-    const focusable = this.elements.overlay?.querySelectorAll(
-      'button:not([disabled]), [href], input:not([type="hidden"]):not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
-    );
-    if (!focusable?.length) {
-      return;
-    }
-    const first = focusable[0] as HTMLElement;
-    const last = focusable[focusable.length - 1] as HTMLElement;
-
-    this.focusTrapHandler = (e) => {
-      if (e.key !== 'Tab') {
-        return;
-      }
-      if (e.shiftKey && document.activeElement === first) {
-        e.preventDefault();
-        last.focus();
-      } else if (!e.shiftKey && document.activeElement === last) {
-        e.preventDefault();
-        first.focus();
-      }
-    };
-    this.elements.overlay?.addEventListener('keydown', this.focusTrapHandler);
   }
 
   validate(): boolean {
@@ -320,15 +232,19 @@ export class TaskForm extends FormHandler {
       this.close();
       this.onSaved();
     } catch (error) {
-      const apiError = error as {
-        status?: number;
-        data?: { errors?: Record<string, string[]> };
-        message?: string;
-      };
-      if (apiError.status === 400 && apiError.data?.errors) {
-        this.showValidationErrors(apiError.data.errors);
+      if (isApiError(error)) {
+        this.showGlobalError(error.message);
       } else {
-        this.showGlobalError(apiError.message || 'An error occurred');
+        const apiError = error as {
+          status?: number;
+          data?: { errors?: Record<string, string[]> };
+          message?: string;
+        };
+        if (apiError.status === 400 && apiError.data?.errors) {
+          this.showValidationErrors(apiError.data.errors);
+        } else {
+          this.showGlobalError(apiError.message || 'An error occurred');
+        }
       }
     } finally {
       this.setSubmitting(false, isEdit ? 'Update Task' : 'Create Task');

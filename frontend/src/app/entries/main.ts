@@ -1,7 +1,9 @@
-import { TaskForm } from '@/features/tasks/ui/task-form.ts';
-import { TaskList } from '@/features/tasks/ui/task-list.ts';
+import { authApi } from '@/features/auth/index.ts';
+import { TaskForm, TaskList } from '@/features/tasks/index.ts';
 import { clear, hasToken } from '@/shared/auth-session.ts';
-import { flushPendingToasts, showToast } from '@/shared/ui/Toast/index.ts';
+import { flushPendingToasts, initServerWarmup, showToast } from '@/shared/ui/index.ts';
+
+initServerWarmup();
 
 const LAST_ERROR_KEY = 'last_auth_error';
 
@@ -19,7 +21,7 @@ function init(): void {
   const lastError = sessionStorage.getItem(LAST_ERROR_KEY);
   if (lastError) {
     sessionStorage.removeItem(LAST_ERROR_KEY);
-    showToast(toastContainer, `Sesión expirada (${lastError}): vuelve a iniciar sesión`, 'error');
+    showToast(toastContainer, `Session expired (${lastError}): please log in again`, 'error');
   }
   flushPendingToasts(toastContainer);
 
@@ -35,6 +37,16 @@ function init(): void {
   if (status) {
     status.textContent = 'Authenticated';
     status.style.color = 'var(--success)';
+    authApi
+      .me()
+      .then((user) => {
+        if (status && user?.username) {
+          status.textContent = `USER: ${user.username.toUpperCase()}`;
+        }
+      })
+      .catch((err) => {
+        console.warn('[auth] Failed to fetch user profile:', err);
+      });
   }
 
   const logoutBtn = document.getElementById('logout-btn');
@@ -45,6 +57,10 @@ function init(): void {
   }
 
   list.load();
+
+  window.addEventListener('server-ready', () => {
+    list.loadRetry();
+  });
 }
 
 function goToLogin(reason = ''): void {

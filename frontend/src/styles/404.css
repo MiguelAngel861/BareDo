@@ -117,16 +117,16 @@
   border-radius: 0;
   box-shadow: var(--shadow-hard);
   cursor: pointer;
-  transition:
-    background-color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-    color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-    box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-    transform 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: background-color 0.2s cubic-bezier(0.16, 1, 0.3, 1), color 0.2s
+    cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), transform 0.15s
+    cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.error-action:hover {
-  transform: translate(-1px, -1px);
-  box-shadow: var(--shadow-hard-lg);
+@media (hover: hover) {
+  .error-action:hover {
+    transform: translate(-1px, -1px);
+    box-shadow: var(--shadow-hard-lg);
+  }
 }
 
 .error-action:active {
@@ -134,9 +134,17 @@
   box-shadow: var(--shadow-hard-hover);
 }
 
+.error-action:focus {
+  outline: none;
+}
+
+.error-action:focus:not(:focus-visible) {
+  outline: none;
+}
+
 .error-action:focus-visible {
   outline: 2px solid var(--focus-ring);
-  outline-offset: 2px;
+  outline-offset: 0;
 }
 
 .action-arrow {
