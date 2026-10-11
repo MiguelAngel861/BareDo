@@ -21,7 +21,6 @@ class Pagination:
 
     def to_dict(self) -> dict:
         return {
-            "total": self.total,
             "total_items": self.total,
             "page": self.page,
             "per_page": self.per_page,

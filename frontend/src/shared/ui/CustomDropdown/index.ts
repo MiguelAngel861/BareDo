@@ -1,7 +1,7 @@
 export class CustomDropdown {
   private readonly element: HTMLElement;
   private readonly trigger: HTMLButtonElement | null;
-  private readonly options: NodeListOf<Element>;
+  private options: NodeListOf<Element>;
   private value: string;
   private readonly onSelect?: ((value: string) => void) | undefined;
 
@@ -21,16 +21,47 @@ export class CustomDropdown {
       this.toggle();
     });
 
+    this.bindOptionListeners();
+
+    this.trigger?.addEventListener('keydown', (e) => this.handleKeyboard(e as KeyboardEvent));
+
+    document.addEventListener('click', () => this.close());
+  }
+
+  private bindOptionListeners(): void {
+    this.options = this.element.querySelectorAll('.dropdown-option');
     for (const option of this.options) {
       option.addEventListener('click', (e) => {
         e.stopPropagation();
         this.select(option as HTMLElement);
       });
     }
+  }
 
-    this.trigger?.addEventListener('keydown', (e) => this.handleKeyboard(e as KeyboardEvent));
-
-    document.addEventListener('click', () => this.close());
+  setOptions(options: { value: string; label: string }[]): void {
+    const optionsContainer = this.element.querySelector('.dropdown-options');
+    if (!optionsContainer) {
+      return;
+    }
+    optionsContainer.innerHTML = '';
+    for (const opt of options) {
+      const optEl = document.createElement('div');
+      optEl.className = `dropdown-option${opt.value === this.value ? ' selected' : ''}`;
+      optEl.dataset.value = opt.value;
+      optEl.setAttribute('role', 'option');
+      optEl.setAttribute('aria-selected', String(opt.value === this.value));
+      optEl.setAttribute('tabindex', '-1');
+      optEl.textContent = opt.label;
+      optionsContainer.appendChild(optEl);
+    }
+    this.bindOptionListeners();
+    // If current value is not in new options, reset to default (first option or empty)
+    const exists = options.some((opt) => opt.value === this.value);
+    if (!exists && options.length > 0 && options[0]) {
+      this.setValue(options[0].value);
+    } else {
+      this.setValue(this.value);
+    }
   }
 
   toggle(): void {

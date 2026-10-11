@@ -1,4 +1,5 @@
 import { prioritiesApi } from '@/features/priorities/index.ts';
+import { type Tag, tagsApi } from '@/features/tags/index.ts';
 import { isApiError } from '@/shared/api/errors.ts';
 import { CustomDropdown, FormHandler, showToast } from '@/shared/ui/index.ts';
 import { trapFocus } from '@/shared/utils/dom-utils.ts';
@@ -28,6 +29,11 @@ export class TaskForm extends FormHandler {
   private removeFocusTrap: (() => void) | null = null;
   private priorityDropdown: CustomDropdown | null = null;
   private priorityDescriptions = new Map<number, string>();
+  private selectedTags: Tag[] = [];
+  private availableTags: Tag[] = [];
+  private readonly tagInputField: HTMLInputElement | null = null;
+  private readonly tagChipsWrapper: HTMLElement | null = null;
+  private readonly tagsError: HTMLElement | null = null;
 
   constructor(toastContainer: HTMLElement, onSaved: () => void) {
     super('task-form');
@@ -51,6 +57,17 @@ export class TaskForm extends FormHandler {
       priorityHelper: document.getElementById('priority-helper'),
     };
 
+    this.tagInputField = document.getElementById('tag-input-field') as HTMLInputElement | null;
+    this.tagChipsWrapper = document.getElementById('tag-chips-wrapper');
+    this.tagsError = document.getElementById('tags-error');
+
+    this.tagInputField?.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ',') {
+        e.preventDefault();
+        this.handleTagInput();
+      }
+    });
+
     this.handleSubmit(() => this.onSubmit());
     this.elements.cancelBtn?.addEventListener('click', () => this.close());
     this.elements.closeBtn?.addEventListener('click', () => this.close());
@@ -70,6 +87,11 @@ export class TaskForm extends FormHandler {
     }
 
     this.loadPriorities();
+    this.loadAvailableTags();
+
+    window.addEventListener('tags-updated', () => {
+      this.loadAvailableTags();
+    });
 
     this.onKeyDown = (e) => {
       if (
@@ -86,6 +108,85 @@ export class TaskForm extends FormHandler {
   private async loadPriorities(): Promise<void> {
     this.priorityDescriptions = await prioritiesApi.getDescriptions();
     this.updatePriorityHelper(String(this.getPriorityValue()));
+  }
+
+  private async loadAvailableTags(): Promise<void> {
+    try {
+      const res = await tagsApi.getTags();
+      this.availableTags = res.tags;
+    } catch {
+      // Ignorar si falla al cargar en offline/inactivo
+    }
+  }
+
+  private async handleTagInput(): Promise<void> {
+    if (!this.tagInputField) {
+      return;
+    }
+    const raw = this.tagInputField.value.trim().toLowerCase().replace(/^#/, '');
+    if (!raw) {
+      return;
+    }
+
+    if (this.selectedTags.length >= 7) {
+      if (this.tagsError) {
+        this.tagsError.textContent = 'Maximum 7 tags per task';
+      }
+      return;
+    }
+
+    if (this.selectedTags.some((t) => t.name === raw)) {
+      this.tagInputField.value = '';
+      return;
+    }
+
+    if (this.tagsError) {
+      this.tagsError.textContent = '';
+    }
+
+    let tag = this.availableTags.find((t) => t.name === raw);
+    if (!tag) {
+      try {
+        tag = await tagsApi.createTag(raw);
+        this.availableTags.push(tag);
+        window.dispatchEvent(new CustomEvent('tags-updated'));
+      } catch (err) {
+        if (this.tagsError) {
+          this.tagsError.textContent = err instanceof Error ? err.message : 'Failed to create tag';
+        }
+        return;
+      }
+    }
+
+    this.selectedTags.push(tag);
+    this.tagInputField.value = '';
+    this.renderTagChips();
+  }
+
+  private renderTagChips(): void {
+    if (!this.tagChipsWrapper) {
+      return;
+    }
+    this.tagChipsWrapper.innerHTML = '';
+    for (const tag of this.selectedTags) {
+      const chip = document.createElement('span');
+      chip.className = 'tag-chip';
+      chip.textContent = `#${tag.name}`;
+
+      const removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      removeBtn.className = 'tag-chip-remove';
+      removeBtn.setAttribute('aria-label', `Remove tag ${tag.name}`);
+      removeBtn.textContent = '×';
+      removeBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.selectedTags = this.selectedTags.filter((t) => t.tag_id !== tag.tag_id);
+        this.renderTagChips();
+      });
+
+      chip.appendChild(removeBtn);
+      this.tagChipsWrapper.appendChild(chip);
+    }
   }
 
   private updatePriorityHelper(value: string): void {
@@ -199,6 +300,7 @@ export class TaskForm extends FormHandler {
       priority_id: this.getPriorityValue(),
       due_date: this.fields.due_date?.input?.value || null,
       completed: this.elements.completedInput?.checked ?? false,
+      tag_ids: this.selectedTags.map((t) => t.tag_id),
     };
   }
 
@@ -210,6 +312,7 @@ export class TaskForm extends FormHandler {
       priority_id: this.getPriorityValue(),
       due_date: dueDateValue ?? this.editingTask?.due_date ?? null,
       completed: this.elements.completedInput?.checked ?? false,
+      tag_ids: this.selectedTags.map((t) => t.tag_id),
     };
   }
 
@@ -292,12 +395,22 @@ export class TaskForm extends FormHandler {
     if (this.submitBtn) {
       this.submitBtn.textContent = 'Update Task';
     }
+    this.selectedTags = [...(task.tags || [])];
+    this.renderTagChips();
     setTimeout(() => this.fields.title?.input?.focus(), 50);
   }
 
   resetForm(): void {
     this.editingTaskId = null;
     this.editingTask = null;
+    this.selectedTags = [];
+    if (this.tagInputField) {
+      this.tagInputField.value = '';
+    }
+    if (this.tagsError) {
+      this.tagsError.textContent = '';
+    }
+    this.renderTagChips();
     if (this.elements.idInput) {
       this.elements.idInput.value = '';
     }

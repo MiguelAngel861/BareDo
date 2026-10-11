@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Any
 from uuid import uuid4
 
@@ -40,7 +40,7 @@ def register_middleware(app: Flask):
     @app.before_request
     def log_request():
         g.request_id = uuid4().hex
-        request._start_time = datetime.utcnow()
+        request._start_time = datetime.now(UTC)
 
     @app.after_request
     def log_response(response):
@@ -48,9 +48,8 @@ def register_middleware(app: Flask):
             return response
 
         request_id = getattr(g, "request_id", None)
-        duration = (
-            datetime.utcnow() - getattr(request, "_start_time", datetime.utcnow())
-        ).total_seconds() * 1000
+        start_time = getattr(request, "_start_time", None) or datetime.now(UTC)
+        duration = (datetime.now(UTC) - start_time).total_seconds() * 1000
 
         log_data = {
             "request_id": request_id,

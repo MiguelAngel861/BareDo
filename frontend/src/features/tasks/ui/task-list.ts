@@ -1,4 +1,5 @@
 import { getPriorityLabel, prioritiesApi } from '@/features/priorities/index.ts';
+import { tagsApi } from '@/features/tags/index.ts';
 import { CustomDropdown, showModal, showToast } from '@/shared/ui/index.ts';
 import { SafeRenderer, clearChildren } from '@/shared/utils/dom-utils.ts';
 import { tasksApi } from '../api.ts';
@@ -13,6 +14,7 @@ interface TaskListElements {
   searchInput: HTMLInputElement | null;
   filterSelect: HTMLElement | null;
   filterPriority: HTMLElement | null;
+  filterTag: HTMLElement | null;
 }
 
 interface Filters {
@@ -21,6 +23,7 @@ interface Filters {
   title?: string;
   completed?: boolean | undefined;
   priority_id?: number | undefined;
+  tag_ids?: string | undefined;
 }
 
 export class TaskList {
@@ -33,6 +36,7 @@ export class TaskList {
   private debounceTimer: ReturnType<typeof setTimeout> | null = null;
   private readonly elements: TaskListElements;
   private priorityDescriptions = new Map<number, string>();
+  private tagDropdown: CustomDropdown | null = null;
 
   constructor(toastContainer: HTMLElement, onEdit: (task: Task) => void) {
     this.toastContainer = toastContainer;
@@ -47,6 +51,7 @@ export class TaskList {
       searchInput: document.getElementById('search-title') as HTMLInputElement | null,
       filterSelect: document.getElementById('filter-completed'),
       filterPriority: document.getElementById('filter-priority'),
+      filterTag: document.getElementById('filter-tag'),
     };
 
     this.elements.prevBtn?.addEventListener('click', () => this.changePage(this.currentPage - 1));
@@ -63,11 +68,35 @@ export class TaskList {
       this.setFilter('priority_id', value);
     });
 
+    if (this.elements.filterTag) {
+      this.tagDropdown = new CustomDropdown(this.elements.filterTag, (value) => {
+        this.setFilter('tag_ids', value);
+      });
+    }
+
     this.loadPriorities();
+    this.loadTags();
+
+    window.addEventListener('tags-updated', () => {
+      this.loadTags();
+    });
   }
 
   private async loadPriorities(): Promise<void> {
     this.priorityDescriptions = await prioritiesApi.getDescriptions();
+  }
+
+  private async loadTags(): Promise<void> {
+    try {
+      const res = await tagsApi.getTags();
+      const options = [
+        { value: '', label: 'All Tags' },
+        ...res.tags.map((t) => ({ value: String(t.tag_id), label: `#${t.name}` })),
+      ];
+      this.tagDropdown?.setOptions(options);
+    } catch (error) {
+      console.error('[tasks] failed to load tags for filter:', error);
+    }
   }
 
   debounceSearch(value: string): void {
@@ -94,6 +123,12 @@ export class TaskList {
       } else {
         this.filters.priority_id = Number(value);
       }
+    } else if (key === 'tag_ids') {
+      if (value === '' || value === undefined) {
+        this.filters.tag_ids = undefined;
+      } else {
+        this.filters.tag_ids = String(value);
+      }
     }
     this.currentPage = 1;
     this.load();
@@ -113,6 +148,7 @@ export class TaskList {
         title: this.filters.title,
         completed: this.filters.completed,
         priority_id: this.filters.priority_id,
+        tag_ids: this.filters.tag_ids,
       });
       if (!data) {
         return;
@@ -190,6 +226,19 @@ export class TaskList {
           textContent: task.description,
         })
       );
+    }
+
+    if (task.tags && task.tags.length > 0) {
+      const tagsContainer = SafeRenderer.createElement('div', { className: 'task-tags' });
+      for (const tag of task.tags) {
+        tagsContainer.appendChild(
+          SafeRenderer.createElement('span', {
+            className: 'task-tag-badge',
+            textContent: `#${tag.name}`,
+          })
+        );
+      }
+      content.appendChild(tagsContainer);
     }
 
     const meta = SafeRenderer.createElement('div', { className: 'task-meta' });

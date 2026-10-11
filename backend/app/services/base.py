@@ -1,5 +1,5 @@
 from app.core.db import transactional
-from app.errors.exceptions import DatabaseError, NotFoundError
+from app.errors.exceptions import DatabaseError, DomainError
 from app.repositories.base import BaseRepository
 
 
@@ -16,9 +16,7 @@ class BaseService:
             repo = self._get_repo(session)
             try:
                 return fn(repo)
-            except NotFoundError:
-                raise
-            except DatabaseError:
+            except DomainError:
                 raise
             except Exception as exc:
                 raise DatabaseError(str(exc)) from exc

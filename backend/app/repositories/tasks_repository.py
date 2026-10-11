@@ -1,3 +1,4 @@
+from app.models.tags import Tags
 from app.models.tasks import Tasks
 from app.repositories.base import BaseRepository
 
@@ -6,7 +7,7 @@ class TasksRepository(BaseRepository[Tasks]):
     sortable_columns = {
         "due_date": Tasks.due_date,
         "completed": Tasks.completed,
-        "priority": Tasks.priority_id,
+        "priority_id": Tasks.priority_id,
     }
 
     def __init__(self, session) -> None:
@@ -29,5 +30,9 @@ class TasksRepository(BaseRepository[Tasks]):
         priority_id = filters.get("priority_id")
         if priority_id is not None:
             stmt = stmt.where(Tasks.priority_id == priority_id)
+
+        tag_ids = filters.get("tag_ids")
+        if tag_ids:
+            stmt = stmt.where(Tasks.tags.any(Tags.tag_id.in_(tag_ids)))
 
         return stmt

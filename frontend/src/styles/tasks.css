@@ -265,6 +265,59 @@ section h2 {
   box-shadow: var(--shadow-hard-hover);
 }
 
+/* ===== Tag Chips & Inputs ===== */
+.field-hint {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+  font-weight: 400;
+  text-transform: none;
+}
+
+.tag-chips-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.tag-chips-wrapper:empty {
+  display: none;
+}
+
+.tag-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 6px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: lowercase;
+  background-color: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--text);
+  line-height: 1.4;
+}
+
+.tag-chip-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0;
+  font-size: 0.875rem;
+  line-height: 1;
+  font-weight: 700;
+}
+
+.tag-chip-remove:hover {
+  color: var(--danger);
+}
+
 #form-error {
   padding: 10px;
   border: 2px solid var(--danger);
@@ -575,6 +628,28 @@ section h2 {
   color: var(--text-muted);
   line-height: 1.4;
   min-height: 1em;
+}
+
+/* ===== Task Card Tags ===== */
+.task-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 6px 0 8px 0;
+}
+
+.task-tag-badge {
+  display: inline-block;
+  padding: 1px 6px;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: lowercase;
+  border: 1px solid var(--border);
+  background-color: var(--surface);
+  color: var(--text-muted);
+  line-height: 1.4;
 }
 
 /* ===== Botones de Acción Estilo Badge Textual (G3) ===== */

@@ -1,9 +1,12 @@
-def parse_sort(sort_str: str | None, allowed_fields: list[str]) -> list[tuple[str, bool]]:
+type SortField = tuple[str, bool]
+
+
+def parse_sort(sort_str: str | None, allowed_fields: list[str]) -> list[SortField]:
     """Parse sort string into list of (field, desc) tuples."""
     if not sort_str:
         return []
 
-    fields: list[tuple[str, bool]] = []
+    fields: list[SortField] = []
 
     for raw in sort_str.split(","):
         raw = raw.strip()

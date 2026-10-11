@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { TagSchema } from '../tags/schemas.ts';
 
 export const TaskCreateSchema = z.object({
   title: z.string().min(1).max(40),
@@ -6,6 +7,7 @@ export const TaskCreateSchema = z.object({
   priority_id: z.number().int().positive().default(3),
   due_date: z.string().date().nullable().optional(),
   completed: z.boolean().default(false),
+  tag_ids: z.array(z.number().int()).max(7).optional(),
 });
 
 export const TaskUpdateSchema = z.object({
@@ -14,6 +16,7 @@ export const TaskUpdateSchema = z.object({
   priority_id: z.number().int().positive().optional(),
   due_date: z.string().date().nullable().optional(),
   completed: z.boolean().optional(),
+  tag_ids: z.array(z.number().int()).max(7).optional(),
 });
 
 export const TaskResponseSchema = z.object({
@@ -25,6 +28,7 @@ export const TaskResponseSchema = z.object({
   completed: z.boolean(),
   created_at: z.string(),
   updated_at: z.string(),
+  tags: z.array(TagSchema).default([]),
 });
 
 export const TaskListParamsSchema = z.object({
@@ -34,6 +38,7 @@ export const TaskListParamsSchema = z.object({
   completed: z.boolean().optional(),
   priority_id: z.number().int().positive().optional(),
   sort: z.string().optional(),
+  tag_ids: z.union([z.string(), z.array(z.number().int())]).optional(),
 });
 
 export const PaginationMetaSchema = z.object({

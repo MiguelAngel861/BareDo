@@ -1,7 +1,7 @@
 import json
 import logging
 import os
-from datetime import datetime
+from datetime import UTC, datetime
 from logging.handlers import RotatingFileHandler
 
 from flask import Flask
@@ -10,7 +10,7 @@ from flask import Flask
 class JSONFormatter(logging.Formatter):
     def format(self, record):
         log_data = {
-            "timestamp": datetime.utcnow().isoformat() + "Z",
+            "timestamp": datetime.now(UTC).isoformat(),
             "level": record.levelname,
             "logger": record.name,
             "message": record.getMessage(),

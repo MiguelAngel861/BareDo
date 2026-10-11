@@ -2,6 +2,8 @@ from datetime import UTC, datetime
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
+from app.api.v1.schemas.tags_schemas import TagBody
+
 
 class TaskBase(BaseModel):
     title: str = Field(min_length=5, max_length=40)
@@ -16,8 +18,8 @@ class TaskBody(TaskBase):
     due_date: datetime
     created_at: datetime
     updated_at: datetime
+    tags: list[TagBody] = Field(default_factory=list)
 
-    # Compatibility with ORM models
     model_config = ConfigDict(from_attributes=True, extra="forbid")
 
 
@@ -25,13 +27,13 @@ class TaskResponse(BaseModel):
     tasks: list[TaskBody]
     meta: dict
 
-    # Compatibility with ORM models
     model_config = ConfigDict(from_attributes=True, extra="forbid")
 
 
 class TaskCreate(TaskBase):
     completed: bool = Field(default=False)
     due_date: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    tag_ids: list[int] | None = Field(default=None, max_length=7)
 
     model_config = ConfigDict(extra="forbid")
 
@@ -39,6 +41,7 @@ class TaskCreate(TaskBase):
 class TaskUpdate(TaskBase):
     completed: bool
     due_date: datetime
+    tag_ids: list[int] | None = Field(default=None, max_length=7)
 
     model_config = ConfigDict(extra="forbid")
 
@@ -49,6 +52,7 @@ class TaskPatch(BaseModel):
     completed: bool | None = None
     priority_id: int | None = Field(default=None, ge=1, le=5)
     due_date: datetime | None = None
+    tag_ids: list[int] | None = Field(default=None, max_length=7)
 
     model_config = ConfigDict(extra="forbid")
 
@@ -61,6 +65,7 @@ class TaskListQuery(BaseModel):
     description: str | None = None
     completed: bool | None = None
     priority_id: int | None = Field(default=None, ge=1, le=5)
+    tag_ids: str | None = None
 
     model_config = ConfigDict(extra="forbid")
 
@@ -85,6 +90,15 @@ class TaskListQuery(BaseModel):
         if isinstance(v, str) and v.strip() == "":
             return None
         return v
+
+    def get_parsed_tag_ids(self) -> list[int] | None:
+        if not self.tag_ids:
+            return None
+        try:
+            parsed = [int(item.strip()) for item in self.tag_ids.split(",") if item.strip()]
+            return parsed if parsed else None
+        except ValueError:
+            return None
 
 
 class TaskPath(BaseModel):

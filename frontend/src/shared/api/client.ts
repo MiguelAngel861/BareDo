@@ -1,5 +1,5 @@
 import ky from 'ky';
-import type { ZodSchema } from 'zod';
+import type { ZodType } from 'zod';
 import {
   clear,
   getAccessToken,
@@ -47,6 +47,8 @@ async function refreshAccessToken(): Promise<void> {
   }
 }
 
+let hasNotifiedServerReady = false;
+
 export const kyInstance = ky.create({
   prefixUrl: import.meta.env.VITE_API_BASE_URL || '/api/v1',
   timeout: 60000,
@@ -77,7 +79,8 @@ export const kyInstance = ky.create({
       async (request, _options, response, state) => {
         console.log(`[api] ${response.status} ${request.url} (retry: ${state.retryCount})`);
 
-        if (response.ok) {
+        if (response.ok && !hasNotifiedServerReady) {
+          hasNotifiedServerReady = true;
           window.dispatchEvent(new CustomEvent('server-ready'));
         }
 
@@ -109,9 +112,11 @@ export const kyInstance = ky.create({
   },
 });
 
+// biome-ignore lint/suspicious/noExplicitAny: Required to decouple Output type from Input type in schemas with transforms/defaults
 export async function validatedRequest<T>(
   requestFn: () => Promise<unknown>,
-  schema: ZodSchema<T>
+  // biome-ignore lint/suspicious/noExplicitAny: Decouple Output from Input
+  schema: ZodType<T, any, any>
 ): Promise<T> {
   const data = await requestFn();
   try {

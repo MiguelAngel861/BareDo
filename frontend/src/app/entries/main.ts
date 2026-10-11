@@ -58,9 +58,13 @@ function init(): void {
 
   list.load();
 
-  window.addEventListener('server-ready', () => {
-    list.loadRetry();
-  });
+  window.addEventListener(
+    'server-ready',
+    () => {
+      list.loadRetry();
+    },
+    { once: true }
+  );
 }
 
 function goToLogin(reason = ''): void {

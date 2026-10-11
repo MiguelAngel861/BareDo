@@ -7,6 +7,7 @@ from pydantic import BaseModel
 from app.api.v1.routes.auth import auth_bp
 from app.api.v1.routes.health import health_bp
 from app.api.v1.routes.priorities import priorities_bp
+from app.api.v1.routes.tags import tags_bp
 from app.api.v1.routes.tasks import tasks_bp
 from app.core.config import SQLITE_PATH, config
 from app.core.cors import setup_cors
@@ -70,6 +71,7 @@ def create_app(config_name: str | None = None) -> BareDoApp:
 
     # Register blueprints
     app.register_api(tasks_bp)
+    app.register_api(tags_bp)
     app.register_api(priorities_bp)
     app.register_api(auth_bp)
     app.register_api(health_bp)

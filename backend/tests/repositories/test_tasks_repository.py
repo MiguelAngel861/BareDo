@@ -168,7 +168,7 @@ def test_get_all_sort_by_priority_desc(make_user, make_task, tasks_repo):
         page=1,
         per_page=10,
         filters=None,
-        sort_fields=[("priority", True)],
+        sort_fields=[("priority_id", True)],
         user_id=user.user_id,
     )
 
@@ -186,7 +186,7 @@ def test_get_all_sort_by_priority_asc(make_user, make_task, tasks_repo):
         page=1,
         per_page=10,
         filters=None,
-        sort_fields=[("priority", False)],
+        sort_fields=[("priority_id", False)],
         user_id=user.user_id,
     )
 

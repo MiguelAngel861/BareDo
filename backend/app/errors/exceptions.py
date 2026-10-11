@@ -26,3 +26,9 @@ class DatabaseError(DomainError):
     """Generic Database and SQLAlchemy related errors"""
 
     pass
+
+
+class ConflictError(DomainError):
+    """Resource Conflict Errors (e.g. duplicate resource)"""
+
+    pass

@@ -3,10 +3,11 @@ import typing
 
 from flask import Flask, current_app, make_response, request
 from flask_jwt_extended import JWTManager
-from pydantic import ValidationError as PydanticValidationError
+from pydantic import ValidationError
 from werkzeug.exceptions import HTTPException
 
 from app.errors.exceptions import (
+    ConflictError,
     DatabaseError,
     DataValidationError,
     NotFoundError,
@@ -25,7 +26,7 @@ def _sanitize_pydantic_errors(errors: list[dict]) -> list[dict]:
     return clean
 
 
-def openapi_validation_error_callback(error: PydanticValidationError):
+def openapi_validation_error_callback(error: ValidationError):
     hints = {}
     if request.endpoint and request.endpoint in current_app.view_functions:
         vf = current_app.view_functions[request.endpoint]
@@ -90,15 +91,6 @@ def register_error_handlers(app: Flask):
 
         return api_error(code="INTERNAL_ERROR", message=message, status=500, details=str(error))
 
-    @app.errorhandler(PydanticValidationError)
-    def validation_error_handler(error: PydanticValidationError):
-        return api_error(
-            code="BAD_REQUEST",
-            message="Invalid payload",
-            status=400,
-            details=str(error),
-        )
-
     @app.errorhandler(DataValidationError)
     def domain_validation_error_handler(error: DataValidationError):
         return api_error(
@@ -123,6 +115,15 @@ def register_error_handlers(app: Flask):
             code="AUTHENTICATION_ERROR",
             message=str(error) or "Authentication Required",
             status=401,
+            details=None,
+        )
+
+    @app.errorhandler(ConflictError)
+    def conflict_error_handler(error: ConflictError):
+        return api_error(
+            code="CONFLICT",
+            message=str(error) or "Resource already exists",
+            status=409,
             details=None,
         )
 

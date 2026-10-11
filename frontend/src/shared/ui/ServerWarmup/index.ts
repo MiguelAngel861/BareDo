@@ -26,7 +26,7 @@ export function initServerWarmup(): void {
       if (delayTimer) {
         clearTimeout(delayTimer);
       }
-      completeWarmup(true);
+      completeWarmup(true, false);
     }
   };
   window.addEventListener('server-ready', onServerReady);
@@ -155,7 +155,7 @@ export function initServerWarmup(): void {
     startTimer();
   };
 
-  const completeWarmup = (success: boolean) => {
+  const completeWarmup = (success: boolean, dispatchEvent = true) => {
     isResolved = true;
     window.removeEventListener('server-ready', onServerReady);
     if (delayTimer) {
@@ -169,7 +169,7 @@ export function initServerWarmup(): void {
       clearTimeout(pollTimeout);
     }
 
-    if (success) {
+    if (success && dispatchEvent) {
       window.dispatchEvent(new CustomEvent('server-ready'));
     }
 

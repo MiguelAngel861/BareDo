@@ -82,7 +82,7 @@ def test_sort_tasks_by_priority(client, auth_headers, make_task):
     make_task(user_id, title="High priority task", priority_id=5)
     make_task(user_id, title="Medium priority task", priority_id=3)
 
-    resp = client.get("/api/v1/tasks?sort=-priority", headers=headers)
+    resp = client.get("/api/v1/tasks?sort=-priority_id", headers=headers)
     assert resp.status_code == 200
     data = resp.get_json()
     assert len(data["tasks"]) == 3

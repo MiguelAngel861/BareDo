@@ -32,6 +32,13 @@ function toSearchParams(params: TaskListParams): SearchParams {
   if (params.sort) {
     result.sort = params.sort;
   }
+  if (params.tag_ids !== undefined) {
+    if (Array.isArray(params.tag_ids)) {
+      result.tag_ids = params.tag_ids.join(',');
+    } else {
+      result.tag_ids = params.tag_ids;
+    }
+  }
   return result;
 }
 
@@ -45,6 +52,7 @@ function mergeParams(params: Partial<TaskListParams>): TaskListParams {
     completed: params.completed,
     priority_id: params.priority_id,
     sort: params.sort,
+    tag_ids: params.tag_ids,
   };
 }
 

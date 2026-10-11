@@ -1,9 +1,13 @@
-from datetime import date, datetime
+from datetime import UTC, date, datetime
+from typing import TYPE_CHECKING
 
 from sqlalchemy import ForeignKey, String, false, func
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.extensions import Base
+
+if TYPE_CHECKING:
+    from app.models.tags import Tags
 
 
 class Tasks(Base):
@@ -22,12 +26,19 @@ class Tasks(Base):
     completed: Mapped[bool] = mapped_column(nullable=False, default=False, server_default=false())
 
     created_at: Mapped[datetime] = mapped_column(
-        nullable=False, default=datetime.now, server_default=func.current_timestamp()
+        nullable=False, default=lambda: datetime.now(UTC), server_default=func.now()
     )
     updated_at: Mapped[datetime] = mapped_column(
         nullable=False,
-        default=datetime.now,
-        onupdate=datetime.now,
-        server_default=func.current_timestamp(),
-        server_onupdate=func.current_timestamp(),
+        default=lambda: datetime.now(UTC),
+        onupdate=lambda: datetime.now(UTC),
+        server_default=func.now(),
+        server_onupdate=func.now(),
+    )
+
+    tags: Mapped[list["Tags"]] = relationship(
+        "Tags",
+        secondary="task_tags",
+        back_populates="tasks",
+        lazy="selectin",
     )

@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import UTC, datetime
 
 from sqlalchemy import String, func
 from sqlalchemy.orm import Mapped, mapped_column
@@ -14,7 +14,7 @@ class Users(Base):
     username: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
     created_at: Mapped[datetime] = mapped_column(
-        nullable=False, default=datetime.now, server_default=func.current_timestamp()
+        nullable=False, default=lambda: datetime.now(UTC), server_default=func.now()
     )
 
     def set_password(self, password: str) -> None:

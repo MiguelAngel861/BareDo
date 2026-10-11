@@ -71,6 +71,18 @@
                         </div>
                     </div>
                 </div>
+                <div class="filter-group">
+                    <label id="filter-tag-label" class="visually-hidden">Filter by tag</label>
+                    <div class="custom-dropdown" id="filter-tag" data-value="">
+                        <button type="button" class="dropdown-trigger" aria-expanded="false" aria-haspopup="listbox">
+                            <span class="dropdown-value">All Tags</span>
+                            <span class="dropdown-icon">▼</span>
+                        </button>
+                        <div class="dropdown-options" id="filter-tag-options" role="listbox" aria-labelledby="filter-tag-label">
+                            <div class="dropdown-option selected" data-value="" role="option" aria-selected="true" tabindex="-1">All Tags</div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div id="toast-container"></div>
             <ul id="task-list" class="task-list" role="list"></ul>
@@ -128,6 +140,14 @@
                     </div>
                     <span class="priority-helper" id="priority-helper"></span>
                     <span class="error-message" id="priority_id-error"></span>
+                </div>
+                <div class="form-group">
+                    <label id="task-tags-label" for="tag-input-field">Tags <span class="field-hint">(max 7, press Enter)</span></label>
+                    <div class="tag-input-container" id="task-tags-container">
+                        <div class="tag-chips-wrapper" id="tag-chips-wrapper"></div>
+                        <input type="text" id="tag-input-field" placeholder="Add tag..." maxlength="30" autocomplete="off">
+                    </div>
+                    <span class="error-message" id="tags-error"></span>
                 </div>
                 <div class="form-group">
                     <label class="checkbox-label" for="completed">
