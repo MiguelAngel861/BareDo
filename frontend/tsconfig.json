@@ -10,7 +10,8 @@
     "isolatedModules": true,
     "moduleDetection": "force",
     "noEmit": true,
-    "jsx": "preserve",
+    "jsx": "react-jsx",
+    "jsxImportSource": "preact",
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
@@ -20,13 +21,14 @@
     "noImplicitOverride": true,
     "paths": {
       "@/*": ["./src/*"],
-      "@/features/*": ["./src/features/*"],
+      "@/slices/*": ["./src/slices/*"],
       "@/shared/*": ["./src/shared/*"],
       "@/app/*": ["./src/app/*"],
       "@/pages/*": ["./src/pages/*"],
-      "@/styles/*": ["./src/styles/*"]
+      "@/styles/*": ["./src/styles/*"],
+      "@tests/*": ["./tests/*"]
     }
   },
-  "include": ["src/**/*", "vite.config.ts", "vitest.config.ts"],
+  "include": ["src/**/*", "tests/**/*", "vite.config.ts", "vitest.config.ts"],
   "exclude": ["node_modules", "dist"]
 }

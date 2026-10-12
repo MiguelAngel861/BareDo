@@ -50,4 +50,9 @@ Todo lo operativo está en `docs/PLANNING.md`: reglas, validación, grilling, fl
 - **No comentar código salvo que se pida.**
 - **Commits**: mensaje en español, corto, imperativo. Nunca commitear sin pedido explícito del usuario.
 - **Docs no-code**: `AGENTS.md` y `docs/PLANNING.md` NO se editan sin pedido explícito.
+- **Nomenclatura en Frontend**:
+  - **Tests**: Sufijo por punto co-localizado con el archivo probado (`*.test.ts`, `*.test.tsx`). La suite global y utilidades van en `frontend/tests/` (`setup.ts`, `utils.ts`).
+  - **Componentes UI y Páginas**: PascalCase simple sin sufijo técnico (`TaskCard.tsx`, `HomePage.tsx`). La extensión `.tsx` ya denota su propósito visual.
+  - **Hooks**: CamelCase con prefijo estándar `use` sin sufijo (`useTasks.ts`).
+  - **Servicios / API / Esquemas / Tipos**: Sufijo descriptivo por punto cuando el contexto o el dominio lo requiera (`*.api.ts`, `*.service.ts`, `*.schemas.ts`, `*.types.ts`), evitando sobre-etiquetado redundante con el nombre de la carpeta.
 - **Verificar antes de asumir**: si un paso requiere un dato no confirmado (config, migraciones, deps), verificar en el código antes de ejecutar.
