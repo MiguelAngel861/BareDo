@@ -1,4 +1,4 @@
-import { ConfirmModal } from '@/shared/ui/index.ts';
+import { Button, ConfirmModal } from '@/shared/ui/index.ts';
 import { authSignal, logout } from '@/slices/auth/index.ts';
 import { fetchPriorities } from '@/slices/priorities/index.ts';
 import { fetchTags } from '@/slices/tags/index.ts';
@@ -45,11 +45,17 @@ export function HomePage() {
           <h1 class="site-title">BareDo</h1>
           <div id="auth-section" class="auth-minimal">
             <span id="auth-status" aria-live="polite" style={{ color: 'var(--success)' }}>
-              {user?.username ? `USER: ${user.username.toUpperCase()}` : 'Authenticated'}
+              {user?.username ? user.username : 'Authenticated'}
             </span>
-            <button id="logout-btn" type="button" class="btn ghost" onClick={() => logout()}>
+            <Button
+              id="logout-btn"
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => logout()}
+            >
               Logout
-            </button>
+            </Button>
           </div>
         </div>
       </header>
@@ -63,14 +69,15 @@ export function HomePage() {
                 {totalItems} {totalItems === 1 ? 'task' : 'tasks'}
               </span>
             </div>
-            <button
+            <Button
               type="button"
               id="open-create-task-btn"
-              class="btn-create-task"
+              variant="primary"
+              size="md"
               onClick={() => openCreateModal()}
             >
               + CREATE TASK
-            </button>
+            </Button>
           </header>
 
           <TaskFiltersBar />

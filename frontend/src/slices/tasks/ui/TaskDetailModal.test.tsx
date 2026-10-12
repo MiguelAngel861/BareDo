@@ -45,11 +45,11 @@ describe('TaskDetailModal component', () => {
     expect(screen.getByText('#999')).toBeInTheDocument();
   });
 
-  it('closes modal when Close button is clicked', () => {
+  it('closes modal when header Close button is clicked', () => {
     taskState.viewingTaskSignal.value = mockTask;
     render(<TaskDetailModal />);
 
-    const closeBtn = screen.getByRole('button', { name: /close/i });
+    const closeBtn = screen.getByRole('button', { name: /close|cerrar/i });
     fireEvent.click(closeBtn);
 
     expect(taskState.viewingTaskSignal.value).toBeNull();

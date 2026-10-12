@@ -1,4 +1,4 @@
-import { PopoutModal } from '@/shared/ui/index.ts';
+import { Button, PopoutModal } from '@/shared/ui/index.ts';
 import { PriorityDropdown } from '@/slices/priorities/index.ts';
 import { type Tag, TagInputChips } from '@/slices/tags/index.ts';
 import { useEffect, useState } from 'preact/hooks';
@@ -170,13 +170,27 @@ export function TaskPopoutModal() {
           </label>
         </div>
 
-        <button type="submit" id="submit-btn" disabled={isSubmitting}>
+        <Button
+          type="submit"
+          id="submit-btn"
+          variant="primary"
+          size="lg"
+          fullWidth={true}
+          isLoading={isSubmitting}
+        >
           {isSubmitting ? 'Saving...' : isEditing ? 'Update Task' : 'Create Task'}
-        </button>
+        </Button>
 
-        <button type="button" id="cancel-edit-btn" class="secondary" onClick={closeFormModal}>
+        <Button
+          type="button"
+          id="cancel-edit-btn"
+          variant="secondary"
+          size="md"
+          fullWidth={true}
+          onClick={closeFormModal}
+        >
           Cancel
-        </button>
+        </Button>
       </form>
 
       {formError && (

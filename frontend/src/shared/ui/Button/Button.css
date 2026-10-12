@@ -1,0 +1,182 @@
+/* ===== Button Component - Neo-Brutalist Design System ===== */
+
+.app-btn {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  text-transform: uppercase;
+  border-radius: 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  line-height: 1;
+  text-decoration: none;
+  box-sizing: border-box;
+  transition:
+    background-color 0.15s cubic-bezier(0.16, 1, 0.3, 1),
+    color 0.15s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.15s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.12s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.1s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.app-btn--full-width {
+  width: 100%;
+}
+
+/* ===== Sizes ===== */
+
+/* SM: Compact inline actions (TaskCard, Pagination, Header, Modal Close) */
+.app-btn--sm {
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  padding: 5px 12px;
+  min-height: 32px;
+  border-width: 1px;
+  border-style: solid;
+  box-shadow: var(--shadow-action);
+}
+
+@media (hover: hover) {
+  .app-btn--sm:hover:not(:disabled) {
+    transform: translate(-1px, -1px);
+    box-shadow: var(--shadow-action-hover);
+  }
+}
+
+.app-btn--sm:active:not(:disabled) {
+  transform: translate(1px, 1px);
+  box-shadow: var(--shadow-action-active);
+}
+
+/* MD: Standard interactive buttons (Dashboard CTA, Modal Footers) */
+.app-btn--md {
+  font-size: 0.875rem;
+  letter-spacing: 0.05em;
+  padding: 8px 16px;
+  min-height: 38px;
+  border-width: 1px;
+  border-style: solid;
+  box-shadow: var(--shadow-hard);
+}
+
+@media (hover: hover) {
+  .app-btn--md:hover:not(:disabled) {
+    transform: translate(-1px, -1px);
+    box-shadow: var(--shadow-hard-lg);
+  }
+}
+
+.app-btn--md:active:not(:disabled) {
+  transform: translate(1px, 1px);
+  box-shadow: var(--shadow-hard-hover);
+}
+
+/* LG: High-prominence form submissions */
+.app-btn--lg {
+  font-size: 0.875rem;
+  letter-spacing: 0.05em;
+  padding: 10px 18px;
+  min-height: 42px;
+  border-width: 1px;
+  border-style: solid;
+  box-shadow: var(--shadow-hard);
+}
+
+@media (hover: hover) {
+  .app-btn--lg:hover:not(:disabled) {
+    transform: translate(-1px, -1px);
+    box-shadow: var(--shadow-hard-lg);
+  }
+}
+
+.app-btn--lg:active:not(:disabled) {
+  transform: translate(1px, 1px);
+  box-shadow: var(--shadow-hard-hover);
+}
+
+/* ===== Variants ===== */
+
+/* Primary: Main call-to-action */
+.app-btn--primary {
+  background-color: var(--text);
+  color: var(--bg);
+  border-color: var(--text);
+}
+
+@media (hover: hover) {
+  .app-btn--primary:hover:not(:disabled) {
+    background-color: var(--surface);
+    color: var(--text);
+    border-color: var(--text);
+  }
+}
+
+/* Secondary: Neutral / supporting action */
+.app-btn--secondary {
+  background-color: var(--surface);
+  color: var(--text);
+  border-color: var(--border-strong);
+}
+
+@media (hover: hover) {
+  .app-btn--secondary:hover:not(:disabled) {
+    background-color: var(--text);
+    color: var(--bg);
+    border-color: var(--text);
+  }
+}
+
+/* Danger: Destructive / irreversible action */
+.app-btn--danger {
+  background-color: var(--surface);
+  color: var(--danger);
+  border-color: var(--danger);
+}
+
+@media (hover: hover) {
+  .app-btn--danger:hover:not(:disabled) {
+    background-color: var(--danger);
+    color: #ffffff;
+    border-color: var(--danger);
+  }
+}
+
+/* Ghost: Low-emphasis / subtle action */
+.app-btn--ghost {
+  background-color: transparent;
+  color: var(--text-muted);
+  border-color: var(--border);
+  box-shadow: none;
+}
+
+@media (hover: hover) {
+  .app-btn--ghost:hover:not(:disabled) {
+    background-color: var(--text);
+    color: var(--bg);
+    border-color: var(--text);
+    box-shadow: var(--shadow-action);
+  }
+}
+
+.app-btn--ghost:active:not(:disabled) {
+  box-shadow: var(--shadow-action-active);
+}
+
+/* ===== Focus & Disabled States ===== */
+
+.app-btn:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.app-btn:disabled {
+  border-color: var(--border);
+  color: var(--text-muted);
+  background-color: transparent;
+  box-shadow: none;
+  cursor: not-allowed;
+  transform: none;
+  opacity: 0.45;
+}

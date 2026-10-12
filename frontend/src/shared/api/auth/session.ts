@@ -38,7 +38,8 @@ export function isAccessTokenExpired(): boolean {
       return true;
     }
     const payload = JSON.parse(atob(parts[1]));
-    const expiresAt = payload.exp * 1000;
+    // Considerar expirado si le quedan menos de 10 segundos para prevenir desincronizaciones de reloj
+    const expiresAt = payload.exp * 1000 - 10000;
     return Date.now() >= expiresAt;
   } catch {
     return true;

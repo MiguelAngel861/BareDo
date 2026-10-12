@@ -1,3 +1,4 @@
+import { Button } from '@/shared/ui/index.ts';
 import { useLocation } from 'preact-iso';
 import { useState } from 'preact/hooks';
 import { PasswordSchema, UsernameSchema } from '../auth.schemas.ts';
@@ -163,9 +164,16 @@ export function RegisterForm() {
             </div>
           )}
 
-          <button type="submit" id="submit-btn" disabled={isSubmitting}>
+          <Button
+            type="submit"
+            id="submit-btn"
+            variant="primary"
+            size="lg"
+            fullWidth={true}
+            isLoading={isSubmitting}
+          >
             {submitText}
-          </button>
+          </Button>
         </form>
 
         <div class="switch-link">

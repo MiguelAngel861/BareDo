@@ -11,13 +11,20 @@ import { ApiErrorClass } from '../errors/index.ts';
 
 type TokenGetter = () => string | null;
 type UnauthorizedHandler = () => void;
+type TokenRefreshedHandler = (newToken: string) => void;
 
 let customGetToken: TokenGetter | null = null;
 let customOnUnauthorized: UnauthorizedHandler | null = null;
+let customOnTokenRefreshed: TokenRefreshedHandler | null = null;
 
-export function configureApiAuth(getter: TokenGetter, onUnauthorized: UnauthorizedHandler): void {
+export function configureApiAuth(
+  getter: TokenGetter,
+  onUnauthorized: UnauthorizedHandler,
+  onTokenRefreshed?: TokenRefreshedHandler
+): void {
   customGetToken = getter;
   customOnUnauthorized = onUnauthorized;
+  customOnTokenRefreshed = onTokenRefreshed || null;
 }
 
 let refreshPromise: Promise<void> | null = null;
@@ -46,6 +53,9 @@ async function refreshAccessToken(): Promise<void> {
     }>();
 
     setTokens(data);
+    if (customOnTokenRefreshed) {
+      customOnTokenRefreshed(data.access_token);
+    }
   })();
 
   try {

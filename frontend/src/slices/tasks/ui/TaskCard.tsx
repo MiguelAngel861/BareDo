@@ -1,3 +1,4 @@
+import { Button } from '@/shared/ui/index.ts';
 import { getPriorityDescription, getPriorityLabel } from '@/slices/priorities/index.ts';
 import {
   openEditModal,
@@ -57,37 +58,41 @@ export function TaskCard({ task }: { task: Task }) {
       </div>
 
       <div class="task-actions">
-        <button
+        <Button
           type="button"
-          class="secondary"
-          onClick={(e) => {
+          variant="secondary"
+          size="sm"
+          onClick={(e: MouseEvent) => {
             e.stopPropagation();
             openEditModal(task);
           }}
         >
           Edit
-        </button>
+        </Button>
 
-        <button
+        <Button
           type="button"
-          onClick={(e) => {
+          variant="secondary"
+          size="sm"
+          onClick={(e: MouseEvent) => {
             e.stopPropagation();
             toggleTaskComplete(task);
           }}
         >
           {task.completed ? 'Mark Pending' : 'Mark Complete'}
-        </button>
+        </Button>
 
-        <button
+        <Button
           type="button"
-          class="danger"
-          onClick={(e) => {
+          variant="danger"
+          size="sm"
+          onClick={(e: MouseEvent) => {
             e.stopPropagation();
             requestDeleteTask(task);
           }}
         >
           Delete
-        </button>
+        </Button>
       </div>
     </li>
   );

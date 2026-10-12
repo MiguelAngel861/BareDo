@@ -33,7 +33,14 @@ export function logout(): void {
 // Conectar el cliente HTTP Ky con el estado reactivo sin dependencias circulares
 configureApiAuth(
   () => authSignal.value.token,
-  () => logout()
+  () => logout(),
+  (newToken) => {
+    authSignal.value = {
+      ...authSignal.value,
+      token: newToken,
+      isAuthenticated: true,
+    };
+  }
 );
 
 export async function initAuth(): Promise<void> {

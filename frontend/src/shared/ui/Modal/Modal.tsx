@@ -1,5 +1,6 @@
 import type { ComponentChildren } from 'preact';
 import { useEffect, useRef } from 'preact/hooks';
+import { Button } from '../Button/index.ts';
 
 export function PopoutModal({
   isOpen,
@@ -49,9 +50,15 @@ export function PopoutModal({
       <div class="popout-container" ref={containerRef}>
         <header class="popout-header">
           <h2>{title}</h2>
-          <button type="button" class="btn-close" onClick={onClose} aria-label="Cerrar modal">
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={onClose}
+            aria-label="Cerrar modal"
+          >
             ESC / CLOSE
-          </button>
+          </Button>
         </header>
         {children}
       </div>
@@ -112,12 +119,12 @@ export function ConfirmModal({
         <h3>{title}</h3>
         <p>{message}</p>
         <div class="modal-actions">
-          <button type="button" class="secondary" onClick={onCancel}>
+          <Button type="button" variant="secondary" size="md" onClick={onCancel}>
             {cancelLabel}
-          </button>
-          <button type="button" class="danger" onClick={onConfirm}>
+          </Button>
+          <Button type="button" variant="danger" size="md" onClick={onConfirm}>
             {confirmLabel}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

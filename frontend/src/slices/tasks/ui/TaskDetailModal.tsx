@@ -1,4 +1,4 @@
-import { PopoutModal } from '@/shared/ui/index.ts';
+import { Button, PopoutModal } from '@/shared/ui/index.ts';
 import { getPriorityDescription, getPriorityLabel } from '@/slices/priorities/index.ts';
 import {
   closeViewModal,
@@ -101,17 +101,17 @@ export function TaskDetailModal() {
           )}
         </header>
 
-        <section class="task-detail-section">
+        <div class="task-detail-section">
           <h4 class="task-detail-section-title">Description</h4>
           {task.description ? (
             <div class="task-detail-description">{task.description}</div>
           ) : (
             <p class="task-detail-empty-text">No description provided for this task.</p>
           )}
-        </section>
+        </div>
 
         {task.tags && task.tags.length > 0 && (
-          <section class="task-detail-section">
+          <div class="task-detail-section task-detail-section--tags">
             <h4 class="task-detail-section-title">Tags</h4>
             <div class="task-tags">
               {task.tags.map((tag) => (
@@ -120,7 +120,7 @@ export function TaskDetailModal() {
                 </span>
               ))}
             </div>
-          </section>
+          </div>
         )}
 
         <footer class="task-detail-meta-grid">
@@ -139,21 +139,17 @@ export function TaskDetailModal() {
         </footer>
 
         <div class="task-detail-actions">
-          <button type="button" class="btn secondary" onClick={handleEdit}>
+          <Button type="button" variant="secondary" size="md" onClick={handleEdit}>
             Edit Task
-          </button>
+          </Button>
 
-          <button type="button" class="btn" onClick={handleToggle}>
+          <Button type="button" variant="primary" size="md" onClick={handleToggle}>
             {task.completed ? 'Mark Pending' : 'Mark Completed'}
-          </button>
+          </Button>
 
-          <button type="button" class="btn danger" onClick={handleDelete}>
+          <Button type="button" variant="danger" size="md" onClick={handleDelete}>
             Delete Task
-          </button>
-
-          <button type="button" class="btn ghost" onClick={closeViewModal}>
-            Close
-          </button>
+          </Button>
         </div>
       </div>
     </PopoutModal>

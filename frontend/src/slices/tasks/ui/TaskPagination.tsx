@@ -1,3 +1,4 @@
+import { Button } from '@/shared/ui/index.ts';
 import { changePage, paginationSignal } from '../tasks.state.ts';
 
 export function TaskPagination() {
@@ -9,27 +10,31 @@ export function TaskPagination() {
 
   return (
     <nav id="pagination" class="pagination" aria-label="Pagination">
-      <button
+      <Button
         type="button"
         id="prev-page"
+        variant="secondary"
+        size="sm"
         disabled={!meta.has_prev}
         onClick={() => changePage(meta.page - 1)}
       >
         Previous
-      </button>
+      </Button>
 
       <span id="page-indicator">
         Page {meta.page} of {meta.total_pages || 1}
       </span>
 
-      <button
+      <Button
         type="button"
         id="next-page"
+        variant="secondary"
+        size="sm"
         disabled={!meta.has_next}
         onClick={() => changePage(meta.page + 1)}
       >
         Next
-      </button>
+      </Button>
     </nav>
   );
 }
