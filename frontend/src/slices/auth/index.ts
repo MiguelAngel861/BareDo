@@ -1,5 +1,4 @@
-export { LoginForm } from './ui/LoginForm.tsx';
-export { RegisterForm } from './ui/RegisterForm.tsx';
+export { LoginForm, RegisterForm, AuthCard } from './ui/index.ts';
 export {
   authSignal,
   login,

@@ -1,126 +1,4 @@
-/* ===== Layout: mobile-first centrado a ancho completo ===== */
-body {
-  max-width: 100%;
-  margin: 0 auto;
-  padding: 1rem;
-}
-
-@media (min-width: 25rem) {
-  body {
-    padding: 1.25rem;
-  }
-}
-
-@media (min-width: 60rem) {
-  body {
-    max-width: 56rem;
-    padding: 2.5rem 1.5rem;
-  }
-}
-
-.site-header {
-  padding: 1rem 0;
-  border-bottom: 2px solid var(--text);
-  margin-bottom: 2rem;
-}
-
-.header-inner {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-}
-
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-}
-
-.header-cmd-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  padding: 6px 10px;
-  text-transform: uppercase;
-}
-
-.cmd-kbd {
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
-  padding: 1px 5px;
-  background-color: var(--bg);
-  border: 1px solid var(--border);
-  color: var(--text-muted);
-}
-
-#auth-section {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-#auth-status {
-  font-size: 0.8125rem;
-  font-family: var(--font-mono);
-  letter-spacing: 0.05em;
-  color: var(--text-muted);
-}
-
-/* ===== Layout Centrado de Dashboard ===== */
-#main {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-/* ===== Cabecera del Listado con Botón Disparador ===== */
-.section-header--minimal {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-}
-
-.section-header-left {
-  display: flex;
-  align-items: baseline;
-  gap: 12px;
-}
-
-.section-header-actions {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-}
-
-/* ===== Secciones Brutalistas ===== */
-section {
-  background: var(--surface);
-  border: 1px solid var(--text);
-  border-radius: 0;
-  padding: 1.75rem;
-  box-shadow: var(--shadow-hard);
-  position: relative;
-}
-
-section h2 {
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: 1.35rem;
-  letter-spacing: -0.02em;
-  margin-bottom: 0.5rem;
-  text-transform: uppercase;
-}
+/* ===== Componentes de Tareas (pendientes de co-localizar) ===== */
 
 /* ===== Botones de Formulario (Create / Update Task) ===== */
 .task-form #submit-btn,
@@ -249,6 +127,13 @@ section h2 {
   .filter-group {
     flex: none;
     width: 200px;
+  }
+
+  .filter-group--search {
+    flex: 1.5;
+    min-width: 240px;
+    max-width: 340px;
+    width: auto;
   }
 
   .filter-group input {

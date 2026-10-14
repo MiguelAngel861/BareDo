@@ -17,3 +17,4 @@ export {
   closeCommandPalette,
   toggleCommandPalette,
 } from './CommandPalette/index.ts';
+export { SearchBar, type SearchBarProps } from './SearchBar/index.ts';

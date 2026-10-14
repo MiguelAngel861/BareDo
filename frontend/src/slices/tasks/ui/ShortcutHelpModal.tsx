@@ -22,6 +22,7 @@ const SHORTCUT_GROUPS: ShortcutGroup[] = [
       { keys: ['J', '↓'], desc: 'Select next task in list', actionTag: 'CYCLE' },
       { keys: ['K', '↑'], desc: 'Select previous task in list', actionTag: 'CYCLE' },
       { keys: ['Enter'], desc: 'Open full preview & details for focused task' },
+      { keys: ['/'], desc: 'Focus global search bar', actionTag: 'SEARCH' },
     ],
   },
   {

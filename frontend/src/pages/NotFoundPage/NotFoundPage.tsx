@@ -1,4 +1,4 @@
-import '@/styles/404.css';
+import './NotFoundPage.css';
 
 export function NotFoundPage() {
   return (

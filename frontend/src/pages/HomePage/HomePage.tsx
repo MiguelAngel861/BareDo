@@ -46,6 +46,7 @@ import {
 } from '@/slices/tasks/index.ts';
 import { useLocation } from 'preact-iso';
 import { useEffect } from 'preact/hooks';
+import './HomePage.css';
 
 export function HomePage() {
   const location = useLocation();
@@ -173,7 +174,7 @@ export function HomePage() {
   }, []);
 
   return (
-    <>
+    <div class="home-layout">
       <a href="#main" class="skip-link">
         Skip to content
       </a>
@@ -288,6 +289,6 @@ export function HomePage() {
       />
 
       <ShortcutHelpModal isOpen={isShortcutModalOpen} onClose={closeShortcutHelpModal} />
-    </>
+    </div>
   );
 }

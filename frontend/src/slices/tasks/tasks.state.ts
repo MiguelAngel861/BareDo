@@ -114,19 +114,26 @@ export async function loadTasks(): Promise<void> {
 
 let searchDebounceTimeout: number | null = null;
 
-export function setSearch(title: string): void {
+export function setSearch(title: string, immediate = false): void {
   if (searchDebounceTimeout) {
     clearTimeout(searchDebounceTimeout);
+    searchDebounceTimeout = null;
   }
 
-  searchDebounceTimeout = window.setTimeout(() => {
+  const applySearch = () => {
     filtersSignal.value = {
       ...filtersSignal.value,
       title: title.trim() || undefined,
       page: 1,
     };
     loadTasks();
-  }, 300);
+  };
+
+  if (immediate) {
+    applySearch();
+  } else {
+    searchDebounceTimeout = window.setTimeout(applySearch, 300);
+  }
 }
 
 export function setFilter<K extends keyof TaskListParams>(key: K, value: TaskListParams[K]): void {

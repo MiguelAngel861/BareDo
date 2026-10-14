@@ -1,4 +1,4 @@
-import { Dropdown, type DropdownOption } from '@/shared/ui/index.ts';
+import { Dropdown, type DropdownOption, SearchBar } from '@/shared/ui/index.ts';
 import { PriorityDropdown } from '@/slices/priorities/index.ts';
 import { TagFilterDropdown } from '@/slices/tags/index.ts';
 import { filtersSignal, setFilter, setSearch } from '../tasks.state.ts';
@@ -27,17 +27,19 @@ export function TaskFiltersBar() {
 
   return (
     <div id="filters-bar" class="filters-bar" role="search" aria-label="Task filters">
-      <div class="filter-group">
+      <div class="filter-group filter-group--search">
         <label for="search-title" class="visually-hidden">
           Search Title
         </label>
-        <input
-          type="search"
+        <SearchBar
           id="search-title"
+          value={filters.title || ''}
           placeholder="Search tasks..."
-          autoComplete="off"
-          defaultValue={filters.title || ''}
-          onInput={(e) => setSearch((e.target as HTMLInputElement).value)}
+          ariaLabel="Search Title"
+          enableGlobalShortcut={true}
+          shortcutHint="/"
+          debounceMs={300}
+          onSearch={(val) => setSearch(val, true)}
         />
       </div>
 

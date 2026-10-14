@@ -1,7 +1,4 @@
-import { HomePage } from '@/pages/HomePage.tsx';
-import { LoginPage } from '@/pages/LoginPage.tsx';
-import { NotFoundPage } from '@/pages/NotFoundPage.tsx';
-import { RegisterPage } from '@/pages/RegisterPage.tsx';
+import { HomePage, LoginPage, NotFoundPage, RegisterPage } from '@/pages/index.ts';
 import { LocationProvider, Route, Router } from 'preact-iso';
 import { AppLayout } from './layout/AppLayout.tsx';
 import { AuthGuard } from './layout/AuthGuard.tsx';
