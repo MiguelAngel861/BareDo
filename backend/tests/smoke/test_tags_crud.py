@@ -28,6 +28,33 @@ def test_create_tag_duplicate_returns_409(client, auth_headers):
     assert resp.status_code == 409
 
 
+def test_update_tag_success(client, auth_headers):
+    headers, _ = auth_headers
+    created = client.post("/api/v1/tags", json={"name": "oldname"}, headers=headers).get_json()
+    tag_id = created["tag_id"]
+
+    resp = client.put(f"/api/v1/tags/{tag_id}", json={"name": "newname"}, headers=headers)
+    assert resp.status_code == 200
+    data = resp.get_json()
+    assert data["name"] == "newname"
+    assert data["tag_id"] == tag_id
+
+
+def test_update_tag_duplicate_returns_409(client, auth_headers):
+    headers, _ = auth_headers
+    client.post("/api/v1/tags", json={"name": "alpha"}, headers=headers)
+    t2 = client.post("/api/v1/tags", json={"name": "beta"}, headers=headers).get_json()
+
+    resp = client.put(f"/api/v1/tags/{t2['tag_id']}", json={"name": "alpha"}, headers=headers)
+    assert resp.status_code == 409
+
+
+def test_update_tag_not_found(client, auth_headers):
+    headers, _ = auth_headers
+    resp = client.put("/api/v1/tags/9999", json={"name": "ghost"}, headers=headers)
+    assert resp.status_code == 404
+
+
 def test_delete_tag_success(client, auth_headers):
     headers, _ = auth_headers
     created = client.post("/api/v1/tags", json={"name": "temp"}, headers=headers).get_json()
@@ -38,6 +65,34 @@ def test_delete_tag_success(client, auth_headers):
 
     list_resp = client.get("/api/v1/tags", headers=headers).get_json()
     assert len(list_resp["tags"]) == 0
+
+
+def test_delete_tag_removes_association_from_tasks(client, auth_headers):
+    from sqlalchemy import text
+
+    from app.core.extensions import db
+
+    headers, _ = auth_headers
+    tag = client.post("/api/v1/tags", json={"name": "to-delete"}, headers=headers).get_json()
+    task = client.post(
+        "/api/v1/tasks",
+        json={"title": "Task With Tag", "tag_ids": [tag["tag_id"]]},
+        headers=headers,
+    ).get_json()
+    tag_id = tag["tag_id"]
+    task_id = task["task_id"]
+
+    del_resp = client.delete(f"/api/v1/tags/{tag_id}", headers=headers)
+    assert del_resp.status_code == 204
+
+    count = db.session.execute(
+        text("SELECT COUNT(*) FROM task_tags WHERE tag_id = :tag_id"), {"tag_id": tag_id}
+    ).scalar()
+    assert count == 0
+
+    task_resp = client.get(f"/api/v1/tasks/{task_id}", headers=headers)
+    assert task_resp.status_code == 200
+    assert task_resp.get_json()["tags"] == []
 
 
 def test_delete_tag_not_found(client, auth_headers):

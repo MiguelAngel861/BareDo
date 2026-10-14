@@ -32,6 +32,15 @@ def create_tag(body: TagCreate):
     return TagBody.model_validate(tag), 201
 
 
+@tags_bp.put("/tags/<int:tag_id>")
+@jwt_required()
+def update_tag(path: TagPath, body: TagCreate):
+    """Update a tag belonging to the authenticated user."""
+    user_id = get_current_user_id()
+    tag = service.update_tag(path.tag_id, body.name, user_id)
+    return TagBody.model_validate(tag), 200
+
+
 @tags_bp.delete("/tags/<int:tag_id>")
 @jwt_required()
 def delete_tag(path: TagPath):

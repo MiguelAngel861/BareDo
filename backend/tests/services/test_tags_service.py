@@ -62,6 +62,30 @@ def test_delete_tag(tags_service, make_user):
     assert len(tags_service.get_all_user_tags(user.user_id)) == 0
 
 
+def test_update_tag_success(tags_service, make_user):
+    user = make_user(**unique_user())
+    tag = tags_service.create_tag("original", user.user_id)
+
+    updated = tags_service.update_tag(tag.tag_id, "  Renamed  ", user.user_id)
+    assert updated.name == "renamed"
+    assert updated.tag_id == tag.tag_id
+
+
+def test_update_tag_duplicate_conflict(tags_service, make_user):
+    user = make_user(**unique_user())
+    tag1 = tags_service.create_tag("tag-alpha", user.user_id)
+    tags_service.create_tag("tag-beta", user.user_id)
+
+    with pytest.raises(ConflictError):
+        tags_service.update_tag(tag1.tag_id, "tag-beta", user.user_id)
+
+
+def test_update_tag_not_found(tags_service, make_user):
+    user = make_user(**unique_user())
+    with pytest.raises(NotFoundError):
+        tags_service.update_tag(999, "new-name", user.user_id)
+
+
 def test_delete_tag_not_found(tags_service, make_user):
     user = make_user(**unique_user())
     with pytest.raises(NotFoundError):
