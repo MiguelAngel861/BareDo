@@ -1,21 +1,58 @@
-# BareDo
+# BareDo: High-Speed, Keyboard-Driven Productivity Client for Developers
 
-API REST + frontend para gestión de tareas. Backend en Python/Flask en capas (`app/{api,services,repositories,...}`), frontend en TypeScript vanilla con Vite.
+[![Backend CI](https://img.shields.io/badge/backend-Flask%20%7C%20Pytest%20(101%20passed)-15803d?style=flat-square&logo=python)](https://github.com/MiguelAngel861/BareDo)
+[![Frontend CI](https://img.shields.io/badge/frontend-Preact%20%7C%20Vitest%20(69%20passed)-15803d?style=flat-square&logo=typescript)](https://github.com/MiguelAngel861/BareDo)
+[![Code Style](https://img.shields.io/badge/code%20style-Ruff%20%26%20Biome-black?style=flat-square)](https://github.com/MiguelAngel861/BareDo)
+[![Architecture](https://img.shields.io/badge/architecture-Signals%20%2B%20Optimistic%20UI-blueviolet?style=flat-square)](https://github.com/MiguelAngel861/BareDo)
 
-**Demo:** https://baredo.onrender.com
+Cliente de productividad ultrarrápido diseñado específicamente para desarrolladores que buscan flujo continuo sin tocar el mouse. Construido con arquitectura reactiva en `@preact/signals`, **Optimistic UI a 0ms de latencia**, navegación completa estilo **Vim**, **Command Palette** global (`Ctrl+K`) y una API REST desacoplada en capas bajo Python y Flask.
 
-## Stack
+**Demo en Producción:** [https://baredo.onrender.com](https://baredo.onrender.com)
 
-- **Backend:** Python 3.13+, Flask, SQLAlchemy 2, Pydantic, JWT (flask-jwt-extended), SQLite (dev) / Postgres (prod)
-- **Frontend:** TypeScript (ES modules), Vite, ky (HTTP), Zod (validación de respuestas)
-- **Estilo/lint:** ruff (backend), Biome (frontend)
-- **Gestores:** [uv](https://docs.astral.sh/uv/) (Python), [pnpm](https://pnpm.io/) (Node)
+---
 
-## Arquitectura
+## ⚡ Características Principales para Desarrolladores
+
+**⌨️ Navegación 100% por Teclado (Vim-Style):**
+
+| Tecla | Acción |
+|---|---|
+| `J` / `K` o `↓` / `↑` | Desplazamiento circular entre tareas con indicador visual de alto contraste |
+| `X` o `Espacio` | Marcado/desmarcado con **Optimistic UI** inmediata |
+| `Enter` | Apertura de vista detallada en modal pop-out |
+| `E` | Edición rápida de la tarea enfocada |
+| `D` | Eliminación instantánea con diálogo de confirmación |
+| `C` | Creación rápida de nueva tarea |
+| `?` | Guía interactiva de atajos de teclado (`ShortcutHelpModal`) |
+- **🚀 Command Palette Global (`Ctrl + K` / `Cmd + K`):**
+  - Paleta de comandos interactiva con búsqueda difusa (*fuzzy text filter*).
+  - Acciones rápidas del sistema (crear tarea, resetear filtros, filtrar completadas/pendientes).
+  - Filtros directos por prioridad y etiquetas (`#tags`).
+  - Salto directo a tareas por título con selección por teclado.
+- **⚡ Optimistic UI con Rollback Automático:**
+  - Actualizaciones reactivas a **0ms** en el estado local de la interfaz.
+  - Reversión transparente (*rollback*) y notificación de error contextual (*toast*) ante fallos de red o base de datos.
+- **🛡️ Arquitectura y Resiliencia en Frío:**
+  - Tolerancia a cold starts en hosting serverless/gratuito mediante overlay táctil de telemetría y sondeo proactivo (`ServerWarmupOverlay`).
+  - Preservación de sesión en memoria y auto-recuperación transparente ante errores temporales de red.
+
+---
+
+## Stack Tecnológico
+
+- **Backend:** Python 3.13+, Flask, SQLAlchemy 2, Pydantic, JWT (`flask-jwt-extended`), SQLite (dev) / PostgreSQL (prod).
+- **Frontend:** Preact, `@preact/signals`, Vite, TypeScript estricto, Ky (cliente HTTP con reintentos), Zod (validación de esquemas en tiempo de ejecución).
+- **Testing & Linters:** Pytest + Cov (Backend, 101 tests), Vitest + Testing Library (Frontend, 69 tests), Ruff (Python), Biome (TypeScript/CSS).
+- **Gestores de Paquetes:** [uv](https://docs.astral.sh/uv/) (Python ultra-rápido), [pnpm](https://pnpm.io/) (Node.js optimizado).
+
+---
+
+## Arquitectura del Sistema
 
 ```
-Navegador ──┬── /api/* ──► Flask API (gunicorn)
-            └── /*          archivos estáticos (Vite build)
+Navegador (Preact + Signals + Optimistic UI)
+    ├── /api/v1/*  ──► Flask API en Capas (Gunicorn + SQLAlchemy) ──► PostgreSQL / SQLite
+    └── /*          ──► Static Site (Vite Single Page Client en CDN)
 ```
 
 - En desarrollo, el frontend usa el proxy de Vite para hablar a `/api/v1`.
@@ -96,10 +133,10 @@ Endpoints disponibles: `POST /auth/register`, `POST /auth/login`, `POST /auth/re
 ## Testing
 
 ```bash
-# Backend (59 tests, coverage ≥ 80%)
+# Backend (101 tests, coverage ≥ 80%)
 cd backend && uv run pytest
 
-# Frontend
+# Frontend (69 tests con Vitest + Testing Library)
 cd frontend && pnpm test:run
 ```
 
