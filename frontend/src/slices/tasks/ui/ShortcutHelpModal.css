@@ -1,0 +1,202 @@
+/* ===== ShortcutHelpModal - Tactical Dark-Tech Neobrutalism ===== */
+
+.shortcut-help-container {
+  width: 100%;
+  max-width: 44rem;
+  background-color: var(--surface);
+  border: 2px solid var(--text) !important;
+  box-shadow: var(--shadow-hard-lg) !important;
+  border-radius: 0;
+  overflow: hidden;
+  padding: 0 !important;
+}
+
+.shortcut-help-layout {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* Header */
+.shortcut-help-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1.25rem 1.5rem;
+  background-color: var(--bg);
+  border-bottom: 2px solid var(--text);
+}
+
+.shortcut-help-header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.shortcut-help-badge {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 800;
+  padding: 3px 6px;
+  background-color: var(--text);
+  color: var(--surface);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border: 1px solid var(--text);
+  box-shadow: var(--shadow-action-active);
+}
+
+.shortcut-help-title {
+  font-family: var(--font-display);
+  font-size: 1.625rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--text);
+  margin: 0;
+  line-height: 1.1;
+}
+
+.shortcut-help-desc {
+  font-family: var(--font-ui);
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* Scrollable Content Body */
+.shortcut-help-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 1.25rem 1.5rem;
+  max-height: 60vh;
+  overflow-y: auto;
+  background-color: var(--surface);
+}
+
+/* Category Sections */
+.shortcut-group-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.shortcut-group-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.shortcut-group-title {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+.shortcut-group-header::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background-color: var(--border);
+}
+
+/* Cards Grid */
+.shortcut-cards-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.5rem;
+}
+
+@media (min-width: 36rem) {
+  .shortcut-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Individual Shortcut Tactical Card */
+.shortcut-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.625rem 0.875rem;
+  background-color: var(--bg);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-action);
+  transition: transform 0.1s ease, box-shadow 0.1s ease, border-color 0.1s ease;
+}
+
+.shortcut-card:hover {
+  transform: translate(-1px, -1px);
+  border-color: var(--text);
+  box-shadow: var(--shadow-action-hover);
+}
+
+.shortcut-card-keys {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+.shortcut-key-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.shortcut-key-separator {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.shortcut-kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.75rem;
+  height: 1.5rem;
+  padding: 0 0.375rem;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 800;
+  color: var(--text);
+  background-color: var(--surface);
+  border: 1px solid var(--border-strong);
+  box-shadow: var(--shadow-action-active);
+  letter-spacing: 0.02em;
+}
+
+.shortcut-card-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.shortcut-card-desc {
+  font-family: var(--font-ui);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.25;
+}
+
+.shortcut-card-tag {
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  padding: 1px 4px;
+  background-color: var(--text);
+  color: var(--surface);
+  line-height: 1;
+}

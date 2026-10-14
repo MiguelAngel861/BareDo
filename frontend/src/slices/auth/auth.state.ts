@@ -43,10 +43,21 @@ configureApiAuth(
   }
 );
 
+let hasServerReadyListener = false;
+
 export async function initAuth(): Promise<void> {
   if (!authSignal.value.token) {
     authSignal.value = { ...authSignal.value, isLoading: false };
     return;
+  }
+
+  if (!hasServerReadyListener && typeof window !== 'undefined') {
+    hasServerReadyListener = true;
+    window.addEventListener('server-ready', () => {
+      if (authSignal.value.token && !authSignal.value.user) {
+        initAuth();
+      }
+    });
   }
 
   try {
@@ -57,8 +68,21 @@ export async function initAuth(): Promise<void> {
       isAuthenticated: true,
       isLoading: false,
     };
-  } catch {
-    logout();
+  } catch (err: unknown) {
+    // Solo cerrar sesión si el servidor respondió explícitamente con 401 Unauthorized
+    // Si el servidor está apagado, iniciando (cold start), 502/503 o hay error de red, NO borrar sesión
+    if (err && typeof err === 'object' && 'response' in err) {
+      const response = (err as { response?: Response }).response;
+      if (response && response.status === 401) {
+        logout();
+        return;
+      }
+    }
+    // El servidor puede estar en cold start; conservar el token y mantener isLoading: false
+    authSignal.value = {
+      ...authSignal.value,
+      isLoading: false,
+    };
   }
 }
 

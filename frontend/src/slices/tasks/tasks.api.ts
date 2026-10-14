@@ -1,6 +1,15 @@
 import { apiClient, validatedRequest } from '@/shared/api/client/index.ts';
-import { TaskListResponseSchema, TaskResponseSchema } from './tasks.schemas.ts';
+import {
+  SubtaskListResponseSchema,
+  SubtaskSchema,
+  TaskListResponseSchema,
+  TaskResponseSchema,
+  TrashCountResponseSchema,
+} from './tasks.schemas.ts';
 import type {
+  Subtask,
+  SubtaskCreate,
+  SubtaskUpdate,
   Task,
   TaskCreate,
   TaskListParams,
@@ -91,4 +100,61 @@ export const tasksApi = {
     ),
 
   delete: (taskId: string) => apiClient.delete(`tasks/${taskId}`),
+
+  listTrash: (
+    params: { page?: number; per_page?: number; sort?: string } = {}
+  ): Promise<TaskListResponse> => {
+    const searchParams: Record<string, string> = {};
+    if (params.page !== undefined) {
+      searchParams.page = String(params.page);
+    }
+    if (params.per_page !== undefined) {
+      searchParams.per_page = String(params.per_page);
+    }
+    if (params.sort) {
+      searchParams.sort = params.sort;
+    }
+    return validatedRequest(
+      () => apiClient.get('tasks/trash', { searchParams }).json<unknown>(),
+      TaskListResponseSchema
+    );
+  },
+
+  getTrashCount: (): Promise<{ count: number }> =>
+    validatedRequest(
+      () => apiClient.get('tasks/trash/count').json<unknown>(),
+      TrashCountResponseSchema
+    ),
+
+  restore: (taskId: string): Promise<Task> =>
+    validatedRequest(
+      () => apiClient.post(`tasks/${taskId}/restore`).json<unknown>(),
+      TaskResponseSchema
+    ),
+
+  permanentDelete: (taskId: string) => apiClient.delete(`tasks/${taskId}/permanent`),
+
+  emptyTrash: () => apiClient.delete('tasks/trash'),
+
+  listSubtasks: (taskId: string): Promise<{ subtasks: Subtask[] }> =>
+    validatedRequest(
+      () => apiClient.get(`tasks/${taskId}/subtasks`).json<unknown>(),
+      SubtaskListResponseSchema
+    ),
+
+  createSubtask: (taskId: string, data: SubtaskCreate): Promise<Subtask> =>
+    validatedRequest(
+      () => apiClient.post(`tasks/${taskId}/subtasks`, { json: data }).json<unknown>(),
+      SubtaskSchema
+    ),
+
+  updateSubtask: (taskId: string, subtaskId: string, data: SubtaskUpdate): Promise<Subtask> =>
+    validatedRequest(
+      () =>
+        apiClient.patch(`tasks/${taskId}/subtasks/${subtaskId}`, { json: data }).json<unknown>(),
+      SubtaskSchema
+    ),
+
+  deleteSubtask: (taskId: string, subtaskId: string) =>
+    apiClient.delete(`tasks/${taskId}/subtasks/${subtaskId}`),
 };

@@ -7,6 +7,7 @@ import {
   toggleTaskComplete,
   viewingTaskSignal,
 } from '../tasks.state.ts';
+import { SubtaskList } from './SubtaskList.tsx';
 
 function formatDate(dateStr?: string | null): string {
   if (!dateStr) {
@@ -122,6 +123,10 @@ export function TaskDetailModal() {
             </div>
           </div>
         )}
+
+        <div class="task-detail-section task-detail-section--subtasks">
+          <SubtaskList taskId={task.task_id} subtasks={task.subtasks || []} />
+        </div>
 
         <footer class="task-detail-meta-grid">
           <div class="task-detail-meta-item">

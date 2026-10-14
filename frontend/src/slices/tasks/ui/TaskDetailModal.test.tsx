@@ -18,6 +18,7 @@ describe('TaskDetailModal component', () => {
       { tag_id: 1, name: 'devops' },
       { tag_id: 2, name: 'monitoring' },
     ],
+    subtasks: [],
   };
 
   beforeEach(() => {

@@ -8,6 +8,7 @@ import {
   isFormModalOpenSignal,
   saveTask,
 } from '../tasks.state.ts';
+import { SubtaskList } from './SubtaskList.tsx';
 
 export function TaskPopoutModal() {
   const isOpen = isFormModalOpenSignal.value;
@@ -20,6 +21,9 @@ export function TaskPopoutModal() {
   const [priorityId, setPriorityId] = useState<number>(3);
   const [completed, setCompleted] = useState<boolean>(false);
   const [tags, setTags] = useState<Tag[]>([]);
+  const [draftSubtasks, setDraftSubtasks] = useState<
+    Array<{ id: string; title: string; completed: boolean }>
+  >([]);
 
   const [titleError, setTitleError] = useState<string | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
@@ -33,6 +37,7 @@ export function TaskPopoutModal() {
       setPriorityId(editingTask.priority_id || 3);
       setCompleted(editingTask.completed);
       setTags(editingTask.tags || []);
+      setDraftSubtasks([]);
     } else {
       setTitle('');
       setDescription('');
@@ -40,6 +45,7 @@ export function TaskPopoutModal() {
       setPriorityId(3);
       setCompleted(false);
       setTags([]);
+      setDraftSubtasks([]);
     }
     setTitleError(null);
     setFormError(null);
@@ -72,6 +78,9 @@ export function TaskPopoutModal() {
       priority_id: priorityId,
       completed,
       tag_ids: tags.map((t) => t.tag_id),
+      ...(!isEditing && draftSubtasks.length > 0
+        ? { subtasks: draftSubtasks.map((s) => ({ title: s.title, completed: s.completed })) }
+        : {}),
       ...(dueDate ? { due_date: dueDate.includes('T') ? dueDate : `${dueDate}T00:00:00Z` } : {}),
     };
 
@@ -169,6 +178,34 @@ export function TaskPopoutModal() {
             <span class="checkbox-text">Completed</span>
           </label>
         </div>
+
+        {isEditing && editingTask ? (
+          <div class="form-group">
+            <SubtaskList taskId={editingTask.task_id} subtasks={editingTask.subtasks || []} />
+          </div>
+        ) : (
+          <div class="form-group">
+            <SubtaskList
+              subtasks={draftSubtasks.map((s) => ({
+                subtask_id: s.id,
+                title: s.title,
+                completed: s.completed,
+              }))}
+              onAddDraft={(t) =>
+                setDraftSubtasks((prev) => [
+                  ...prev,
+                  { id: String(Date.now() + Math.random()), title: t, completed: false },
+                ])
+              }
+              onToggleDraft={(id) =>
+                setDraftSubtasks((prev) =>
+                  prev.map((s) => (s.id === id ? { ...s, completed: !s.completed } : s))
+                )
+              }
+              onDeleteDraft={(id) => setDraftSubtasks((prev) => prev.filter((s) => s.id !== id))}
+            />
+          </div>
+        )}
 
         <Button
           type="submit"

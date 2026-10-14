@@ -1,5 +1,5 @@
 import { fireEvent, render, screen } from '@testing-library/preact';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import * as taskState from '../tasks.state.ts';
 import type { Task } from '../tasks.types.ts';
 import { TaskCard } from './TaskCard.tsx';
@@ -18,6 +18,22 @@ describe('TaskCard component', () => {
       { tag_id: 1, name: 'frontend' },
       { tag_id: 2, name: 'architecture' },
     ],
+    subtasks: [
+      {
+        subtask_id: '1',
+        task_id: '123',
+        title: 'Step 1',
+        completed: true,
+        created_at: '2026-10-10T00:00:00Z',
+      },
+      {
+        subtask_id: '2',
+        task_id: '123',
+        title: 'Step 2',
+        completed: false,
+        created_at: '2026-10-10T00:00:00Z',
+      },
+    ],
   };
 
   it('renders task details correctly', () => {
@@ -29,6 +45,7 @@ describe('TaskCard component', () => {
     expect(screen.getByText('#architecture')).toBeInTheDocument();
     expect(screen.getByText('High')).toBeInTheDocument();
     expect(screen.getByText('Due: 2026-12-31')).toBeInTheDocument();
+    expect(screen.getByText('1/2 SUBTASKS')).toBeInTheDocument();
     expect(screen.getByText('Mark Complete')).toBeInTheDocument();
     expect(screen.getByText('Edit')).toBeInTheDocument();
     expect(screen.getByText('Delete')).toBeInTheDocument();
@@ -42,5 +59,18 @@ describe('TaskCard component', () => {
     fireEvent.click(cell);
 
     expect(taskState.viewingTaskSignal.value).toEqual(mockTask);
+  });
+
+  it('scrolls into view when task is selected', () => {
+    const scrollMock = vi.fn();
+    window.HTMLElement.prototype.scrollIntoView = scrollMock;
+
+    taskState.selectedTaskIdSignal.value = '123';
+    render(<TaskCard task={mockTask} />);
+
+    expect(scrollMock).toHaveBeenCalledWith({
+      block: 'nearest',
+      behavior: 'smooth',
+    });
   });
 });

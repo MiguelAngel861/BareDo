@@ -1,6 +1,8 @@
 import { signal } from '@preact/signals';
+import { Toast, type ToastVariant } from './Toast.tsx';
+import './Toast.css';
 
-export type ToastType = 'success' | 'error' | 'info';
+export type ToastType = ToastVariant;
 
 export interface ToastItem {
   id: string;
@@ -23,9 +25,12 @@ export function showToast(
     message = messageOrContainer;
     if (
       typeof typeOrMessage === 'string' &&
-      (typeOrMessage === 'success' || typeOrMessage === 'error' || typeOrMessage === 'info')
+      (typeOrMessage === 'success' ||
+        typeOrMessage === 'error' ||
+        typeOrMessage === 'info' ||
+        typeOrMessage === 'warning')
     ) {
-      type = typeOrMessage;
+      type = typeOrMessage as ToastType;
     }
     if (typeof durationOrType === 'number') {
       duration = durationOrType;
@@ -35,9 +40,12 @@ export function showToast(
     message = typeof typeOrMessage === 'string' ? typeOrMessage : '';
     if (
       typeof durationOrType === 'string' &&
-      (durationOrType === 'success' || durationOrType === 'error' || durationOrType === 'info')
+      (durationOrType === 'success' ||
+        durationOrType === 'error' ||
+        durationOrType === 'info' ||
+        durationOrType === 'warning')
     ) {
-      type = durationOrType;
+      type = durationOrType as ToastType;
     }
   }
 
@@ -61,27 +69,21 @@ export function removeToast(id: string): void {
 
 export function ToastContainer() {
   if (toastsSignal.value.length === 0) {
-    return <div id="toast-container" aria-live="polite" aria-atomic="true" />;
+    return (
+      <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true" />
+    );
   }
 
   return (
-    <div id="toast-container" aria-live="polite" aria-atomic="true">
+    <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true">
       {toastsSignal.value.map((toast) => (
-        <div
+        <Toast
           key={toast.id}
-          class={`toast ${toast.type}`}
-          role="status"
-          tabIndex={0}
-          onClick={() => removeToast(toast.id)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault();
-              removeToast(toast.id);
-            }
-          }}
-        >
-          {toast.message}
-        </div>
+          id={toast.id}
+          message={toast.message}
+          variant={toast.type}
+          onClose={removeToast}
+        />
       ))}
     </div>
   );

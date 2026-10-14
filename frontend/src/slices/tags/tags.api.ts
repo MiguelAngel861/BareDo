@@ -9,5 +9,11 @@ export const tagsApi = {
   createTag: (name: string): Promise<Tag> =>
     validatedRequest(() => apiClient.post('tags', { json: { name } }).json<unknown>(), TagSchema),
 
+  updateTag: (tagId: number, name: string): Promise<Tag> =>
+    validatedRequest(
+      () => apiClient.put(`tags/${tagId}`, { json: { name } }).json<unknown>(),
+      TagSchema
+    ),
+
   deleteTag: (tagId: number) => apiClient.delete(`tags/${tagId}`),
 };

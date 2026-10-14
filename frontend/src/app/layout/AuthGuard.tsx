@@ -6,11 +6,13 @@ import { useEffect } from 'preact/hooks';
 export function AuthGuard({ children }: { children: ComponentChildren }) {
   const location = useLocation();
 
+  const isAuthenticated = authSignal.value.isAuthenticated;
+
   useEffect(() => {
-    if (!authSignal.value.isAuthenticated) {
+    if (!isAuthenticated) {
       location.route('/login');
     }
-  }, [location]);
+  }, [isAuthenticated, location]);
 
   if (!authSignal.value.isAuthenticated) {
     return null;

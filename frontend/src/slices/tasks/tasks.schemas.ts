@@ -1,6 +1,28 @@
 import { TagSchema } from '@/slices/tags/tags.schemas.ts';
 import { z } from 'zod';
 
+export const SubtaskSchema = z.object({
+  subtask_id: z.coerce.string(),
+  task_id: z.coerce.string(),
+  title: z.string(),
+  completed: z.boolean(),
+  created_at: z.string(),
+});
+
+export const SubtaskCreateSchema = z.object({
+  title: z.string().min(1).max(120),
+  completed: z.boolean().default(false),
+});
+
+export const SubtaskUpdateSchema = z.object({
+  title: z.string().min(1).max(120).optional(),
+  completed: z.boolean().optional(),
+});
+
+export const SubtaskListResponseSchema = z.object({
+  subtasks: z.array(SubtaskSchema),
+});
+
 export const TaskCreateSchema = z.object({
   title: z.string().min(5).max(40),
   description: z.string().max(500).default(''),
@@ -8,6 +30,7 @@ export const TaskCreateSchema = z.object({
   due_date: z.string().optional(),
   completed: z.boolean().default(false),
   tag_ids: z.array(z.number().int()).max(7).optional(),
+  subtasks: z.array(SubtaskCreateSchema).optional(),
 });
 
 export const TaskUpdateSchema = z.object({
@@ -28,7 +51,13 @@ export const TaskResponseSchema = z.object({
   completed: z.boolean(),
   created_at: z.string(),
   updated_at: z.string(),
+  deleted_at: z.string().nullable().optional(),
   tags: z.array(TagSchema).default([]),
+  subtasks: z.array(SubtaskSchema).default([]),
+});
+
+export const TrashCountResponseSchema = z.object({
+  count: z.number().int().nonnegative(),
 });
 
 export const TaskListParamsSchema = z.object({

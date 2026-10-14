@@ -1,0 +1,30 @@
+/* ===== ConfirmModal Component - Neo-Brutalist Design System ===== */
+
+.confirm-modal-overlay {
+  z-index: 3000;
+}
+
+.confirm-modal-container {
+  padding: 24px;
+  max-width: 400px;
+  width: 90%;
+}
+
+.confirm-modal-container h3,
+.modal h3 {
+  margin-bottom: 8px;
+  font-size: 1rem;
+}
+
+.confirm-modal-container p,
+.modal p {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  margin-bottom: 20px;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}

@@ -1,19 +1,36 @@
 import { Button } from '@/shared/ui/index.ts';
 import { getPriorityDescription, getPriorityLabel } from '@/slices/priorities/index.ts';
+import { useEffect, useRef } from 'preact/hooks';
 import {
   openEditModal,
   openViewModal,
   requestDeleteTask,
+  selectedTaskIdSignal,
   toggleTaskComplete,
 } from '../tasks.state.ts';
 import type { Task } from '../tasks.types.ts';
 
 export function TaskCard({ task }: { task: Task }) {
+  const cardRef = useRef<HTMLLIElement>(null);
+  const isSelected = selectedTaskIdSignal.value === task.task_id;
   const priorityLabel = getPriorityLabel(task.priority_id);
   const priorityDesc = getPriorityDescription(task.priority_id);
 
+  useEffect(() => {
+    if (isSelected && cardRef.current) {
+      cardRef.current.scrollIntoView?.({
+        block: 'nearest',
+        behavior: 'smooth',
+      });
+    }
+  }, [isSelected]);
+
   return (
-    <li class="task-item">
+    <li
+      ref={cardRef}
+      class={`task-item ${isSelected ? 'task-item--focused' : ''}`.trim()}
+      data-task-id={task.task_id}
+    >
       <div
         class="task-content"
         role="button"
@@ -51,6 +68,12 @@ export function TaskCard({ task }: { task: Task }) {
 
           {task.due_date && (
             <span class="task-due-date">Due: {task.due_date.substring(0, 10)}</span>
+          )}
+
+          {task.subtasks && task.subtasks.length > 0 && (
+            <span class="task-subtasks-count">
+              {task.subtasks.filter((s) => s.completed).length}/{task.subtasks.length} SUBTASKS
+            </span>
           )}
 
           <span>{task.completed ? 'Completed' : 'Pending'}</span>

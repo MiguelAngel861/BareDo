@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
+import './Dropdown.css';
 
 export interface DropdownOption {
   value: string;
@@ -83,6 +84,7 @@ export function Dropdown({
               <div
                 key={opt.value}
                 class={`dropdown-option ${isSelected ? 'selected' : ''}`.trim()}
+                data-value={opt.value}
                 role="option"
                 aria-selected={isSelected}
                 tabIndex={0}

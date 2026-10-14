@@ -3,6 +3,7 @@ import { signal } from '@preact/signals';
 import { tasksApi } from './tasks.api.ts';
 import type {
   PaginationMeta,
+  Subtask,
   Task,
   TaskCreate,
   TaskListParams,
@@ -34,6 +35,59 @@ export const editingTaskSignal = signal<Task | null>(null);
 export const isFormModalOpenSignal = signal<boolean>(false);
 export const deletingTaskSignal = signal<Task | null>(null);
 export const viewingTaskSignal = signal<Task | null>(null);
+export const isShortcutHelpModalOpenSignal = signal<boolean>(false);
+export const selectedTaskIdSignal = signal<string | null>(null);
+
+export const trashTasksSignal = signal<Task[]>([]);
+export const trashCountSignal = signal<number>(0);
+export const isTrashModalOpenSignal = signal<boolean>(false);
+export const isLoadingTrashSignal = signal<boolean>(false);
+export const trashPaginationSignal = signal<PaginationMeta>({
+  page: 1,
+  per_page: 10,
+  total_pages: 1,
+  total_items: 0,
+  has_prev: false,
+  has_next: false,
+});
+export const permanentDeletingTaskSignal = signal<Task | null>(null);
+export const isConfirmEmptyTrashOpenSignal = signal<boolean>(false);
+
+export function selectNextTask(): void {
+  const tasks = tasksSignal.value;
+  if (tasks.length === 0) {
+    selectedTaskIdSignal.value = null;
+    return;
+  }
+  const currentIndex = tasks.findIndex((t) => t.task_id === selectedTaskIdSignal.value);
+  if (currentIndex === -1 || currentIndex >= tasks.length - 1) {
+    selectedTaskIdSignal.value = tasks[0]?.task_id ?? null;
+  } else {
+    selectedTaskIdSignal.value = tasks[currentIndex + 1]?.task_id ?? null;
+  }
+}
+
+export function selectPrevTask(): void {
+  const tasks = tasksSignal.value;
+  if (tasks.length === 0) {
+    selectedTaskIdSignal.value = null;
+    return;
+  }
+  const currentIndex = tasks.findIndex((t) => t.task_id === selectedTaskIdSignal.value);
+  if (currentIndex <= 0) {
+    selectedTaskIdSignal.value = tasks[tasks.length - 1]?.task_id ?? null;
+  } else {
+    selectedTaskIdSignal.value = tasks[currentIndex - 1]?.task_id ?? null;
+  }
+}
+
+export function openShortcutHelpModal(): void {
+  isShortcutHelpModalOpenSignal.value = true;
+}
+
+export function closeShortcutHelpModal(): void {
+  isShortcutHelpModalOpenSignal.value = false;
+}
 
 export async function loadTasks(): Promise<void> {
   isLoadingTasksSignal.value = true;
@@ -41,6 +95,15 @@ export async function loadTasks(): Promise<void> {
     const res = await tasksApi.list(filtersSignal.value);
     tasksSignal.value = res.tasks;
     paginationSignal.value = res.meta;
+    fetchTrashCount();
+    if (res.tasks.length > 0) {
+      const stillExists = res.tasks.some((t) => t.task_id === selectedTaskIdSignal.value);
+      if (!stillExists) {
+        selectedTaskIdSignal.value = res.tasks[0]?.task_id ?? null;
+      }
+    } else {
+      selectedTaskIdSignal.value = null;
+    }
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'Failed to load tasks';
     showToast(`Error loading tasks: ${msg}`, 'error');
@@ -87,17 +150,28 @@ export function changePage(page: number): void {
 }
 
 export async function toggleTaskComplete(task: Task): Promise<void> {
-  const newStatus = !task.completed;
+  const previousStatus = task.completed;
+  const newStatus = !previousStatus;
+
+  // 1. Optimistic update (0ms immediate feedback)
+  tasksSignal.value = tasksSignal.value.map((t) =>
+    t.task_id === task.task_id ? { ...t, completed: newStatus } : t
+  );
+  if (viewingTaskSignal.value?.task_id === task.task_id) {
+    viewingTaskSignal.value = { ...viewingTaskSignal.value, completed: newStatus };
+  }
+
   try {
     await tasksApi.patch(task.task_id, { completed: newStatus });
-    tasksSignal.value = tasksSignal.value.map((t) =>
-      t.task_id === task.task_id ? { ...t, completed: newStatus } : t
-    );
-    if (viewingTaskSignal.value?.task_id === task.task_id) {
-      viewingTaskSignal.value = { ...viewingTaskSignal.value, completed: newStatus };
-    }
     showToast(newStatus ? 'Task marked as completed' : 'Task marked as pending', 'success');
   } catch (err) {
+    // 2. Rollback on failure
+    tasksSignal.value = tasksSignal.value.map((t) =>
+      t.task_id === task.task_id ? { ...t, completed: previousStatus } : t
+    );
+    if (viewingTaskSignal.value?.task_id === task.task_id) {
+      viewingTaskSignal.value = { ...viewingTaskSignal.value, completed: previousStatus };
+    }
     const msg = err instanceof Error ? err.message : 'Failed to update status';
     showToast(`Error: ${msg}`, 'error');
   }
@@ -142,15 +216,31 @@ export async function executeDeleteTask(): Promise<void> {
     return;
   }
 
+  // Preserve previous state for potential rollback
+  const previousTasks = [...tasksSignal.value];
+  const previousPagination = { ...paginationSignal.value };
+
+  // 1. Optimistic removal (0ms immediate feedback)
+  deletingTaskSignal.value = null;
+  if (viewingTaskSignal.value?.task_id === task.task_id) {
+    viewingTaskSignal.value = null;
+  }
+  tasksSignal.value = previousTasks.filter((t) => t.task_id !== task.task_id);
+  paginationSignal.value = {
+    ...previousPagination,
+    total_items: Math.max(0, previousPagination.total_items - 1),
+  };
+
   try {
     await tasksApi.delete(task.task_id);
-    if (viewingTaskSignal.value?.task_id === task.task_id) {
-      viewingTaskSignal.value = null;
-    }
-    deletingTaskSignal.value = null;
-    showToast('Task deleted successfully', 'success');
+    showToast('Task moved to trash', 'success');
+    fetchTrashCount();
+    // Silent refresh to align pagination metadata if needed
     loadTasks();
   } catch (err) {
+    // 2. Rollback on failure
+    tasksSignal.value = previousTasks;
+    paginationSignal.value = previousPagination;
     const msg = err instanceof Error ? err.message : 'Failed to delete task';
     showToast(`Error: ${msg}`, 'error');
   }
@@ -175,5 +265,202 @@ export async function saveTask(
     const msg = err instanceof Error ? err.message : 'Failed to save task';
     showToast(`Error: ${msg}`, 'error');
     throw err;
+  }
+}
+
+export async function fetchTrashCount(): Promise<void> {
+  try {
+    const res = await tasksApi.getTrashCount();
+    trashCountSignal.value = res.count;
+  } catch {
+    // Keep existing count on error
+  }
+}
+
+export async function loadTrashTasks(page = 1): Promise<void> {
+  isLoadingTrashSignal.value = true;
+  try {
+    const res = await tasksApi.listTrash({ page, per_page: 10 });
+    trashTasksSignal.value = res.tasks;
+    trashPaginationSignal.value = res.meta;
+    trashCountSignal.value = res.meta.total_items;
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Failed to load trash';
+    showToast(`Error: ${msg}`, 'error');
+  } finally {
+    isLoadingTrashSignal.value = false;
+  }
+}
+
+export function openTrashModal(): void {
+  isTrashModalOpenSignal.value = true;
+  loadTrashTasks(1);
+}
+
+export function closeTrashModal(): void {
+  isTrashModalOpenSignal.value = false;
+  permanentDeletingTaskSignal.value = null;
+  isConfirmEmptyTrashOpenSignal.value = false;
+}
+
+export async function restoreTaskAction(task: Task): Promise<void> {
+  try {
+    await tasksApi.restore(task.task_id);
+    showToast('Task restored', 'success');
+    trashTasksSignal.value = trashTasksSignal.value.filter((t) => t.task_id !== task.task_id);
+    trashCountSignal.value = Math.max(0, trashCountSignal.value - 1);
+    loadTasks();
+    if (trashTasksSignal.value.length === 0 && trashPaginationSignal.value.page > 1) {
+      loadTrashTasks(trashPaginationSignal.value.page - 1);
+    }
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Failed to restore task';
+    showToast(`Error: ${msg}`, 'error');
+  }
+}
+
+export function requestPermanentDeleteTask(task: Task): void {
+  permanentDeletingTaskSignal.value = task;
+}
+
+export function cancelPermanentDeleteTask(): void {
+  permanentDeletingTaskSignal.value = null;
+}
+
+export async function executePermanentDeleteTask(): Promise<void> {
+  const task = permanentDeletingTaskSignal.value;
+  if (!task) {
+    return;
+  }
+  permanentDeletingTaskSignal.value = null;
+
+  try {
+    await tasksApi.permanentDelete(task.task_id);
+    showToast('Task permanently deleted', 'success');
+    trashTasksSignal.value = trashTasksSignal.value.filter((t) => t.task_id !== task.task_id);
+    trashCountSignal.value = Math.max(0, trashCountSignal.value - 1);
+    if (trashTasksSignal.value.length === 0 && trashPaginationSignal.value.page > 1) {
+      loadTrashTasks(trashPaginationSignal.value.page - 1);
+    }
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Failed to delete task permanently';
+    showToast(`Error: ${msg}`, 'error');
+  }
+}
+
+export function requestEmptyTrash(): void {
+  isConfirmEmptyTrashOpenSignal.value = true;
+}
+
+export function cancelEmptyTrash(): void {
+  isConfirmEmptyTrashOpenSignal.value = false;
+}
+
+export async function executeEmptyTrash(): Promise<void> {
+  isConfirmEmptyTrashOpenSignal.value = false;
+  try {
+    await tasksApi.emptyTrash();
+    showToast('Trash emptied', 'success');
+    trashTasksSignal.value = [];
+    trashCountSignal.value = 0;
+    trashPaginationSignal.value = {
+      page: 1,
+      per_page: 10,
+      total_pages: 1,
+      total_items: 0,
+      has_prev: false,
+      has_next: false,
+    };
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Failed to empty trash';
+    showToast(`Error: ${msg}`, 'error');
+  }
+}
+
+export async function addSubtaskAction(taskId: string, title: string): Promise<Subtask | null> {
+  const cleanTitle = title.trim();
+  if (!cleanTitle) {
+    return null;
+  }
+  try {
+    const created = await tasksApi.createSubtask(taskId, { title: cleanTitle, completed: false });
+    tasksSignal.value = tasksSignal.value.map((t) =>
+      t.task_id === taskId ? { ...t, subtasks: [...(t.subtasks || []), created] } : t
+    );
+    if (viewingTaskSignal.value?.task_id === taskId) {
+      viewingTaskSignal.value = {
+        ...viewingTaskSignal.value,
+        subtasks: [...(viewingTaskSignal.value.subtasks || []), created],
+      };
+    }
+    showToast('Subtask added', 'success');
+    return created;
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Failed to add subtask';
+    showToast(`Error: ${msg}`, 'error');
+    return null;
+  }
+}
+
+export async function toggleSubtaskAction(taskId: string, subtask: Subtask): Promise<void> {
+  const newStatus = !subtask.completed;
+  const updateList = (subtasks: Subtask[]) =>
+    subtasks.map((s) => (s.subtask_id === subtask.subtask_id ? { ...s, completed: newStatus } : s));
+
+  tasksSignal.value = tasksSignal.value.map((t) =>
+    t.task_id === taskId ? { ...t, subtasks: updateList(t.subtasks || []) } : t
+  );
+  if (viewingTaskSignal.value?.task_id === taskId) {
+    viewingTaskSignal.value = {
+      ...viewingTaskSignal.value,
+      subtasks: updateList(viewingTaskSignal.value.subtasks || []),
+    };
+  }
+
+  try {
+    await tasksApi.updateSubtask(taskId, subtask.subtask_id, { completed: newStatus });
+  } catch (err) {
+    const rollbackList = (subtasks: Subtask[]) =>
+      subtasks.map((s) =>
+        s.subtask_id === subtask.subtask_id ? { ...s, completed: subtask.completed } : s
+      );
+    tasksSignal.value = tasksSignal.value.map((t) =>
+      t.task_id === taskId ? { ...t, subtasks: rollbackList(t.subtasks || []) } : t
+    );
+    if (viewingTaskSignal.value?.task_id === taskId) {
+      viewingTaskSignal.value = {
+        ...viewingTaskSignal.value,
+        subtasks: rollbackList(viewingTaskSignal.value.subtasks || []),
+      };
+    }
+    const msg = err instanceof Error ? err.message : 'Failed to update subtask';
+    showToast(`Error: ${msg}`, 'error');
+  }
+}
+
+export async function deleteSubtaskAction(taskId: string, subtaskId: string): Promise<void> {
+  const previousViewing = viewingTaskSignal.value;
+  const previousTasks = [...tasksSignal.value];
+
+  const filterList = (subtasks: Subtask[]) => subtasks.filter((s) => s.subtask_id !== subtaskId);
+
+  tasksSignal.value = tasksSignal.value.map((t) =>
+    t.task_id === taskId ? { ...t, subtasks: filterList(t.subtasks || []) } : t
+  );
+  if (viewingTaskSignal.value?.task_id === taskId) {
+    viewingTaskSignal.value = {
+      ...viewingTaskSignal.value,
+      subtasks: filterList(viewingTaskSignal.value.subtasks || []),
+    };
+  }
+
+  try {
+    await tasksApi.deleteSubtask(taskId, subtaskId);
+    showToast('Subtask deleted', 'success');
+  } catch (err) {
+    tasksSignal.value = previousTasks;
+    viewingTaskSignal.value = previousViewing;
+    const msg = err instanceof Error ? err.message : 'Failed to delete subtask';
+    showToast(`Error: ${msg}`, 'error');
   }
 }
