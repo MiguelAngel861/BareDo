@@ -1,7 +1,7 @@
 from collections.abc import Sequence
 from typing import Any
 
-from sqlalchemy import Select, asc, delete, desc, func, inspect, select, update
+from sqlalchemy import Select, asc, desc, func, inspect, select, update
 from sqlalchemy.orm import Session
 
 from app.core.pagination import Pagination
@@ -68,9 +68,11 @@ class BaseRepository[T]:
         return self.session.scalar(stmt)
 
     def delete(self, entity_id: int, **extra_filters: Any) -> bool:
-        stmt = delete(self.model).where(self._pk_column == entity_id).filter_by(**extra_filters)
-        result = self.session.execute(stmt)
-        return result.rowcount > 0
+        entity = self.get_by_id(entity_id, **extra_filters)
+        if not entity:
+            return False
+        self.session.delete(entity)
+        return True
 
     @staticmethod
     def _apply_sort(

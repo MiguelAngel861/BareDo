@@ -93,6 +93,34 @@ def test_delete_task(client, auth_headers, make_task):
     assert resp.status_code == 404
 
 
+def test_delete_task_with_tags_removes_association(client, auth_headers):
+    from sqlalchemy import text
+
+    from app.core.extensions import db
+
+    headers, _ = auth_headers
+    tag = client.post("/api/v1/tags", json={"name": "tag-to-cascade"}, headers=headers).get_json()
+    task = client.post(
+        "/api/v1/tasks",
+        json={"title": "Cascade Task", "tag_ids": [tag["tag_id"]]},
+        headers=headers,
+    ).get_json()
+    task_id = task["task_id"]
+
+    count_before = db.session.execute(
+        text("SELECT COUNT(*) FROM task_tags WHERE task_id = :task_id"), {"task_id": task_id}
+    ).scalar()
+    assert count_before == 1
+
+    resp = client.delete(f"/api/v1/tasks/{task_id}/permanent", headers=headers)
+    assert resp.status_code == 204
+
+    count_after = db.session.execute(
+        text("SELECT COUNT(*) FROM task_tags WHERE task_id = :task_id"), {"task_id": task_id}
+    ).scalar()
+    assert count_after == 0
+
+
 def test_delete_task_not_found(client, auth_headers):
     headers, user_id = auth_headers
     resp = client.delete("/api/v1/tasks/999999", headers=headers)

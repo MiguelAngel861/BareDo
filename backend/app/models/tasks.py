@@ -7,6 +7,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.core.extensions import Base
 
 if TYPE_CHECKING:
+    from app.models.subtasks import Subtasks
     from app.models.tags import Tags
 
 
@@ -35,10 +36,18 @@ class Tasks(Base):
         server_default=func.now(),
         server_onupdate=func.now(),
     )
+    deleted_at: Mapped[datetime | None] = mapped_column(nullable=True, default=None)
 
     tags: Mapped[list["Tags"]] = relationship(
         "Tags",
         secondary="task_tags",
         back_populates="tasks",
         lazy="selectin",
+    )
+    subtasks: Mapped[list["Subtasks"]] = relationship(
+        "Subtasks",
+        back_populates="task",
+        cascade="all, delete-orphan",
+        lazy="selectin",
+        order_by="Subtasks.subtask_id",
     )

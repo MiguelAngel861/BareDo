@@ -146,3 +146,38 @@ def test_delete_task_unknown_raises_not_found(make_user, tasks_service):
 
     with pytest.raises(NotFoundError):
         tasks_service.delete_task(99999, user.user_id)
+
+
+def test_trash_service_lifecycle(make_user, make_task, tasks_service):
+    user = make_user(**unique_user())
+    t1 = make_task(user.user_id, title="Task to trash")
+    t2 = make_task(user.user_id, title="Task to purge")
+
+    assert tasks_service.count_trash_tasks(user.user_id) == 0
+
+    # Soft delete both
+    tasks_service.delete_task(t1.task_id, user.user_id)
+    tasks_service.delete_task(t2.task_id, user.user_id)
+
+    assert tasks_service.count_trash_tasks(user.user_id) == 2
+    trash_tasks, pagination = tasks_service.get_trash_tasks(1, 10, None, user.user_id)
+    assert len(trash_tasks) == 2
+    assert pagination.total == 2
+
+    # Restore t1
+    restored = tasks_service.restore_task(t1.task_id, user.user_id)
+    assert restored.task_id == t1.task_id
+    assert restored.deleted_at is None
+    assert tasks_service.count_trash_tasks(user.user_id) == 1
+
+    # Permanent delete t2
+    tasks_service.permanent_delete_task(t2.task_id, user.user_id)
+    assert tasks_service.count_trash_tasks(user.user_id) == 0
+
+    # Empty trash with another item
+    t3 = make_task(user.user_id, title="Another trash")
+    tasks_service.delete_task(t3.task_id, user.user_id)
+    assert tasks_service.count_trash_tasks(user.user_id) == 1
+    emptied = tasks_service.empty_trash(user.user_id)
+    assert emptied == 1
+    assert tasks_service.count_trash_tasks(user.user_id) == 0

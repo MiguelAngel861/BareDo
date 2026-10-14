@@ -2,6 +2,7 @@ from datetime import UTC, datetime
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
+from app.api.v1.schemas.subtasks_schemas import SubtaskBody, SubtaskCreate
 from app.api.v1.schemas.tags_schemas import TagBody
 
 
@@ -18,7 +19,9 @@ class TaskBody(TaskBase):
     due_date: datetime
     created_at: datetime
     updated_at: datetime
+    deleted_at: datetime | None = None
     tags: list[TagBody] = Field(default_factory=list)
+    subtasks: list[SubtaskBody] = Field(default_factory=list)
 
     model_config = ConfigDict(from_attributes=True, extra="forbid")
 
@@ -34,6 +37,7 @@ class TaskCreate(TaskBase):
     completed: bool = Field(default=False)
     due_date: datetime = Field(default_factory=lambda: datetime.now(UTC))
     tag_ids: list[int] | None = Field(default=None, max_length=7)
+    subtasks: list[SubtaskCreate] | None = Field(default=None)
 
     model_config = ConfigDict(extra="forbid")
 
@@ -103,3 +107,17 @@ class TaskListQuery(BaseModel):
 
 class TaskPath(BaseModel):
     task_id: int = Field(description="ID of the task")
+
+
+class TrashCountResponse(BaseModel):
+    count: int
+
+    model_config = ConfigDict(extra="forbid")
+
+
+class TrashListQuery(BaseModel):
+    page: int = Field(default=1, ge=1)
+    per_page: int = Field(default=100, ge=1, le=100)
+    sort: str | None = None
+
+    model_config = ConfigDict(extra="forbid")

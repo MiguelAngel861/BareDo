@@ -10,6 +10,8 @@ from app.api.v1.schemas.tasks_schemas import (
     TaskPath,
     TaskResponse,
     TaskUpdate,
+    TrashCountResponse,
+    TrashListQuery,
 )
 from app.services.tasks_service import TasksService
 
@@ -39,6 +41,36 @@ def get_tasks(query: TaskListQuery):
         tasks=[TaskBody.model_validate(task) for task in tasks],
         meta=pagination.to_dict(),
     ), 200
+
+
+@tasks_bp.get("/tasks/trash")
+@jwt_required()
+def get_trash_tasks(query: TrashListQuery):
+    """List tasks currently in trash."""
+    user_id = get_current_user_id()
+    tasks, pagination = service.get_trash_tasks(query.page, query.per_page, query.sort, user_id)
+    return TaskResponse(
+        tasks=[TaskBody.model_validate(task) for task in tasks],
+        meta=pagination.to_dict(),
+    ), 200
+
+
+@tasks_bp.get("/tasks/trash/count")
+@jwt_required()
+def get_trash_count():
+    """Get the count of tasks currently in trash."""
+    user_id = get_current_user_id()
+    count = service.count_trash_tasks(user_id)
+    return TrashCountResponse(count=count), 200
+
+
+@tasks_bp.delete("/tasks/trash")
+@jwt_required()
+def empty_trash():
+    """Empty all tasks currently in trash."""
+    user_id = get_current_user_id()
+    service.empty_trash(user_id)
+    return "", 204
 
 
 @tasks_bp.get("/tasks/<int:task_id>")
@@ -84,8 +116,28 @@ def patch_task(path: TaskPath, body: TaskPatch):
 @tasks_bp.delete("/tasks/<int:task_id>")
 @jwt_required()
 def delete_task(path: TaskPath):
-    """Delete a task."""
+    """Soft delete a task (move to trash)."""
     user_id = get_current_user_id()
 
     service.delete_task(path.task_id, user_id)
+    return "", 204
+
+
+@tasks_bp.post("/tasks/<int:task_id>/restore")
+@jwt_required()
+def restore_task(path: TaskPath):
+    """Restore a task from trash."""
+    user_id = get_current_user_id()
+
+    restored_task = service.restore_task(path.task_id, user_id)
+    return TaskBody.model_validate(restored_task), 200
+
+
+@tasks_bp.delete("/tasks/<int:task_id>/permanent")
+@jwt_required()
+def permanent_delete_task(path: TaskPath):
+    """Permanently delete a task."""
+    user_id = get_current_user_id()
+
+    service.permanent_delete_task(path.task_id, user_id)
     return "", 204
