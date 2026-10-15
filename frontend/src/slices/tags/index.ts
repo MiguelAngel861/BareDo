@@ -1,6 +1,6 @@
-export { TagInputChips } from './ui/TagInputChips.tsx';
-export { TagFilterDropdown } from './ui/TagFilterDropdown.tsx';
-export { ManageTagsModal } from './ui/ManageTagsModal.tsx';
+export { TagInputChips } from './ui/TagInputChips/index.ts';
+export { TagFilterDropdown, type TagFilterDropdownProps } from './ui/TagFilterDropdown/index.ts';
+export { ManageTagsModal } from './ui/ManageTagsModal/index.ts';
 export {
   tagsSignal,
   isLoadingTagsSignal,

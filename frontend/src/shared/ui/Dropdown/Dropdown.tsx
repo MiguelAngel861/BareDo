@@ -30,6 +30,7 @@ export function Dropdown({
 
   const selectedOption = options.find((opt) => opt.value === value);
   const displayLabel = selectedOption ? selectedOption.label : placeholder;
+  const isPlaceholder = !selectedOption || selectedOption.value === '';
 
   useEffect(() => {
     if (!isOpen) {
@@ -72,7 +73,9 @@ export function Dropdown({
         aria-label={ariaLabel}
         onClick={() => setIsOpen((prev) => !prev)}
       >
-        <span class="dropdown-value">{displayLabel}</span>
+        <span class={`dropdown-value ${isPlaceholder ? 'dropdown-value--placeholder' : ''}`.trim()}>
+          {displayLabel}
+        </span>
         <span class="dropdown-icon">▼</span>
       </button>
 

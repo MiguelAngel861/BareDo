@@ -1,3 +1,4 @@
+import { useDocumentTitle } from '@/shared/hooks/index.ts';
 import {
   Button,
   ConfirmModal,
@@ -49,6 +50,7 @@ import { useEffect } from 'preact/hooks';
 import './HomePage.css';
 
 export function HomePage() {
+  useDocumentTitle('Tasks — BareDo');
   const location = useLocation();
   const user = authSignal.value.user;
   const totalItems = paginationSignal.value.total_items;

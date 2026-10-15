@@ -1,19 +1,29 @@
+/* ===== SearchBar Component - Swiss Industrial Brutalist ===== */
+
 .search-bar-container {
   display: flex;
   align-items: center;
   position: relative;
   width: 100%;
+  height: 44px;
   min-height: 44px;
+  max-height: 44px;
+  padding: 0 8px 0 12px;
   background-color: var(--surface);
   border: 2px solid var(--border);
+  border-radius: 0;
   box-shadow: var(--shadow-action);
-  transition: border-color 0.15s ease, box-shadow 0.15s ease, outline 0.15s ease;
+  transition: border-color 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.12s
+    cubic-bezier(0.16, 1, 0.3, 1), transform 0.1s cubic-bezier(0.16, 1, 0.3, 1);
   box-sizing: border-box;
 }
 
-.search-bar-container:hover {
-  border-color: var(--text);
-  box-shadow: var(--shadow-action-hover);
+@media (hover: hover) {
+  .search-bar-container:hover {
+    border-color: var(--text);
+    transform: translate(-1px, -1px);
+    box-shadow: var(--shadow-action-hover);
+  }
 }
 
 .search-bar-container:focus-within {
@@ -32,11 +42,18 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding-left: 12px;
-  padding-right: 8px;
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
   color: var(--text-muted);
   flex-shrink: 0;
   pointer-events: none;
+  transition: color 0.15s ease;
+}
+
+.search-bar-container:hover .search-bar-icon-wrap,
+.search-bar-container:focus-within .search-bar-icon-wrap {
+  color: var(--text);
 }
 
 .search-bar-icon {
@@ -53,14 +70,17 @@
   flex: 1;
   min-width: 0;
   height: 100%;
-  padding: 10px 4px 10px 0;
+  padding: 0;
+  margin: 0;
   border: none !important;
   border-radius: 0;
   background: transparent !important;
   color: var(--text);
-  font-family: inherit;
+  font-family: var(--font-ui);
   font-size: 0.875rem;
-  line-height: 1.4;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1;
   outline: none !important;
   box-shadow: none !important;
   box-sizing: border-box;
@@ -76,7 +96,11 @@
 
 .search-bar-container .search-bar-input::placeholder {
   color: var(--text-muted);
-  opacity: 0.8;
+  font-family: var(--font-ui);
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  opacity: 1;
 }
 
 .search-bar-input::-webkit-search-decoration,
@@ -90,7 +114,6 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  padding-right: 10px;
   flex-shrink: 0;
 }
 

@@ -1,11 +1,12 @@
-export { TaskList } from './ui/TaskList.tsx';
-export { TaskCard } from './ui/TaskCard.tsx';
-export { TaskFiltersBar } from './ui/TaskFiltersBar.tsx';
-export { TaskPagination } from './ui/TaskPagination.tsx';
-export { TaskPopoutModal } from './ui/TaskPopoutModal.tsx';
-export { TaskDetailModal } from './ui/TaskDetailModal.tsx';
-export { ShortcutHelpModal } from './ui/ShortcutHelpModal.tsx';
-export { TrashModal } from './ui/TrashModal.tsx';
+export { TaskList } from './ui/TaskList/index.ts';
+export { TaskCard } from './ui/TaskCard/index.ts';
+export { TaskFiltersBar } from './ui/TaskFiltersBar/index.ts';
+export { TaskPagination } from './ui/TaskPagination/index.ts';
+export { TaskPopoutModal } from './ui/TaskPopoutModal/index.ts';
+export { TaskDetailModal } from './ui/TaskDetailModal/index.ts';
+export { ShortcutHelpModal } from './ui/ShortcutHelpModal/index.ts';
+export { TrashModal } from './ui/TrashModal/index.ts';
+export { SubtaskList } from './ui/SubtaskList/index.ts';
 export {
   tasksSignal,
   isLoadingTasksSignal,

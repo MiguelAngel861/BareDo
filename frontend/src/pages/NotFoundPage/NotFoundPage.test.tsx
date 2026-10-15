@@ -13,6 +13,7 @@ describe('NotFoundPage component', () => {
     ).toBeInTheDocument();
     expect(screen.getByText('STATUS: 404')).toBeInTheDocument();
     expect(screen.getByText('RESOURCE: MISSING')).toBeInTheDocument();
+    expect(document.title).toBe('404 Not Found — BareDo');
   });
 
   it('renders the return home link pointing to "/"', () => {

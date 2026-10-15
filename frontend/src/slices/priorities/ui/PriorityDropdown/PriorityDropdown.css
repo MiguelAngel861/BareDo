@@ -1,0 +1,18 @@
+/* ===== PriorityDropdown Component ===== */
+
+.priority-dropdown-container {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.priority-helper {
+  display: block;
+  margin-top: 4px;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+  min-height: 1em;
+}

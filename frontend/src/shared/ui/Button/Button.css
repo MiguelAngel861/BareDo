@@ -52,25 +52,26 @@
 
 /* MD: Standard interactive buttons (Dashboard CTA, Modal Footers) */
 .app-btn--md {
-  font-size: 0.875rem;
-  letter-spacing: 0.05em;
-  padding: 8px 16px;
-  min-height: 38px;
-  border-width: 1px;
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  padding: 0 16px;
+  height: 40px;
+  min-height: 40px;
+  border-width: 2px;
   border-style: solid;
-  box-shadow: var(--shadow-hard);
+  box-shadow: var(--shadow-action);
 }
 
 @media (hover: hover) {
   .app-btn--md:hover:not(:disabled) {
     transform: translate(-1px, -1px);
-    box-shadow: var(--shadow-hard-lg);
+    box-shadow: var(--shadow-action-hover);
   }
 }
 
 .app-btn--md:active:not(:disabled) {
   transform: translate(1px, 1px);
-  box-shadow: var(--shadow-hard-hover);
+  box-shadow: var(--shadow-action-active);
 }
 
 /* LG: High-prominence form submissions */

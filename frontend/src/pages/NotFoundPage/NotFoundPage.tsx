@@ -1,6 +1,8 @@
+import { useDocumentTitle } from '@/shared/hooks/index.ts';
 import './NotFoundPage.css';
 
 export function NotFoundPage() {
+  useDocumentTitle('404 Not Found — BareDo');
   return (
     <main class="error-page">
       <div class="error-content">

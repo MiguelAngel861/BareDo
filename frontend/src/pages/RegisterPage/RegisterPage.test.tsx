@@ -39,6 +39,7 @@ describe('RegisterPage component', () => {
     expect(screen.getByLabelText(/^password$/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/^confirm password$/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /register/i })).toBeInTheDocument();
+    expect(document.title).toBe('Create Account — BareDo');
     expect(mockRoute).not.toHaveBeenCalled();
   });
 

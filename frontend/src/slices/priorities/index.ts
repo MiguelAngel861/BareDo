@@ -1,4 +1,5 @@
-export { PriorityDropdown } from './ui/PriorityDropdown.tsx';
+export { PriorityDropdown, type PriorityDropdownProps } from './ui/PriorityDropdown/index.ts';
+
 export {
   prioritiesSignal,
   priorityDescriptionsSignal,

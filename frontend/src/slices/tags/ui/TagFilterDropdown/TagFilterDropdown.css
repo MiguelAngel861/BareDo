@@ -1,0 +1,12 @@
+/* ===== TagFilterDropdown Component ===== */
+
+.tag-filter-dropdown-container {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+#filter-tag .dropdown-options {
+  max-height: 180px;
+}

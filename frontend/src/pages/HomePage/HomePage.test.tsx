@@ -112,6 +112,7 @@ describe('HomePage component', () => {
     expect(fetchPriorities).toHaveBeenCalledTimes(1);
     expect(fetchTags).toHaveBeenCalledTimes(1);
     expect(fetchTrashCount).toHaveBeenCalledTimes(1);
+    expect(document.title).toBe('Tasks — BareDo');
   });
 
   it('renders header with username, task count, and action buttons', () => {
