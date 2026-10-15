@@ -18,3 +18,6 @@ export {
   toggleCommandPalette,
 } from './CommandPalette/index.ts';
 export { SearchBar, type SearchBarProps } from './SearchBar/index.ts';
+export { Badge, type BadgeProps, type BadgeSize, type BadgeVariant } from './Badge/index.ts';
+export { TagChip, type TagChipProps } from './TagChip/index.ts';
+export { Checkbox, type CheckboxProps } from './Checkbox/index.ts';

@@ -1,0 +1,64 @@
+.app-checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+  width: fit-content;
+  position: relative;
+  line-height: 1.4;
+}
+
+.app-checkbox--disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.app-checkbox__native {
+  position: absolute !important;
+  opacity: 0 !important;
+  width: 1px !important;
+  height: 1px !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+}
+
+.app-checkbox__box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  border: 1px solid var(--text);
+  background-color: var(--surface);
+  border-radius: 0;
+  box-sizing: border-box;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.app-checkbox__indicator {
+  display: block;
+  width: 10px;
+  height: 10px;
+  background-color: var(--text);
+  opacity: 0;
+  transition: opacity 0.12s ease;
+  border-radius: 0;
+}
+
+.app-checkbox__indicator.is-checked {
+  opacity: 1;
+}
+
+.app-checkbox__native:focus-visible + .app-checkbox__box {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 1px;
+}
+
+.app-checkbox__label {
+  font-size: 0.875rem;
+  color: var(--text);
+  font-family: var(--font-ui);
+}

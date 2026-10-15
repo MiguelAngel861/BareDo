@@ -1,0 +1,71 @@
+.app-tag-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  text-transform: lowercase;
+  letter-spacing: 0.04em;
+  line-height: 1.4;
+  box-sizing: border-box;
+  background-color: var(--surface);
+  border-radius: 0;
+  white-space: nowrap;
+}
+
+.app-tag-chip--sm {
+  font-size: 0.6875rem;
+  padding: 1px 6px;
+}
+
+.app-tag-chip--md {
+  font-size: 0.75rem;
+  padding: 2px 6px;
+}
+
+.app-tag-chip--default {
+  border: 1px solid var(--text);
+  color: var(--text);
+}
+
+.app-tag-chip--subtle {
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+}
+
+.app-tag-chip--clickable {
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.app-tag-chip--clickable:hover {
+  background-color: var(--text);
+  color: var(--bg);
+}
+
+.app-tag-chip__label {
+  display: inline-block;
+}
+
+.app-tag-chip__remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  box-shadow: none !important;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0;
+  font-size: 0.875rem;
+  line-height: 1;
+  font-weight: 700;
+  transform: none !important;
+  outline: none;
+  margin-left: 2px;
+}
+
+.app-tag-chip__remove:hover,
+.app-tag-chip__remove:focus-visible {
+  color: var(--danger);
+}
