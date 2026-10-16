@@ -1,7 +1,8 @@
+import { getErrorMessage } from '@/shared/api/errors/index.ts';
 import { Button, InputField } from '@/shared/ui/index.ts';
 import { useLocation } from 'preact-iso';
 import { useState } from 'preact/hooks';
-import { PasswordSchema, UsernameSchema } from '../../auth.schemas.ts';
+import { validatePasswordField, validateUsernameField } from '../../auth.schemas.ts';
 import { login } from '../../auth.state.ts';
 import { AuthCard } from '../AuthCard/index.ts';
 import { PasswordInput } from '../PasswordInput/index.ts';
@@ -16,30 +17,20 @@ export function LoginForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitText, setSubmitText] = useState('Login');
 
-  const validateUsername = (): string | null => {
-    const res = UsernameSchema.safeParse(username);
-    return res.success ? null : res.error.errors[0]?.message || 'Invalid username';
-  };
-
-  const validatePassword = (): string | null => {
-    const res = PasswordSchema.safeParse(password);
-    return res.success ? null : res.error.errors[0]?.message || 'Invalid password';
-  };
-
   const handleUsernameBlur = () => {
-    setUsernameError(validateUsername());
+    setUsernameError(validateUsernameField(username));
   };
 
   const handlePasswordBlur = () => {
-    setPasswordError(validatePassword());
+    setPasswordError(validatePasswordField(password));
   };
 
   const handleSubmit = async (e: Event) => {
     e.preventDefault();
     setGlobalError(null);
 
-    const uErr = validateUsername();
-    const pErr = validatePassword();
+    const uErr = validateUsernameField(username);
+    const pErr = validatePasswordField(password);
     setUsernameError(uErr);
     setPasswordError(pErr);
 
@@ -60,8 +51,7 @@ export function LoginForm() {
       location.route('/');
     } catch (err) {
       clearTimeout(slowTimer);
-      const message = err instanceof Error ? err.message : 'Login failed';
-      setGlobalError(message);
+      setGlobalError(getErrorMessage(err, 'Login failed'));
     } finally {
       clearTimeout(slowTimer);
       setIsSubmitting(false);

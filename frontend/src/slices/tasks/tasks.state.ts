@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/shared/api/errors/index.ts';
 import { showToast } from '@/shared/ui/index.ts';
 import { signal } from '@preact/signals';
 import { tasksApi } from './tasks.api.ts';
@@ -9,6 +10,10 @@ import type {
   TaskListParams,
   TaskUpdate,
 } from './tasks.types.ts';
+
+function showErrorToast(err: unknown, fallback: string): void {
+  showToast(`Error: ${getErrorMessage(err, fallback)}`, 'error');
+}
 
 export const tasksSignal = signal<Task[]>([]);
 export const isLoadingTasksSignal = signal<boolean>(false);
@@ -105,8 +110,7 @@ export async function loadTasks(): Promise<void> {
       selectedTaskIdSignal.value = null;
     }
   } catch (err) {
-    const msg = err instanceof Error ? err.message : 'Failed to load tasks';
-    showToast(`Error loading tasks: ${msg}`, 'error');
+    showToast(`Error loading tasks: ${getErrorMessage(err, 'Failed to load tasks')}`, 'error');
   } finally {
     isLoadingTasksSignal.value = false;
   }
@@ -179,8 +183,7 @@ export async function toggleTaskComplete(task: Task): Promise<void> {
     if (viewingTaskSignal.value?.task_id === task.task_id) {
       viewingTaskSignal.value = { ...viewingTaskSignal.value, completed: previousStatus };
     }
-    const msg = err instanceof Error ? err.message : 'Failed to update status';
-    showToast(`Error: ${msg}`, 'error');
+    showErrorToast(err, 'Failed to update status');
   }
 }
 
@@ -248,8 +251,7 @@ export async function executeDeleteTask(): Promise<void> {
     // 2. Rollback on failure
     tasksSignal.value = previousTasks;
     paginationSignal.value = previousPagination;
-    const msg = err instanceof Error ? err.message : 'Failed to delete task';
-    showToast(`Error: ${msg}`, 'error');
+    showErrorToast(err, 'Failed to delete task');
   }
 }
 
@@ -269,8 +271,7 @@ export async function saveTask(
     closeFormModal();
     loadTasks();
   } catch (err) {
-    const msg = err instanceof Error ? err.message : 'Failed to save task';
-    showToast(`Error: ${msg}`, 'error');
+    showErrorToast(err, 'Failed to save task');
     throw err;
   }
 }
@@ -292,8 +293,7 @@ export async function loadTrashTasks(page = 1): Promise<void> {
     trashPaginationSignal.value = res.meta;
     trashCountSignal.value = res.meta.total_items;
   } catch (err) {
-    const msg = err instanceof Error ? err.message : 'Failed to load trash';
-    showToast(`Error: ${msg}`, 'error');
+    showErrorToast(err, 'Failed to load trash');
   } finally {
     isLoadingTrashSignal.value = false;
   }
@@ -321,8 +321,7 @@ export async function restoreTaskAction(task: Task): Promise<void> {
       loadTrashTasks(trashPaginationSignal.value.page - 1);
     }
   } catch (err) {
-    const msg = err instanceof Error ? err.message : 'Failed to restore task';
-    showToast(`Error: ${msg}`, 'error');
+    showErrorToast(err, 'Failed to restore task');
   }
 }
 
@@ -350,8 +349,7 @@ export async function executePermanentDeleteTask(): Promise<void> {
       loadTrashTasks(trashPaginationSignal.value.page - 1);
     }
   } catch (err) {
-    const msg = err instanceof Error ? err.message : 'Failed to delete task permanently';
-    showToast(`Error: ${msg}`, 'error');
+    showErrorToast(err, 'Failed to delete task permanently');
   }
 }
 
@@ -379,8 +377,7 @@ export async function executeEmptyTrash(): Promise<void> {
       has_next: false,
     };
   } catch (err) {
-    const msg = err instanceof Error ? err.message : 'Failed to empty trash';
-    showToast(`Error: ${msg}`, 'error');
+    showErrorToast(err, 'Failed to empty trash');
   }
 }
 
@@ -403,8 +400,7 @@ export async function addSubtaskAction(taskId: string, title: string): Promise<S
     showToast('Subtask added', 'success');
     return created;
   } catch (err) {
-    const msg = err instanceof Error ? err.message : 'Failed to add subtask';
-    showToast(`Error: ${msg}`, 'error');
+    showErrorToast(err, 'Failed to add subtask');
     return null;
   }
 }
@@ -440,8 +436,7 @@ export async function toggleSubtaskAction(taskId: string, subtask: Subtask): Pro
         subtasks: rollbackList(viewingTaskSignal.value.subtasks || []),
       };
     }
-    const msg = err instanceof Error ? err.message : 'Failed to update subtask';
-    showToast(`Error: ${msg}`, 'error');
+    showErrorToast(err, 'Failed to update subtask');
   }
 }
 
@@ -467,7 +462,6 @@ export async function deleteSubtaskAction(taskId: string, subtaskId: string): Pr
   } catch (err) {
     tasksSignal.value = previousTasks;
     viewingTaskSignal.value = previousViewing;
-    const msg = err instanceof Error ? err.message : 'Failed to delete subtask';
-    showToast(`Error: ${msg}`, 'error');
+    showErrorToast(err, 'Failed to delete subtask');
   }
 }

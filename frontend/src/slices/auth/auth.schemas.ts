@@ -13,6 +13,16 @@ export const PasswordSchema = z
   .min(8, 'Password must be at least 8 characters')
   .max(128, 'Password must be 128 characters or less');
 
+export function validateUsernameField(username: string): string | null {
+  const res = UsernameSchema.safeParse(username);
+  return res.success ? null : res.error.errors[0]?.message || 'Invalid username';
+}
+
+export function validatePasswordField(password: string): string | null {
+  const res = PasswordSchema.safeParse(password);
+  return res.success ? null : res.error.errors[0]?.message || 'Invalid password';
+}
+
 export const UserSchema = z.object({
   user_id: z.coerce.string(),
   username: z.string(),

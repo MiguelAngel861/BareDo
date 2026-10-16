@@ -10,6 +10,7 @@ export {
   findOrCreateTag,
   updateTagState,
   deleteTagState,
+  normalizeTagName,
 } from './tags.state.ts';
 export { tagsApi } from './tags.api.ts';
 export * from './tags.types.ts';

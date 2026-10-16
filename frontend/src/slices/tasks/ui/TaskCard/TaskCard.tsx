@@ -1,5 +1,9 @@
 import { Badge, Button, TagChip } from '@/shared/ui/index.ts';
-import { getPriorityDescription, getPriorityLabel } from '@/slices/priorities/index.ts';
+import {
+  getPriorityBadgeVariant,
+  getPriorityDescription,
+  getPriorityLabel,
+} from '@/slices/priorities/index.ts';
 import { useEffect, useRef } from 'preact/hooks';
 import {
   openEditModal,
@@ -59,15 +63,7 @@ export function TaskCard({ task }: { task: Task }) {
 
         <div class="task-meta">
           <Badge
-            variant={
-              task.priority_id === 5
-                ? 'danger'
-                : task.priority_id === 4
-                  ? 'solid'
-                  : task.priority_id === 3
-                    ? 'outline'
-                    : 'default'
-            }
+            variant={getPriorityBadgeVariant(task.priority_id)}
             size="sm"
             title={priorityDesc || undefined}
           >

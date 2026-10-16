@@ -1,6 +1,6 @@
 import { InputField, TagChip } from '@/shared/ui/index.ts';
 import { useEffect, useRef, useState } from 'preact/hooks';
-import { fetchTags, findOrCreateTag, tagsSignal } from '../../tags.state.ts';
+import { fetchTags, findOrCreateTag, normalizeTagName, tagsSignal } from '../../tags.state.ts';
 import type { Tag } from '../../tags.types.ts';
 import './TagInputChips.css';
 
@@ -27,7 +27,7 @@ export function TagInputChips({
     fetchTags();
   }, []);
 
-  const cleanQuery = inputValue.trim().toLowerCase().replace(/^#/, '');
+  const cleanQuery = normalizeTagName(inputValue);
 
   // Tags disponibles que aún no han sido asignados a la tarea
   const selectedTagIds = new Set(tags.map((t) => t.tag_id));

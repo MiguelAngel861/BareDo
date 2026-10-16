@@ -14,6 +14,7 @@ import {
   deleteTagState,
   findOrCreateTag,
   isManageTagsModalOpenSignal,
+  normalizeTagName,
   tagsSignal,
   updateTagState,
 } from '../../tags.state.ts';
@@ -37,7 +38,7 @@ export function ManageTagsModal() {
 
   const handleCreate = async (e: Event) => {
     e.preventDefault();
-    const clean = newTagName.trim().toLowerCase().replace(/^#/, '');
+    const clean = normalizeTagName(newTagName);
     if (!clean) {
       return;
     }
@@ -66,7 +67,7 @@ export function ManageTagsModal() {
   };
 
   const handleSaveEdit = async (tagId: number) => {
-    const clean = editingName.trim().toLowerCase().replace(/^#/, '');
+    const clean = normalizeTagName(editingName);
     if (!clean) {
       setError('Tag name cannot be empty');
       return;

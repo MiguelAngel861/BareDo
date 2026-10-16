@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ApiErrorClass, isApiError } from './errors.ts';
+import { ApiErrorClass, getErrorMessage, isApiError } from './errors.ts';
 
 describe('ApiError and isApiError helper', () => {
   it('instantiates ApiErrorClass properly', () => {
@@ -31,5 +31,14 @@ describe('ApiError and isApiError helper', () => {
     expect(isApiError(null)).toBe(false);
     expect(isApiError(undefined)).toBe(false);
     expect(isApiError({ code: 'UNAUTHORIZED' })).toBe(false);
+  });
+
+  it('extracts error message from Error instances or returns fallback', () => {
+    expect(getErrorMessage(new Error('Network disconnected'), 'Default fallback')).toBe(
+      'Network disconnected'
+    );
+    expect(getErrorMessage('some error string', 'Default fallback')).toBe('Default fallback');
+    expect(getErrorMessage(null, 'Default fallback')).toBe('Default fallback');
+    expect(getErrorMessage(undefined)).toBe('An unexpected error occurred');
   });
 });

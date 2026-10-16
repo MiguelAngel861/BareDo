@@ -38,3 +38,18 @@ export function getPriorityLabel(id: number): string {
 export function getPriorityDescription(id: number): string {
   return priorityDescriptionsSignal.value.get(id) || '';
 }
+
+export type PriorityBadgeVariant = 'danger' | 'solid' | 'outline' | 'default';
+
+export function getPriorityBadgeVariant(id: number): PriorityBadgeVariant {
+  if (id === 5) {
+    return 'danger';
+  }
+  if (id === 4) {
+    return 'solid';
+  }
+  if (id === 3) {
+    return 'outline';
+  }
+  return 'default';
+}

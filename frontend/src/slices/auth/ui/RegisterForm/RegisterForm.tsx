@@ -1,7 +1,8 @@
+import { getErrorMessage } from '@/shared/api/errors/index.ts';
 import { Button, InputField } from '@/shared/ui/index.ts';
 import { useLocation } from 'preact-iso';
 import { useState } from 'preact/hooks';
-import { PasswordSchema, UsernameSchema } from '../../auth.schemas.ts';
+import { validatePasswordField, validateUsernameField } from '../../auth.schemas.ts';
 import { register } from '../../auth.state.ts';
 import { AuthCard } from '../AuthCard/index.ts';
 import { PasswordInput } from '../PasswordInput/index.ts';
@@ -18,16 +19,6 @@ export function RegisterForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitText, setSubmitText] = useState('Register');
 
-  const validateUsername = (): string | null => {
-    const res = UsernameSchema.safeParse(username);
-    return res.success ? null : res.error.errors[0]?.message || 'Invalid username';
-  };
-
-  const validatePassword = (): string | null => {
-    const res = PasswordSchema.safeParse(password);
-    return res.success ? null : res.error.errors[0]?.message || 'Invalid password';
-  };
-
   const validateConfirmPassword = (): string | null => {
     if (!confirmPassword) {
       return 'Please confirm your password';
@@ -39,11 +30,11 @@ export function RegisterForm() {
   };
 
   const handleUsernameBlur = () => {
-    setUsernameError(validateUsername());
+    setUsernameError(validateUsernameField(username));
   };
 
   const handlePasswordBlur = () => {
-    setPasswordError(validatePassword());
+    setPasswordError(validatePasswordField(password));
   };
 
   const handleConfirmPasswordBlur = () => {
@@ -54,8 +45,8 @@ export function RegisterForm() {
     e.preventDefault();
     setGlobalError(null);
 
-    const uErr = validateUsername();
-    const pErr = validatePassword();
+    const uErr = validateUsernameField(username);
+    const pErr = validatePasswordField(password);
     const cpErr = validateConfirmPassword();
 
     setUsernameError(uErr);
@@ -79,8 +70,7 @@ export function RegisterForm() {
       location.route('/');
     } catch (err) {
       clearTimeout(slowTimer);
-      const message = err instanceof Error ? err.message : 'Registration failed';
-      setGlobalError(message);
+      setGlobalError(getErrorMessage(err, 'Registration failed'));
     } finally {
       clearTimeout(slowTimer);
       setIsSubmitting(false);

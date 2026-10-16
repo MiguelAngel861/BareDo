@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/shared/api/errors/index.ts';
 import { Button, Checkbox, InputField, PopoutModal } from '@/shared/ui/index.ts';
 import { PriorityDropdown } from '@/slices/priorities/index.ts';
 import { type Tag, TagInputChips } from '@/slices/tags/index.ts';
@@ -88,8 +89,7 @@ export function TaskPopoutModal() {
     try {
       await saveTask(payload, isEditing, editingTask?.task_id);
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Failed to save task';
-      setFormError(msg);
+      setFormError(getErrorMessage(err, 'Failed to save task'));
     } finally {
       setIsSubmitting(false);
     }

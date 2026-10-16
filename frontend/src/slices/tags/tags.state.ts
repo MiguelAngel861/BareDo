@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/shared/api/errors/index.ts';
 import { showToast } from '@/shared/ui/index.ts';
 import { tasksSignal } from '@/slices/tasks/tasks.state.ts';
 import { signal } from '@preact/signals';
@@ -24,8 +25,12 @@ export async function fetchTags(): Promise<void> {
   }
 }
 
+export function normalizeTagName(name: string): string {
+  return name.trim().toLowerCase().replace(/^#/, '');
+}
+
 export async function findOrCreateTag(name: string): Promise<Tag | null> {
-  const clean = name.trim().toLowerCase().replace(/^#/, '');
+  const clean = normalizeTagName(name);
   if (!clean) {
     return null;
   }
@@ -45,7 +50,7 @@ export async function findOrCreateTag(name: string): Promise<Tag | null> {
 }
 
 export async function updateTagState(tagId: number, name: string): Promise<Tag | null> {
-  const clean = name.trim().toLowerCase().replace(/^#/, '');
+  const clean = normalizeTagName(name);
   if (!clean) {
     return null;
   }
@@ -63,8 +68,7 @@ export async function updateTagState(tagId: number, name: string): Promise<Tag |
     showToast(`Tag #${clean} updated`, 'success');
     return updated;
   } catch (err) {
-    const msg = err instanceof Error ? err.message : 'Failed to update tag';
-    showToast(msg, 'error');
+    showToast(getErrorMessage(err, 'Failed to update tag'), 'error');
     return null;
   }
 }
@@ -84,8 +88,7 @@ export async function deleteTagState(tagId: number): Promise<boolean> {
     showToast(`Tag #${deletedTag?.name || ''} deleted`, 'info');
     return true;
   } catch (err) {
-    const msg = err instanceof Error ? err.message : 'Failed to delete tag';
-    showToast(msg, 'error');
+    showToast(getErrorMessage(err, 'Failed to delete tag'), 'error');
     return false;
   }
 }
