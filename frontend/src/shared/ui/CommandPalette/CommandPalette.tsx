@@ -51,9 +51,10 @@ export function CommandPalette() {
     if (isOpen) {
       setQuery('');
       setSelectedIndex(0);
-      setTimeout(() => {
+      const frameId = requestAnimationFrame(() => {
         inputRef.current?.focus();
-      }, 50);
+      });
+      return () => cancelAnimationFrame(frameId);
     }
   }, [isOpen]);
 

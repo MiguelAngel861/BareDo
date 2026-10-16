@@ -12,43 +12,7 @@ export interface ToastItem {
 
 export const toastsSignal = signal<ToastItem[]>([]);
 
-export function showToast(
-  messageOrContainer: string | HTMLElement,
-  typeOrMessage?: ToastType | string,
-  durationOrType?: number | string
-): void {
-  let message: string;
-  let type: ToastType = 'info';
-  let duration = 4000;
-
-  if (typeof messageOrContainer === 'string') {
-    message = messageOrContainer;
-    if (
-      typeof typeOrMessage === 'string' &&
-      (typeOrMessage === 'success' ||
-        typeOrMessage === 'error' ||
-        typeOrMessage === 'info' ||
-        typeOrMessage === 'warning')
-    ) {
-      type = typeOrMessage as ToastType;
-    }
-    if (typeof durationOrType === 'number') {
-      duration = durationOrType;
-    }
-  } else {
-    // Compatibilidad transitoria con firma vieja: showToast(container, message, type)
-    message = typeof typeOrMessage === 'string' ? typeOrMessage : '';
-    if (
-      typeof durationOrType === 'string' &&
-      (durationOrType === 'success' ||
-        durationOrType === 'error' ||
-        durationOrType === 'info' ||
-        durationOrType === 'warning')
-    ) {
-      type = durationOrType as ToastType;
-    }
-  }
-
+export function showToast(message: string, type: ToastType = 'info', duration = 4000): void {
   const id = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
   const item: ToastItem = { id, message, type };
 
@@ -57,10 +21,6 @@ export function showToast(
   setTimeout(() => {
     removeToast(id);
   }, duration);
-}
-
-export function flushPendingToasts(_container?: HTMLElement): void {
-  // Transitorio: vaciar pendientes
 }
 
 export function removeToast(id: string): void {

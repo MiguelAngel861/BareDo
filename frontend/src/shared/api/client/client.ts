@@ -67,7 +67,7 @@ async function refreshAccessToken(): Promise<void> {
 
 let hasNotifiedServerReady = false;
 
-export const kyInstance = ky.create({
+export const apiClient = ky.create({
   prefixUrl: import.meta.env.VITE_API_BASE_URL || '/api/v1',
   timeout: 60000,
   retry: {
@@ -127,8 +127,6 @@ export const kyInstance = ky.create({
     ],
   },
 });
-
-export const apiClient = kyInstance;
 
 export async function validatedRequest<T>(
   requestFn: () => Promise<unknown>,

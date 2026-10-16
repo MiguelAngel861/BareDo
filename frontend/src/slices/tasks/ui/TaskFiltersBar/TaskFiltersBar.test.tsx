@@ -25,7 +25,7 @@ describe('TaskFiltersBar component', () => {
 
   it('updates search query when input changes', () => {
     vi.useFakeTimers();
-    const setSearchSpy = vi.spyOn(taskState, 'setSearch');
+    const setSearchSpy = vi.spyOn(taskState, 'setSearch').mockImplementation(() => {});
     render(<TaskFiltersBar />);
 
     const searchInput = screen.getByRole('searchbox');
@@ -37,7 +37,7 @@ describe('TaskFiltersBar component', () => {
   });
 
   it('updates status filter when status dropdown changes', () => {
-    const setFilterSpy = vi.spyOn(taskState, 'setFilter');
+    const setFilterSpy = vi.spyOn(taskState, 'setFilter').mockImplementation(() => {});
     render(<TaskFiltersBar />);
 
     const statusDropdown = screen.getByLabelText('Filter by status');
