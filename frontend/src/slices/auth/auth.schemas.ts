@@ -13,13 +13,6 @@ export const PasswordSchema = z
   .min(8, 'Password must be at least 8 characters')
   .max(128, 'Password must be 128 characters or less');
 
-export const LoginRequestSchema = z.object({
-  username: UsernameSchema,
-  password: PasswordSchema,
-});
-
-export const RegisterRequestSchema = LoginRequestSchema;
-
 export const UserSchema = z.object({
   user_id: z.coerce.string(),
   username: z.string(),

@@ -1,9 +1,9 @@
 import { apiClient, validatedRequest } from '@/shared/api/client/index.ts';
 import { TagListResponseSchema, TagSchema } from './tags.schemas.ts';
-import type { Tag } from './tags.types.ts';
+import type { Tag, TagListResponse } from './tags.types.ts';
 
 export const tagsApi = {
-  getTags: (): Promise<{ tags: Tag[] }> =>
+  getTags: (): Promise<TagListResponse> =>
     validatedRequest(() => apiClient.get('tags').json<unknown>(), TagListResponseSchema),
 
   createTag: (name: string): Promise<Tag> =>

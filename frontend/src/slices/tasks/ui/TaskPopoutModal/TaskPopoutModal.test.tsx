@@ -1,3 +1,4 @@
+import * as tagsState from '@/slices/tags/tags.state.ts';
 import { fireEvent, render, screen } from '@testing-library/preact';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import * as taskState from '../../tasks.state.ts';
@@ -20,6 +21,7 @@ describe('TaskPopoutModal component', () => {
 
   beforeEach(() => {
     vi.restoreAllMocks();
+    vi.spyOn(tagsState, 'fetchTags').mockImplementation(async () => {});
     taskState.isFormModalOpenSignal.value = false;
     taskState.editingTaskSignal.value = null;
   });

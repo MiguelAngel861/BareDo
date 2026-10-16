@@ -4,7 +4,7 @@ import { addSubtaskAction, deleteSubtaskAction, toggleSubtaskAction } from '../.
 import type { Subtask } from '../../tasks.types.ts';
 import './SubtaskList.css';
 
-export type SubtaskItemType = Subtask | { subtask_id: string; title: string; completed: boolean };
+type SubtaskItemType = Subtask | { subtask_id: string; title: string; completed: boolean };
 
 interface SubtaskListProps {
   taskId?: string;

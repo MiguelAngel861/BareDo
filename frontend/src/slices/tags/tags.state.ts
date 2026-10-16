@@ -5,7 +5,6 @@ import { tagsApi } from './tags.api.ts';
 import type { Tag } from './tags.types.ts';
 
 export const tagsSignal = signal<Tag[]>([]);
-export const isLoadingTagsSignal = signal<boolean>(false);
 export const isManageTagsModalOpenSignal = signal<boolean>(false);
 
 export function openManageTagsModal(): void {
@@ -17,14 +16,11 @@ export function closeManageTagsModal(): void {
 }
 
 export async function fetchTags(): Promise<void> {
-  isLoadingTagsSignal.value = true;
   try {
     const res = await tagsApi.getTags();
     tagsSignal.value = res.tags;
   } catch {
     // Error silencioso al listar tags
-  } finally {
-    isLoadingTagsSignal.value = false;
   }
 }
 

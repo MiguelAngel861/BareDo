@@ -31,6 +31,18 @@ describe('tasks.state optimistic updates & rollback', () => {
 
   beforeEach(() => {
     vi.restoreAllMocks();
+    vi.spyOn(tasksApi, 'getTrashCount').mockResolvedValue({ count: 0 });
+    vi.spyOn(tasksApi, 'list').mockResolvedValue({
+      tasks: [],
+      meta: {
+        page: 1,
+        per_page: 5,
+        total_pages: 1,
+        total_items: 0,
+        has_prev: false,
+        has_next: false,
+      },
+    });
     tasksSignal.value = [sampleTask];
     paginationSignal.value = {
       page: 1,

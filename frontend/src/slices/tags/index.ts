@@ -3,7 +3,6 @@ export { TagFilterDropdown, type TagFilterDropdownProps } from './ui/TagFilterDr
 export { ManageTagsModal } from './ui/ManageTagsModal/index.ts';
 export {
   tagsSignal,
-  isLoadingTagsSignal,
   isManageTagsModalOpenSignal,
   openManageTagsModal,
   closeManageTagsModal,
