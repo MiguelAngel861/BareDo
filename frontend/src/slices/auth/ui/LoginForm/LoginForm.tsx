@@ -2,10 +2,10 @@ import { getErrorMessage } from '@/shared/api/errors/index.ts';
 import { Button, InputField } from '@/shared/ui/index.ts';
 import { useLocation } from 'preact-iso';
 import { useState } from 'preact/hooks';
-import { validatePasswordField, validateUsernameField } from '../../auth.schemas.ts';
 import { login } from '../../auth.state.ts';
 import { AuthCard } from '../AuthCard/index.ts';
 import { PasswordInput } from '../PasswordInput/index.ts';
+import { validatePasswordField, validateUsernameField } from '../auth.validation.ts';
 
 export function LoginForm() {
   const location = useLocation();
