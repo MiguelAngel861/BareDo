@@ -1,11 +1,10 @@
-import { Button } from '@/shared/ui/index.ts';
+import { Button, InputField } from '@/shared/ui/index.ts';
 import { useLocation } from 'preact-iso';
 import { useState } from 'preact/hooks';
 import { PasswordSchema, UsernameSchema } from '../../auth.schemas.ts';
 import { register } from '../../auth.state.ts';
 import { AuthCard } from '../AuthCard/index.ts';
 import { PasswordInput } from '../PasswordInput/index.ts';
-import './RegisterForm.css';
 
 export function RegisterForm() {
   const location = useLocation();
@@ -99,74 +98,60 @@ export function RegisterForm() {
       }
     >
       <form id="register-form" onSubmit={handleSubmit}>
-        <div class="form-group">
-          <label for="username">Username</label>
-          <input
-            type="text"
-            id="username"
-            name="username"
-            required
-            minLength={3}
-            maxLength={50}
-            autoComplete="username"
-            placeholder="Choose a username"
-            value={username}
-            onInput={(e) => setUsername((e.target as HTMLInputElement).value)}
-            onBlur={handleUsernameBlur}
-          />
-          {usernameError && (
-            <span class="error-message" id="username-error">
-              {usernameError}
-            </span>
-          )}
-        </div>
+        <InputField
+          id="username"
+          name="username"
+          label="Username"
+          required={true}
+          minLength={3}
+          maxLength={50}
+          autoComplete="username"
+          placeholder="Choose a username"
+          value={username}
+          error={usernameError}
+          onInput={(val) => setUsername(val)}
+          onBlur={handleUsernameBlur}
+          onKeyDown={() => {
+            if (usernameError) {
+              setUsernameError(null);
+            }
+          }}
+        />
 
-        <div class="form-group">
-          <label for="password">Password</label>
-          <PasswordInput
-            id="password"
-            name="password"
-            required
-            minLength={8}
-            maxLength={128}
-            autoComplete="new-password"
-            placeholder="Create a password"
-            value={password}
-            onInput={(e) => setPassword((e.target as HTMLInputElement).value)}
-            onBlur={handlePasswordBlur}
-          />
-          {passwordError && (
-            <span class="error-message" id="password-error">
-              {passwordError}
-            </span>
-          )}
-          <div class="password-requirements">Minimum 8 characters</div>
-        </div>
+        <PasswordInput
+          id="password"
+          name="password"
+          label="Password"
+          required={true}
+          minLength={8}
+          maxLength={128}
+          autoComplete="new-password"
+          placeholder="Create a password"
+          value={password}
+          error={passwordError}
+          hint="Minimum 8 characters"
+          onInput={(val) => setPassword(val)}
+          onBlur={handlePasswordBlur}
+        />
 
-        <div class="form-group">
-          <label for="confirm-password">Confirm Password</label>
-          <PasswordInput
-            id="confirm-password"
-            name="confirm-password"
-            required
-            minLength={8}
-            maxLength={128}
-            autoComplete="new-password"
-            placeholder="Confirm your password"
-            value={confirmPassword}
-            toggleAriaLabel={{
-              show: 'Show confirm password',
-              hide: 'Hide confirm password',
-            }}
-            onInput={(e) => setConfirmPassword((e.target as HTMLInputElement).value)}
-            onBlur={handleConfirmPasswordBlur}
-          />
-          {confirmPasswordError && (
-            <span class="error-message" id="confirm-password-error">
-              {confirmPasswordError}
-            </span>
-          )}
-        </div>
+        <PasswordInput
+          id="confirm-password"
+          name="confirm-password"
+          label="Confirm Password"
+          required={true}
+          minLength={8}
+          maxLength={128}
+          autoComplete="new-password"
+          placeholder="Confirm your password"
+          value={confirmPassword}
+          error={confirmPasswordError}
+          toggleAriaLabel={{
+            show: 'Show confirm password',
+            hide: 'Hide confirm password',
+          }}
+          onInput={(val) => setConfirmPassword(val)}
+          onBlur={handleConfirmPasswordBlur}
+        />
 
         {globalError && (
           <div id="global-error" class="global-error">
