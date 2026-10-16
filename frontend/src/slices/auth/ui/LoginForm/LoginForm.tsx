@@ -1,4 +1,4 @@
-import { Button } from '@/shared/ui/index.ts';
+import { Button, InputField } from '@/shared/ui/index.ts';
 import { useLocation } from 'preact-iso';
 import { useState } from 'preact/hooks';
 import { PasswordSchema, UsernameSchema } from '../../auth.schemas.ts';
@@ -79,48 +79,35 @@ export function LoginForm() {
       }
     >
       <form id="login-form" onSubmit={handleSubmit}>
-        <div class="form-group">
-          <label for="username">Username</label>
-          <input
-            type="text"
-            id="username"
-            name="username"
-            required
-            minLength={3}
-            maxLength={50}
-            autoComplete="username"
-            placeholder="Enter your username"
-            value={username}
-            onInput={(e) => setUsername((e.target as HTMLInputElement).value)}
-            onBlur={handleUsernameBlur}
-          />
-          {usernameError && (
-            <span class="error-message" id="username-error">
-              {usernameError}
-            </span>
-          )}
-        </div>
+        <InputField
+          id="username"
+          name="username"
+          label="Username"
+          required={true}
+          minLength={3}
+          maxLength={50}
+          autoComplete="username"
+          placeholder="Enter your username"
+          value={username}
+          error={usernameError}
+          onInput={(val) => setUsername(val)}
+          onBlur={handleUsernameBlur}
+        />
 
-        <div class="form-group">
-          <label for="password">Password</label>
-          <PasswordInput
-            id="password"
-            name="password"
-            required
-            minLength={8}
-            maxLength={128}
-            autoComplete="current-password"
-            placeholder="Enter your password"
-            value={password}
-            onInput={(e) => setPassword((e.target as HTMLInputElement).value)}
-            onBlur={handlePasswordBlur}
-          />
-          {passwordError && (
-            <span class="error-message" id="password-error">
-              {passwordError}
-            </span>
-          )}
-        </div>
+        <PasswordInput
+          id="password"
+          name="password"
+          label="Password"
+          required={true}
+          minLength={8}
+          maxLength={128}
+          autoComplete="current-password"
+          placeholder="Enter your password"
+          value={password}
+          error={passwordError}
+          onInput={(val) => setPassword(val)}
+          onBlur={handlePasswordBlur}
+        />
 
         {globalError && (
           <div id="global-error" class="global-error">

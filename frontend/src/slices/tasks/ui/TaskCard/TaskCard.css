@@ -82,85 +82,12 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* ===== Priority Badges (Swiss Brutalist) ===== */
-.task-priority {
-  display: inline-block;
-  padding: 1px 6px;
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  border: 1px solid var(--text);
-  line-height: 1.4;
-}
-
-.task-priority-1 {
-  border-color: var(--border);
-  color: var(--text-muted);
-  background-color: transparent;
-}
-
-.task-priority-2 {
-  border-color: var(--text-muted);
-  color: var(--text-muted);
-  background-color: transparent;
-}
-
-.task-priority-3 {
-  border-color: var(--text);
-  color: var(--text);
-  background-color: transparent;
-}
-
-.task-priority-4 {
-  border-color: var(--text);
-  color: var(--bg);
-  background-color: var(--text);
-}
-
-.task-priority-5 {
-  border-color: var(--danger);
-  color: var(--danger);
-  background-color: transparent;
-}
-
-/* ===== Task Card Tags ===== */
+/* ===== Task Card Tags Wrapper ===== */
 .task-tags {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
   margin: 6px 0 8px 0;
-}
-
-.task-tag-badge {
-  display: inline-block;
-  padding: 1px 6px;
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: lowercase;
-  border: 1px solid var(--border);
-  background-color: var(--surface);
-  color: var(--text-muted);
-  line-height: 1.4;
-}
-
-/* ===== Subtasks Counter Badge ===== */
-.task-subtasks-count {
-  display: inline-block;
-  padding: 1px 6px;
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  border: 1px solid var(--border);
-  background-color: var(--surface);
-  color: var(--text-muted);
-  font-variant-numeric: tabular-nums;
-  line-height: 1.4;
 }
 
 /* ===== Botones de Acción Estilo Badge Textual (G3) ===== */

@@ -1,17 +1,8 @@
+import { InputField, type InputFieldProps } from '@/shared/ui/index.ts';
 import { useState } from 'preact/hooks';
 import './PasswordInput.css';
 
-export interface PasswordInputProps {
-  id: string;
-  name: string;
-  value: string;
-  onInput?: (e: Event) => void;
-  onBlur?: (e: Event) => void;
-  required?: boolean;
-  minLength?: number;
-  maxLength?: number;
-  autoComplete?: string;
-  placeholder?: string;
+export interface PasswordInputProps extends Omit<InputFieldProps, 'type' | 'endAdornment'> {
   toggleAriaLabel?: {
     show: string;
     hide: string;
@@ -61,43 +52,25 @@ function EyeOffIcon() {
 }
 
 export function PasswordInput({
-  id,
-  name,
-  value,
-  onInput,
-  onBlur,
-  required,
-  minLength,
-  maxLength,
-  autoComplete,
-  placeholder,
   toggleAriaLabel = { show: 'Show password', hide: 'Hide password' },
+  ...props
 }: PasswordInputProps) {
   const [isVisible, setIsVisible] = useState(false);
 
   return (
-    <div class="password-input-wrapper">
-      <input
-        id={id}
-        name={name}
-        type={(isVisible ? 'text' : 'password') as 'password'}
-        value={value}
-        onInput={onInput}
-        onBlur={onBlur}
-        required={required}
-        minLength={minLength}
-        maxLength={maxLength}
-        autoComplete={autoComplete}
-        placeholder={placeholder}
-      />
-      <button
-        type="button"
-        class="password-toggle-btn"
-        aria-label={isVisible ? toggleAriaLabel.hide : toggleAriaLabel.show}
-        onClick={() => setIsVisible((prev) => !prev)}
-      >
-        {isVisible ? <EyeOffIcon /> : <EyeIcon />}
-      </button>
-    </div>
+    <InputField
+      {...props}
+      type={isVisible ? 'text' : 'password'}
+      endAdornment={
+        <button
+          type="button"
+          class="password-toggle-btn"
+          aria-label={isVisible ? toggleAriaLabel.hide : toggleAriaLabel.show}
+          onClick={() => setIsVisible((prev) => !prev)}
+        >
+          {isVisible ? <EyeOffIcon /> : <EyeIcon />}
+        </button>
+      }
+    />
   );
 }

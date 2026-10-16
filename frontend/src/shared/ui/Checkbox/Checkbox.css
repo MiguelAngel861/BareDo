@@ -1,3 +1,4 @@
+label.app-checkbox,
 .app-checkbox {
   display: inline-flex;
   align-items: center;
@@ -7,6 +8,7 @@
   width: fit-content;
   position: relative;
   line-height: 1.4;
+  margin-bottom: 0;
 }
 
 .app-checkbox--disabled {

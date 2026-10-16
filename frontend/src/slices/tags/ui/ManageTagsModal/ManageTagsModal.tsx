@@ -1,4 +1,12 @@
-import { Button, ConfirmModal, PopoutModal } from '@/shared/ui/index.ts';
+import {
+  Badge,
+  Button,
+  ConfirmModal,
+  EmptyState,
+  InputField,
+  PopoutModal,
+  TagChip,
+} from '@/shared/ui/index.ts';
 import { tasksSignal } from '@/slices/tasks/tasks.state.ts';
 import { useState } from 'preact/hooks';
 import {
@@ -99,13 +107,16 @@ export function ManageTagsModal() {
           </p>
 
           <form class="manage-tags-create-bar" onSubmit={handleCreate}>
-            <input
+            <InputField
+              id="manage-tags-new-tag"
               type="text"
               placeholder="Create new tag..."
               maxLength={30}
               value={newTagName}
-              onInput={(e) => setNewTagName((e.target as HTMLInputElement).value)}
+              onInput={(val) => setNewTagName(val)}
               aria-label="New tag name"
+              className="manage-tags-create-field"
+              noMargin={true}
             />
             <Button type="submit" variant="primary" size="md">
               + ADD TAG
@@ -114,11 +125,15 @@ export function ManageTagsModal() {
 
           {error && <span class="error-message">{error}</span>}
 
-          <div class="manage-tags-list" role="list">
-            {tags.length === 0 ? (
-              <div class="manage-tags-empty">No tags created yet.</div>
-            ) : (
-              tags.map((tag) => {
+          {tags.length === 0 ? (
+            <EmptyState
+              id="manage-tags-empty"
+              title="// NO TAGS FOUND"
+              description="No tags created yet. Use the field above to add your first tag."
+            />
+          ) : (
+            <div class="manage-tags-list" role="list">
+              {tags.map((tag) => {
                 const isEditing = editingTagId === tag.tag_id;
                 const taskCount = getTaskCountForTag(tag.tag_id);
 
@@ -126,12 +141,12 @@ export function ManageTagsModal() {
                   return (
                     <div key={tag.tag_id} class="manage-tag-row">
                       <div class="manage-tag-edit-form">
-                        <input
+                        <InputField
+                          id={`manage-tag-edit-${tag.tag_id}`}
                           type="text"
-                          class="manage-tag-edit-input"
                           maxLength={30}
                           value={editingName}
-                          onInput={(e) => setEditingName((e.target as HTMLInputElement).value)}
+                          onInput={(val) => setEditingName(val)}
                           onKeyDown={(e) => {
                             if (e.key === 'Enter') {
                               e.preventDefault();
@@ -141,6 +156,9 @@ export function ManageTagsModal() {
                             }
                           }}
                           aria-label={`Edit tag ${tag.name}`}
+                          className="manage-tag-edit-field"
+                          inputClassName="manage-tag-edit-input"
+                          noMargin={true}
                         />
                         <Button
                           type="button"
@@ -161,10 +179,10 @@ export function ManageTagsModal() {
                 return (
                   <div key={tag.tag_id} class="manage-tag-row" role="listitem">
                     <div class="manage-tag-info">
-                      <span class="tag-chip">#{tag.name}</span>
-                      <span class="manage-tag-count">
+                      <TagChip name={tag.name} variant="default" size="sm" />
+                      <Badge variant="default" size="sm">
                         {taskCount} {taskCount === 1 ? 'task' : 'tasks'}
-                      </span>
+                      </Badge>
                     </div>
 
                     <div class="manage-tag-actions">
@@ -189,9 +207,9 @@ export function ManageTagsModal() {
                     </div>
                   </div>
                 );
-              })
-            )}
-          </div>
+              })}
+            </div>
+          )}
         </div>
       </PopoutModal>
 

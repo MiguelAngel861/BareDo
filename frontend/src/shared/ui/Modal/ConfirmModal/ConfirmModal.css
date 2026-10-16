@@ -5,26 +5,37 @@
 }
 
 .confirm-modal-container {
-  padding: 24px;
-  max-width: 400px;
-  width: 90%;
+  padding: 1.75rem;
+  max-width: 420px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-.confirm-modal-container h3,
-.modal h3 {
-  margin-bottom: 8px;
-  font-size: 1rem;
+.confirm-modal-title {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: var(--text);
+  margin: 0 0 0.75rem 0;
+  line-height: 1.2;
 }
 
-.confirm-modal-container p,
-.modal p {
-  color: var(--text-muted);
+.confirm-modal-desc {
+  font-family: var(--font-ui);
   font-size: 0.875rem;
-  margin-bottom: 20px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin: 0 0 1.5rem 0;
 }
 
-.modal-actions {
+.confirm-modal-actions {
   display: flex;
-  gap: 8px;
+  gap: 0.75rem;
   justify-content: flex-end;
+}
+
+.confirm-modal-actions .app-btn {
+  min-width: 110px;
 }

@@ -9,7 +9,7 @@ export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
   size?: BadgeSize;
   children: ComponentChildren;
   className?: string;
-  title?: string;
+  title?: string | undefined;
 }
 
 export function Badge({

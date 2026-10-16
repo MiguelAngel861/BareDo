@@ -1,4 +1,4 @@
-import { Button, PopoutModal } from '@/shared/ui/index.ts';
+import { Badge, Button, PopoutModal, TagChip } from '@/shared/ui/index.ts';
 import { getPriorityDescription, getPriorityLabel } from '@/slices/priorities/index.ts';
 import {
   closeViewModal,
@@ -78,18 +78,31 @@ export function TaskDetailModal() {
       <div class="task-detail-container">
         <header class="task-detail-header">
           <div class="task-detail-badge-group">
-            <span class={`task-detail-status ${task.completed ? 'is-completed' : 'is-pending'}`}>
+            <Badge variant={task.completed ? 'success' : 'outline'} size="sm">
               {task.completed ? '● COMPLETED' : '○ PENDING'}
-            </span>
+            </Badge>
 
-            <span
-              class={`task-priority task-priority-${task.priority_id}`}
+            <Badge
+              variant={
+                task.priority_id === 5
+                  ? 'danger'
+                  : task.priority_id === 4
+                    ? 'solid'
+                    : task.priority_id === 3
+                      ? 'outline'
+                      : 'default'
+              }
+              size="sm"
               title={priorityDesc || undefined}
             >
               {priorityLabel}
-            </span>
+            </Badge>
 
-            {task.due_date && <span class="task-detail-due">DUE: {formatDate(task.due_date)}</span>}
+            {task.due_date && (
+              <Badge variant="default" size="sm">
+                DUE: {formatDate(task.due_date)}
+              </Badge>
+            )}
           </div>
 
           <h3 class={`task-detail-title ${task.completed ? 'completed' : ''}`.trim()}>
@@ -117,9 +130,7 @@ export function TaskDetailModal() {
             <h4 class="task-detail-section-title">Tags</h4>
             <div class="task-tags">
               {task.tags.map((tag) => (
-                <span key={tag.tag_id} class="task-tag-badge">
-                  #{tag.name}
-                </span>
+                <TagChip key={tag.tag_id} name={tag.name} variant="subtle" size="sm" />
               ))}
             </div>
           </div>

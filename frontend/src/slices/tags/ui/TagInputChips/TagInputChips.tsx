@@ -1,3 +1,4 @@
+import { InputField, TagChip } from '@/shared/ui/index.ts';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { fetchTags, findOrCreateTag, tagsSignal } from '../../tags.state.ts';
 import type { Tag } from '../../tags.types.ts';
@@ -188,23 +189,18 @@ export function TagInputChips({
       <div class="tag-input-container" id="task-tags-container">
         <div class="tag-chips-wrapper" id="tag-chips-wrapper">
           {tags.map((tag) => (
-            <span key={tag.tag_id} class="tag-chip">
-              #{tag.name}
-              <button
-                type="button"
-                class="tag-chip-remove"
-                onClick={() => removeTag(tag.tag_id)}
-                aria-label={`Remove tag ${tag.name}`}
-              >
-                &times;
-              </button>
-            </span>
+            <TagChip
+              key={tag.tag_id}
+              name={tag.name}
+              onRemove={() => removeTag(tag.tag_id)}
+              size="md"
+            />
           ))}
         </div>
 
         <div class="tag-combobox-wrapper">
-          <input
-            ref={inputRef}
+          <InputField
+            inputRef={inputRef}
             type="text"
             id="tag-input-field"
             placeholder={
@@ -214,13 +210,15 @@ export function TagInputChips({
             autoComplete="off"
             disabled={tags.length >= MAX_TAGS}
             value={inputValue}
+            className="tag-input-field-wrapper"
+            noMargin={true}
             onFocus={() => {
               if (tags.length < MAX_TAGS) {
                 setIsOpen(true);
               }
             }}
-            onInput={(e) => {
-              setInputValue((e.target as HTMLInputElement).value);
+            onInput={(val) => {
+              setInputValue(val);
               setIsOpen(true);
               setHighlightedIndex(-1);
             }}

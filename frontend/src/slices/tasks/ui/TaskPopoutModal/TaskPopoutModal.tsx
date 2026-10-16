@@ -1,4 +1,4 @@
-import { Button, PopoutModal } from '@/shared/ui/index.ts';
+import { Button, Checkbox, InputField, PopoutModal } from '@/shared/ui/index.ts';
 import { PriorityDropdown } from '@/slices/priorities/index.ts';
 import { type Tag, TagInputChips } from '@/slices/tags/index.ts';
 import { useEffect, useState } from 'preact/hooks';
@@ -102,26 +102,18 @@ export function TaskPopoutModal() {
       title={isEditing ? 'Edit Task' : 'Create Task'}
     >
       <form id="task-form" class="task-form" onSubmit={handleSubmit}>
-        <div class="form-group">
-          <label for="title">
-            Title <span class="required">*</span>
-          </label>
-          <input
-            type="text"
-            id="title"
-            name="title"
-            required
-            maxLength={40}
-            placeholder="Task title (max 40 chars)"
-            value={title}
-            onInput={(e) => setTitle((e.target as HTMLInputElement).value)}
-          />
-          {titleError && (
-            <span class="error-message" id="title-error">
-              {titleError}
-            </span>
-          )}
-        </div>
+        <InputField
+          id="title"
+          name="title"
+          label="Title"
+          required={true}
+          showAsterisk={true}
+          maxLength={40}
+          placeholder="Task title (max 40 chars)"
+          value={title}
+          error={titleError}
+          onInput={(val) => setTitle(val)}
+        />
 
         <div class="form-group">
           <label for="description">Description</label>
@@ -135,16 +127,14 @@ export function TaskPopoutModal() {
           />
         </div>
 
-        <div class="form-group">
-          <label for="due_date">Due Date</label>
-          <input
-            type="date"
-            id="due_date"
-            name="due_date"
-            value={dueDate}
-            onInput={(e) => setDueDate((e.target as HTMLInputElement).value)}
-          />
-        </div>
+        <InputField
+          id="due_date"
+          name="due_date"
+          type="date"
+          label="Due Date"
+          value={dueDate}
+          onInput={(val) => setDueDate(val)}
+        />
 
         <div class="form-group">
           <label id="priority-label" for="priority-select">
@@ -166,18 +156,13 @@ export function TaskPopoutModal() {
         </div>
 
         <div class="form-group">
-          <label class="checkbox-label" for="completed">
-            <input
-              type="checkbox"
-              id="completed"
-              name="completed"
-              class="checkbox-input"
-              checked={completed}
-              onChange={(e) => setCompleted((e.target as HTMLInputElement).checked)}
-            />
-            <span class="checkbox-custom" />
-            <span class="checkbox-text">Completed</span>
-          </label>
+          <Checkbox
+            id="completed"
+            name="completed"
+            checked={completed}
+            onChange={(val) => setCompleted(val)}
+            label="Completed"
+          />
         </div>
 
         {isEditing && editingTask ? (
@@ -208,27 +193,26 @@ export function TaskPopoutModal() {
           </div>
         )}
 
-        <Button
-          type="submit"
-          id="submit-btn"
-          variant="primary"
-          size="lg"
-          fullWidth={true}
-          isLoading={isSubmitting}
-        >
-          {isSubmitting ? 'Saving...' : isEditing ? 'Update Task' : 'Create Task'}
-        </Button>
-
-        <Button
-          type="button"
-          id="cancel-edit-btn"
-          variant="secondary"
-          size="md"
-          fullWidth={true}
-          onClick={closeFormModal}
-        >
-          Cancel
-        </Button>
+        <div class="task-form-actions">
+          <Button
+            type="button"
+            id="cancel-edit-btn"
+            variant="secondary"
+            size="md"
+            onClick={closeFormModal}
+          >
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            id="submit-btn"
+            variant="primary"
+            size="md"
+            isLoading={isSubmitting}
+          >
+            {isSubmitting ? 'Saving...' : isEditing ? 'Update Task' : 'Create Task'}
+          </Button>
+        </div>
       </form>
 
       {formError && (

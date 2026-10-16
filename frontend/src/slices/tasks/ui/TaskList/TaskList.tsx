@@ -1,3 +1,4 @@
+import { EmptyState } from '@/shared/ui/index.ts';
 import { isLoadingTasksSignal, tasksSignal } from '../../tasks.state.ts';
 import { TaskCard } from '../TaskCard/index.ts';
 import './TaskList.css';
@@ -22,14 +23,12 @@ export function TaskList() {
 
   if (tasks.length === 0) {
     return (
-      <div id="empty-message" class="empty-state">
-        <span class="empty-state-tag">STATUS: 0 TASKS</span>
-        <h3 class="empty-state-title">NO TASKS FOUND</h3>
-        <p class="empty-state-desc">
-          Create your first task using the "+ CREATE TASK" button above to initialize your
-          workspace.
-        </p>
-      </div>
+      <EmptyState
+        id="empty-message"
+        tag="STATUS: 0 TASKS"
+        title="NO TASKS FOUND"
+        description='Create your first task using the "+ CREATE TASK" button above to initialize your workspace.'
+      />
     );
   }
 

@@ -1,4 +1,4 @@
-import { Button } from '@/shared/ui/index.ts';
+import { Badge, Button, TagChip } from '@/shared/ui/index.ts';
 import { getPriorityDescription, getPriorityLabel } from '@/slices/priorities/index.ts';
 import { useEffect, useRef } from 'preact/hooks';
 import {
@@ -52,32 +52,41 @@ export function TaskCard({ task }: { task: Task }) {
         {task.tags && task.tags.length > 0 && (
           <div class="task-tags">
             {task.tags.map((tag) => (
-              <span key={tag.tag_id} class="task-tag-badge">
-                #{tag.name}
-              </span>
+              <TagChip key={tag.tag_id} name={tag.name} variant="subtle" size="sm" />
             ))}
           </div>
         )}
 
         <div class="task-meta">
-          <span
-            class={`task-priority task-priority-${task.priority_id}`}
+          <Badge
+            variant={
+              task.priority_id === 5
+                ? 'danger'
+                : task.priority_id === 4
+                  ? 'solid'
+                  : task.priority_id === 3
+                    ? 'outline'
+                    : 'default'
+            }
+            size="sm"
             title={priorityDesc || undefined}
           >
             {priorityLabel}
-          </span>
+          </Badge>
 
           {task.due_date && (
             <span class="task-due-date">Due: {task.due_date.substring(0, 10)}</span>
           )}
 
           {task.subtasks && task.subtasks.length > 0 && (
-            <span class="task-subtasks-count">
+            <Badge variant="default" size="sm">
               {task.subtasks.filter((s) => s.completed).length}/{task.subtasks.length} SUBTASKS
-            </span>
+            </Badge>
           )}
 
-          <span>{task.completed ? 'Completed' : 'Pending'}</span>
+          <Badge variant={task.completed ? 'success' : 'default'} size="sm">
+            {task.completed ? 'Completed' : 'Pending'}
+          </Badge>
         </div>
       </div>
 

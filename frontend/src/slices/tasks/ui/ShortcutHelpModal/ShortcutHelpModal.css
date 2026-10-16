@@ -9,31 +9,43 @@
   border-radius: 0;
   overflow: hidden;
   padding: 0 !important;
+  box-sizing: border-box;
 }
 
 .shortcut-help-layout {
   display: flex;
   flex-direction: column;
   width: 100%;
+  box-sizing: border-box;
 }
 
 /* Header */
 .shortcut-help-header {
   display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  padding: 1.25rem 1.5rem;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1.5rem;
   background-color: var(--bg);
   border-bottom: 2px solid var(--text);
 }
 
-.shortcut-help-header-top {
+.shortcut-help-header-content {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.shortcut-help-header .app-btn {
+  flex-shrink: 0;
 }
 
 .shortcut-help-badge {
+  display: inline-flex;
+  align-items: center;
   font-family: var(--font-mono);
   font-size: 0.6875rem;
   font-weight: 800;
@@ -69,10 +81,11 @@
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
-  padding: 1.25rem 1.5rem;
+  padding: 1.25rem 1.5rem 1.5rem;
   max-height: 60vh;
   overflow-y: auto;
   background-color: var(--surface);
+  box-sizing: border-box;
 }
 
 /* Category Sections */
@@ -80,6 +93,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  width: 100%;
 }
 
 .shortcut-group-header {
@@ -110,6 +124,8 @@
   display: grid;
   grid-template-columns: 1fr;
   gap: 0.5rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 @media (min-width: 36rem) {
@@ -128,6 +144,8 @@
   background-color: var(--bg);
   border: 1px solid var(--border);
   box-shadow: var(--shadow-action);
+  width: 100%;
+  box-sizing: border-box;
   transition: transform 0.1s ease, box-shadow 0.1s ease, border-color 0.1s ease;
 }
 
@@ -142,6 +160,7 @@
   align-items: center;
   gap: 0.25rem;
   flex-shrink: 0;
+  min-width: 4.75rem;
 }
 
 .shortcut-key-wrap {
@@ -171,6 +190,7 @@
   border: 1px solid var(--border-strong);
   box-shadow: var(--shadow-action-active);
   letter-spacing: 0.02em;
+  box-sizing: border-box;
 }
 
 .shortcut-card-info {

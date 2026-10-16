@@ -1,4 +1,4 @@
-import { Button, ConfirmModal, PopoutModal } from '@/shared/ui/index.ts';
+import { Button, ConfirmModal, EmptyState, PopoutModal, TagChip } from '@/shared/ui/index.ts';
 import {
   cancelEmptyTrash,
   cancelPermanentDeleteTask,
@@ -56,7 +56,7 @@ export function TrashModal() {
       >
         <div class="trash-modal-content">
           <div class="trash-modal-header-actions">
-            <p class="field-hint" style={{ flex: 1, margin: 0 }}>
+            <p class="trash-modal-desc">
               Discarded tasks remain here until restored or permanently purged.
             </p>
             {tasks.length > 0 && (
@@ -77,12 +77,10 @@ export function TrashModal() {
               <p class="trash-empty-title">{'// LOADING TRASH...'}</p>
             </div>
           ) : tasks.length === 0 ? (
-            <div class="trash-empty-state">
-              <p class="trash-empty-title">{'// TRASH IS EMPTY'}</p>
-              <p class="trash-empty-sub">
-                No discarded tasks. Items moved to trash will appear here.
-              </p>
-            </div>
+            <EmptyState
+              title="// TRASH IS EMPTY"
+              description="No discarded tasks. Items moved to trash will appear here."
+            />
           ) : (
             <div class="trash-list" role="list">
               {tasks.map((task) => (
@@ -94,9 +92,7 @@ export function TrashModal() {
                       {task.tags && task.tags.length > 0 && (
                         <div class="trash-item-tags">
                           {task.tags.map((tag) => (
-                            <span key={tag.tag_id} class="trash-tag-chip">
-                              #{tag.name}
-                            </span>
+                            <TagChip key={tag.tag_id} name={tag.name} variant="subtle" size="sm" />
                           ))}
                         </div>
                       )}

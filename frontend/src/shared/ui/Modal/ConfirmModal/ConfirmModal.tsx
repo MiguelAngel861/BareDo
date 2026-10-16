@@ -27,11 +27,11 @@ export function ConfirmModal({
       onClose={onCancel}
       title={title}
       className="confirm-modal-overlay"
-      containerClassName="confirm-modal-container modal"
+      containerClassName="confirm-modal-container"
     >
-      <h3>{title}</h3>
-      <p>{message}</p>
-      <div class="modal-actions">
+      <h3 class="confirm-modal-title">{title}</h3>
+      <p class="confirm-modal-desc">{message}</p>
+      <div class="confirm-modal-actions">
         <Button type="button" variant="secondary" size="md" onClick={onCancel}>
           {cancelLabel}
         </Button>

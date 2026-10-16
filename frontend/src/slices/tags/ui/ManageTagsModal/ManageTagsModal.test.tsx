@@ -42,6 +42,14 @@ describe('ManageTagsModal', () => {
     expect(screen.queryByText('Manage Tags')).not.toBeInTheDocument();
   });
 
+  it('renders EmptyState when there are no tags', () => {
+    tagsState.tagsSignal.value = [];
+    render(<ManageTagsModal />);
+
+    expect(screen.getByText('// NO TAGS FOUND')).toBeInTheDocument();
+    expect(screen.getByText(/No tags created yet/i)).toBeInTheDocument();
+  });
+
   it('renders list of tags with their associated task counts', () => {
     render(<ManageTagsModal />);
 

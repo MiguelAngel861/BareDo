@@ -58,24 +58,24 @@ export function ShortcutHelpModal({ isOpen, onClose }: ShortcutHelpModalProps) {
     >
       <div class="shortcut-help-layout">
         <header class="shortcut-help-header">
-          <div class="shortcut-help-header-top">
+          <div class="shortcut-help-header-content">
             <span class="shortcut-help-badge">CLI_ENGINE :: REFERENCE</span>
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={onClose}
-              aria-label="Cerrar modal de atajos"
-            >
-              ESC / CLOSE
-            </Button>
+            <h2 id="shortcut-help-title" class="shortcut-help-title">
+              KEYBOARD SHORTCUTS
+            </h2>
+            <p class="shortcut-help-desc">
+              Vim-style navigation and rapid command execution. Zero mouse reliance required.
+            </p>
           </div>
-          <h2 id="shortcut-help-title" class="shortcut-help-title">
-            KEYBOARD SHORTCUTS
-          </h2>
-          <p class="shortcut-help-desc">
-            Vim-style navigation and rapid command execution. Zero mouse reliance required.
-          </p>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={onClose}
+            aria-label="Cerrar modal de atajos"
+          >
+            ESC / CLOSE
+          </Button>
         </header>
 
         <div class="shortcut-help-body">
