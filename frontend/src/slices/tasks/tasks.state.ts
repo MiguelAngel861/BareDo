@@ -5,8 +5,10 @@ import { tasksApi } from './tasks.api.ts';
 import type {
   PaginationMeta,
   Subtask,
+  SubtaskId,
   Task,
   TaskCreate,
+  TaskId,
   TaskListParams,
   TaskUpdate,
 } from './tasks.types.ts';
@@ -41,7 +43,7 @@ export const isFormModalOpenSignal = signal<boolean>(false);
 export const deletingTaskSignal = signal<Task | null>(null);
 export const viewingTaskSignal = signal<Task | null>(null);
 export const isShortcutHelpModalOpenSignal = signal<boolean>(false);
-export const selectedTaskIdSignal = signal<string | null>(null);
+export const selectedTaskIdSignal = signal<TaskId | null>(null);
 
 export const trashTasksSignal = signal<Task[]>([]);
 export const trashCountSignal = signal<number>(0);
@@ -64,7 +66,9 @@ export function selectNextTask(): void {
     selectedTaskIdSignal.value = null;
     return;
   }
-  const currentIndex = tasks.findIndex((t) => t.task_id === selectedTaskIdSignal.value);
+  const currentIndex = tasks.findIndex(
+    (t) => String(t.task_id) === String(selectedTaskIdSignal.value)
+  );
   if (currentIndex === -1 || currentIndex >= tasks.length - 1) {
     selectedTaskIdSignal.value = tasks[0]?.task_id ?? null;
   } else {
@@ -78,7 +82,9 @@ export function selectPrevTask(): void {
     selectedTaskIdSignal.value = null;
     return;
   }
-  const currentIndex = tasks.findIndex((t) => t.task_id === selectedTaskIdSignal.value);
+  const currentIndex = tasks.findIndex(
+    (t) => String(t.task_id) === String(selectedTaskIdSignal.value)
+  );
   if (currentIndex <= 0) {
     selectedTaskIdSignal.value = tasks[tasks.length - 1]?.task_id ?? null;
   } else {
@@ -102,7 +108,9 @@ export async function loadTasks(): Promise<void> {
     paginationSignal.value = res.meta;
     fetchTrashCount();
     if (res.tasks.length > 0) {
-      const stillExists = res.tasks.some((t) => t.task_id === selectedTaskIdSignal.value);
+      const stillExists = res.tasks.some(
+        (t) => String(t.task_id) === String(selectedTaskIdSignal.value)
+      );
       if (!stillExists) {
         selectedTaskIdSignal.value = res.tasks[0]?.task_id ?? null;
       }
@@ -258,7 +266,7 @@ export async function executeDeleteTask(): Promise<void> {
 export async function saveTask(
   data: TaskCreate | TaskUpdate,
   isEditing: boolean,
-  taskId?: string
+  taskId?: TaskId
 ): Promise<void> {
   try {
     if (isEditing && taskId) {
@@ -381,7 +389,7 @@ export async function executeEmptyTrash(): Promise<void> {
   }
 }
 
-export async function addSubtaskAction(taskId: string, title: string): Promise<Subtask | null> {
+export async function addSubtaskAction(taskId: TaskId, title: string): Promise<Subtask | null> {
   const cleanTitle = title.trim();
   if (!cleanTitle) {
     return null;
@@ -405,7 +413,7 @@ export async function addSubtaskAction(taskId: string, title: string): Promise<S
   }
 }
 
-export async function toggleSubtaskAction(taskId: string, subtask: Subtask): Promise<void> {
+export async function toggleSubtaskAction(taskId: TaskId, subtask: Subtask): Promise<void> {
   const newStatus = !subtask.completed;
   const updateList = (subtasks: Subtask[]) =>
     subtasks.map((s) => (s.subtask_id === subtask.subtask_id ? { ...s, completed: newStatus } : s));
@@ -440,7 +448,7 @@ export async function toggleSubtaskAction(taskId: string, subtask: Subtask): Pro
   }
 }
 
-export async function deleteSubtaskAction(taskId: string, subtaskId: string): Promise<void> {
+export async function deleteSubtaskAction(taskId: TaskId, subtaskId: SubtaskId): Promise<void> {
   const previousViewing = viewingTaskSignal.value;
   const previousTasks = [...tasksSignal.value];
 

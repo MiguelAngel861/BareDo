@@ -1,18 +1,18 @@
 import { Badge, Button, Checkbox, CloseIcon, InputField } from '@/shared/ui/index.ts';
 import { useState } from 'preact/hooks';
 import { addSubtaskAction, deleteSubtaskAction, toggleSubtaskAction } from '../../tasks.state.ts';
-import type { Subtask } from '../../tasks.types.ts';
+import type { Subtask, SubtaskId, TaskId } from '../../tasks.types.ts';
 import './SubtaskList.css';
 
-type SubtaskItemType = Subtask | { subtask_id: string; title: string; completed: boolean };
+type SubtaskItemType = Subtask | { subtask_id: SubtaskId; title: string; completed: boolean };
 
 interface SubtaskListProps {
-  taskId?: string;
+  taskId?: TaskId;
   subtasks: SubtaskItemType[];
   interactive?: boolean;
   onAddDraft?: (title: string) => void;
-  onToggleDraft?: (subtaskId: string) => void;
-  onDeleteDraft?: (subtaskId: string) => void;
+  onToggleDraft?: (subtaskId: SubtaskId) => void;
+  onDeleteDraft?: (subtaskId: SubtaskId) => void;
 }
 
 export function SubtaskList({
@@ -66,7 +66,7 @@ export function SubtaskList({
     }
   };
 
-  const handleDelete = (subtaskId: string) => {
+  const handleDelete = (subtaskId: SubtaskId) => {
     if (onDeleteDraft) {
       onDeleteDraft(subtaskId);
     } else if (taskId) {

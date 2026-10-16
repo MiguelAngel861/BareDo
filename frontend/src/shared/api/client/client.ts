@@ -1,5 +1,4 @@
 import ky from 'ky';
-import type { ZodType } from 'zod';
 import {
   clear,
   getAccessToken,
@@ -7,7 +6,6 @@ import {
   isAccessTokenExpired,
   setTokens,
 } from '../auth/index.ts';
-import { ApiErrorClass } from '../errors/index.ts';
 
 type TokenGetter = () => string | null;
 type UnauthorizedHandler = () => void;
@@ -127,24 +125,3 @@ export const apiClient = ky.create({
     ],
   },
 });
-
-export async function validatedRequest<T>(
-  requestFn: () => Promise<unknown>,
-  // biome-ignore lint/suspicious/noExplicitAny: Decouple Output from Input
-  schema: ZodType<T, any, any>
-): Promise<T> {
-  const data = await requestFn();
-  try {
-    return schema.parse(data);
-  } catch (error) {
-    if (error instanceof Error && error.name === 'ZodError') {
-      throw new ApiErrorClass({
-        code: 'VALIDATION_ERROR',
-        message: `Response validation failed: ${error.message}`,
-        status: 200,
-        details: error,
-      });
-    }
-    throw error;
-  }
-}

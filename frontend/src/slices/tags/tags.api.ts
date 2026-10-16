@@ -1,19 +1,13 @@
-import { apiClient, validatedRequest } from '@/shared/api/client/index.ts';
-import { TagListResponseSchema, TagSchema } from './tags.schemas.ts';
+import { apiClient } from '@/shared/api/client/index.ts';
 import type { Tag, TagListResponse } from './tags.types.ts';
 
 export const tagsApi = {
-  getTags: (): Promise<TagListResponse> =>
-    validatedRequest(() => apiClient.get('tags').json<unknown>(), TagListResponseSchema),
+  getTags: (): Promise<TagListResponse> => apiClient.get('tags').json<TagListResponse>(),
 
-  createTag: (name: string): Promise<Tag> =>
-    validatedRequest(() => apiClient.post('tags', { json: { name } }).json<unknown>(), TagSchema),
+  createTag: (name: string): Promise<Tag> => apiClient.post('tags', { json: { name } }).json<Tag>(),
 
   updateTag: (tagId: number, name: string): Promise<Tag> =>
-    validatedRequest(
-      () => apiClient.put(`tags/${tagId}`, { json: { name } }).json<unknown>(),
-      TagSchema
-    ),
+    apiClient.put(`tags/${tagId}`, { json: { name } }).json<Tag>(),
 
   deleteTag: (tagId: number) => apiClient.delete(`tags/${tagId}`),
 };

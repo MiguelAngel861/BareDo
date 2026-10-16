@@ -24,7 +24,7 @@ export function validatePasswordField(password: string): string | null {
 }
 
 export const UserSchema = z.object({
-  user_id: z.coerce.string(),
+  user_id: z.union([z.string(), z.number()]),
   username: z.string(),
   created_at: z.string().optional(),
 });

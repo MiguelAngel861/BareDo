@@ -2,8 +2,8 @@ import { TagSchema } from '@/slices/tags/tags.schemas.ts';
 import { z } from 'zod';
 
 export const SubtaskSchema = z.object({
-  subtask_id: z.coerce.string(),
-  task_id: z.coerce.string(),
+  subtask_id: z.union([z.string(), z.number()]),
+  task_id: z.union([z.string(), z.number()]),
   title: z.string(),
   completed: z.boolean(),
   created_at: z.string(),
@@ -43,7 +43,7 @@ export const TaskUpdateSchema = z.object({
 });
 
 export const TaskResponseSchema = z.object({
-  task_id: z.coerce.string(),
+  task_id: z.union([z.string(), z.number()]),
   title: z.string(),
   description: z.string().nullable(),
   priority_id: z.number().int().positive(),

@@ -1,5 +1,4 @@
-import { apiClient, validatedRequest } from '@/shared/api/client/index.ts';
-import { PriorityListResponseSchema } from './priorities.schemas.ts';
+import { apiClient } from '@/shared/api/client/index.ts';
 import type { PriorityListResponse } from './priorities.types.ts';
 
 let cachedPrioritiesPromise: Promise<PriorityListResponse> | null = null;
@@ -8,10 +7,7 @@ let cachedDescriptions: Map<number, string> | null = null;
 export const prioritiesApi = {
   list: (): Promise<PriorityListResponse> => {
     if (!cachedPrioritiesPromise) {
-      cachedPrioritiesPromise = validatedRequest(
-        () => apiClient.get('priorities').json<unknown>(),
-        PriorityListResponseSchema
-      );
+      cachedPrioritiesPromise = apiClient.get('priorities').json<PriorityListResponse>();
     }
     return cachedPrioritiesPromise;
   },

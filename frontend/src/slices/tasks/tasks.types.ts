@@ -20,3 +20,5 @@ export type SubtaskUpdate = z.infer<typeof SubtaskUpdateSchema>;
 export type TaskListParams = z.infer<typeof TaskListParamsSchema>;
 export type PaginationMeta = z.infer<typeof PaginationMetaSchema>;
 export type TaskListResponse = z.infer<typeof TaskListResponseSchema>;
+export type TaskId = string | number;
+export type SubtaskId = string | number;

@@ -1,34 +1,20 @@
-import { apiClient, validatedRequest } from '@/shared/api/client/index.ts';
-import { AuthResponseSchema, MeResponseSchema, RefreshResponseSchema } from './auth.schemas.ts';
+import { apiClient } from '@/shared/api/client/index.ts';
 import type { AuthResponse, MeResponse, RefreshResponse } from './auth.types.ts';
 
 export const authApi = {
-  register: (username: string, password: string): Promise<AuthResponse> => {
-    return validatedRequest(
-      () => apiClient.post('auth/register', { json: { username, password } }).json<unknown>(),
-      AuthResponseSchema
-    );
-  },
+  register: (username: string, password: string): Promise<AuthResponse> =>
+    apiClient.post('auth/register', { json: { username, password } }).json<AuthResponse>(),
 
-  login: (username: string, password: string): Promise<AuthResponse> => {
-    return validatedRequest(
-      () => apiClient.post('auth/login', { json: { username, password } }).json<unknown>(),
-      AuthResponseSchema
-    );
-  },
+  login: (username: string, password: string): Promise<AuthResponse> =>
+    apiClient.post('auth/login', { json: { username, password } }).json<AuthResponse>(),
 
   refresh: (refreshToken?: string): Promise<RefreshResponse> =>
-    validatedRequest(
-      () =>
-        apiClient
-          .post(
-            'auth/refresh',
-            refreshToken ? { headers: { Authorization: `Bearer ${refreshToken}` } } : {}
-          )
-          .json<unknown>(),
-      RefreshResponseSchema
-    ),
+    apiClient
+      .post(
+        'auth/refresh',
+        refreshToken ? { headers: { Authorization: `Bearer ${refreshToken}` } } : {}
+      )
+      .json<RefreshResponse>(),
 
-  me: (): Promise<MeResponse> =>
-    validatedRequest(() => apiClient.get('auth/me').json<unknown>(), MeResponseSchema),
+  me: (): Promise<MeResponse> => apiClient.get('auth/me').json<MeResponse>(),
 };
