@@ -186,17 +186,19 @@ export function HomePage() {
           <h1 class="site-title">BareDo</h1>
 
           <div class="header-actions">
+            <span id="auth-status" aria-live="polite" style={{ color: 'var(--success)' }}>
+              {user?.username ? user.username : 'Authenticated'}
+            </span>
             <Button
               type="button"
               id="open-command-palette-btn"
               variant="ghost"
               size="sm"
-              title="Command Palette (Ctrl+K)"
+              title="Command Palette"
               onClick={() => openCommandPalette()}
               className="header-cmd-btn"
             >
-              <span class="cmd-text">COMMANDS</span>
-              <kbd class="cmd-kbd">CTRL+K</kbd>
+              COMMANDS
             </Button>
             <Button
               type="button"
@@ -211,9 +213,6 @@ export function HomePage() {
             </Button>
 
             <div id="auth-section" class="auth-minimal">
-              <span id="auth-status" aria-live="polite" style={{ color: 'var(--success)' }}>
-                {user?.username ? user.username : 'Authenticated'}
-              </span>
               <Button
                 id="logout-btn"
                 type="button"
