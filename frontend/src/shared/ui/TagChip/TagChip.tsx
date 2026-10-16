@@ -1,3 +1,4 @@
+import { CloseIcon } from '../CloseIcon/index.ts';
 import './TagChip.css';
 
 export interface TagChipProps {
@@ -56,7 +57,7 @@ export function TagChip({
           }}
           aria-label={`Remove tag ${name}`}
         >
-          &times;
+          <CloseIcon size={size === 'sm' ? 10 : 12} strokeWidth={2.5} />
         </button>
       )}
     </span>

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
+import { CloseIcon } from '../CloseIcon/index.ts';
 import './SearchBar.css';
 
 export interface SearchBarProps {
@@ -221,7 +222,7 @@ export function SearchBar({
             aria-label="Clear search"
             title="Clear search (Esc)"
           >
-            ×
+            <CloseIcon size={12} strokeWidth={2.5} />
           </button>
         )}
 

@@ -1,3 +1,5 @@
+import { CloseIcon } from '../CloseIcon/index.ts';
+
 export type ToastVariant = 'success' | 'error' | 'info' | 'warning';
 
 export interface ToastProps {
@@ -31,7 +33,7 @@ export function Toast({ id, message, variant = 'info', onClose }: ToastProps) {
           onClose(id);
         }}
       >
-        &times;
+        <CloseIcon size={14} strokeWidth={2.2} />
       </button>
     </div>
   );

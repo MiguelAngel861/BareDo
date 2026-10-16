@@ -1,4 +1,4 @@
-import { Button } from '@/shared/ui/index.ts';
+import { Badge, Button, Checkbox, CloseIcon, InputField } from '@/shared/ui/index.ts';
 import { useState } from 'preact/hooks';
 import { addSubtaskAction, deleteSubtaskAction, toggleSubtaskAction } from '../../tasks.state.ts';
 import type { Subtask } from '../../tasks.types.ts';
@@ -87,9 +87,9 @@ export function SubtaskList({
         <h4 class="subtasks-heading">
           SUBTASKS
           {totalCount > 0 && (
-            <span class="subtasks-counter">
+            <Badge variant="default" size="sm">
               [{completedCount}/{totalCount}] {percent}%
-            </span>
+            </Badge>
           )}
         </h4>
         {totalCount > 0 && (
@@ -106,19 +106,12 @@ export function SubtaskList({
               key={subtask.subtask_id}
               class={`subtask-item ${subtask.completed ? 'is-completed' : ''}`.trim()}
             >
-              <label class="subtask-label">
-                <input
-                  type="checkbox"
-                  class="subtask-checkbox"
-                  checked={subtask.completed}
-                  disabled={!interactive}
-                  onChange={() => handleToggle(subtask)}
-                />
-                <span class="subtask-custom-checkbox" aria-hidden="true">
-                  {subtask.completed ? '■' : ''}
-                </span>
-                <span class="subtask-title">{subtask.title}</span>
-              </label>
+              <Checkbox
+                checked={subtask.completed}
+                disabled={!interactive}
+                onChange={() => handleToggle(subtask)}
+                label={<span class="subtask-title">{subtask.title}</span>}
+              />
 
               {interactive && (
                 <button
@@ -128,7 +121,7 @@ export function SubtaskList({
                   aria-label={`Delete subtask ${subtask.title}`}
                   onClick={() => handleDelete(subtask.subtask_id)}
                 >
-                  ✕
+                  <CloseIcon size={12} strokeWidth={2.2} />
                 </button>
               )}
             </li>
@@ -140,16 +133,19 @@ export function SubtaskList({
 
       {interactive && (
         <form class="subtasks-add-form" onSubmit={handleAdd}>
-          <input
+          <InputField
+            id="subtask-add-input"
             type="text"
-            class="subtasks-add-input"
             placeholder="+ Add subtask (press Enter)"
             value={newTitle}
             maxLength={120}
-            onInput={(e) => setNewTitle((e.target as HTMLInputElement).value)}
+            onInput={(val) => setNewTitle(val)}
             onKeyDown={handleKeyDown}
             disabled={isAdding}
             aria-label="New subtask title"
+            className="subtasks-add-field"
+            inputClassName="subtasks-add-input"
+            noMargin={true}
           />
           <Button
             type="submit"
