@@ -10,19 +10,23 @@ import {
 type TokenGetter = () => string | null;
 type UnauthorizedHandler = () => void;
 type TokenRefreshedHandler = (newToken: string) => void;
+type ServerReadyHandler = () => void;
 
 let customGetToken: TokenGetter | null = null;
 let customOnUnauthorized: UnauthorizedHandler | null = null;
 let customOnTokenRefreshed: TokenRefreshedHandler | null = null;
+let customOnServerReady: ServerReadyHandler | null = null;
 
 export function configureApiAuth(
   getter: TokenGetter,
   onUnauthorized: UnauthorizedHandler,
-  onTokenRefreshed?: TokenRefreshedHandler
+  onTokenRefreshed?: TokenRefreshedHandler,
+  onServerReady?: ServerReadyHandler
 ): void {
   customGetToken = getter;
   customOnUnauthorized = onUnauthorized;
   customOnTokenRefreshed = onTokenRefreshed || null;
+  customOnServerReady = onServerReady || null;
 }
 
 let refreshPromise: Promise<void> | null = null;
@@ -93,7 +97,9 @@ export const apiClient = ky.create({
       async (request, _options, response, state) => {
         if (response.ok && !hasNotifiedServerReady) {
           hasNotifiedServerReady = true;
-          window.dispatchEvent(new CustomEvent('server-ready'));
+          if (customOnServerReady) {
+            customOnServerReady();
+          }
         }
 
         if (response.status !== 401 || state.retryCount > 0) {
@@ -117,7 +123,6 @@ export const apiClient = ky.create({
             customOnUnauthorized();
           } else {
             clear();
-            window.location.href = '/login';
           }
           return response;
         }

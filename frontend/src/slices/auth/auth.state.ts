@@ -40,6 +40,11 @@ configureApiAuth(
       token: newToken,
       isAuthenticated: true,
     };
+  },
+  () => {
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('server-ready'));
+    }
   }
 );
 
