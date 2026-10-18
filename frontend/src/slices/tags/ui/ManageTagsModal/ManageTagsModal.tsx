@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/shared/api/errors/index.ts';
 import {
   Badge,
   Button,
@@ -6,6 +7,7 @@ import {
   InputField,
   PopoutModal,
   TagChip,
+  showToast,
 } from '@/shared/ui/index.ts';
 import { tasksSignal } from '@/slices/tasks/tasks.state.ts';
 import { useState } from 'preact/hooks';
@@ -78,10 +80,15 @@ export function ManageTagsModal() {
     }
 
     setError(null);
-    const res = await updateTagState(tagId, clean);
-    if (res) {
-      setEditingTagId(null);
-      setEditingName('');
+    try {
+      const res = await updateTagState(tagId, clean);
+      if (res) {
+        showToast(`Tag #${clean} updated`, 'success');
+        setEditingTagId(null);
+        setEditingName('');
+      }
+    } catch (err) {
+      showToast(getErrorMessage(err, 'Failed to update tag'), 'error');
     }
   };
 
@@ -89,7 +96,13 @@ export function ManageTagsModal() {
     if (!tagToDelete) {
       return;
     }
-    await deleteTagState(tagToDelete.tag_id);
+    const name = tagToDelete.name;
+    try {
+      await deleteTagState(tagToDelete.tag_id);
+      showToast(`Tag #${name} deleted`, 'info');
+    } catch (err) {
+      showToast(getErrorMessage(err, 'Failed to delete tag'), 'error');
+    }
     setTagToDelete(null);
   };
 

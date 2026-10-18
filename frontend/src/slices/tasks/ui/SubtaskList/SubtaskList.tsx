@@ -1,4 +1,5 @@
-import { Badge, Button, Checkbox, CloseIcon, InputField } from '@/shared/ui/index.ts';
+import { getErrorMessage } from '@/shared/api/errors/index.ts';
+import { Badge, Button, Checkbox, CloseIcon, InputField, showToast } from '@/shared/ui/index.ts';
 import { useState } from 'preact/hooks';
 import { addSubtaskAction, deleteSubtaskAction, toggleSubtaskAction } from '../../tasks.state.ts';
 import type { Subtask, SubtaskId, TaskId } from '../../tasks.types.ts';
@@ -53,24 +54,36 @@ export function SubtaskList({
     try {
       await addSubtaskAction(taskId, clean);
       setNewTitle('');
+      showToast('Subtask added', 'success');
+    } catch (err) {
+      showToast(`Error: ${getErrorMessage(err, 'Failed to add subtask')}`, 'error');
     } finally {
       setIsAdding(false);
     }
   };
 
-  const handleToggle = (subtask: SubtaskItemType) => {
+  const handleToggle = async (subtask: SubtaskItemType) => {
     if (onToggleDraft) {
       onToggleDraft(subtask.subtask_id);
     } else if (taskId) {
-      toggleSubtaskAction(taskId, subtask as Subtask);
+      try {
+        await toggleSubtaskAction(taskId, subtask as Subtask);
+      } catch (err) {
+        showToast(`Error: ${getErrorMessage(err, 'Failed to update subtask')}`, 'error');
+      }
     }
   };
 
-  const handleDelete = (subtaskId: SubtaskId) => {
+  const handleDelete = async (subtaskId: SubtaskId) => {
     if (onDeleteDraft) {
       onDeleteDraft(subtaskId);
     } else if (taskId) {
-      deleteSubtaskAction(taskId, subtaskId);
+      try {
+        await deleteSubtaskAction(taskId, subtaskId);
+        showToast('Subtask deleted', 'success');
+      } catch (err) {
+        showToast(`Error: ${getErrorMessage(err, 'Failed to delete subtask')}`, 'error');
+      }
     }
   };
 

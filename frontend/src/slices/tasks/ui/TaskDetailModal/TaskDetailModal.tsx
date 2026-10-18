@@ -1,4 +1,4 @@
-import { Badge, Button, PopoutModal, TagChip } from '@/shared/ui/index.ts';
+import { Badge, Button, PopoutModal, TagChip, showToast } from '@/shared/ui/index.ts';
 import {
   getPriorityBadgeVariant,
   getPriorityDescription,
@@ -73,8 +73,13 @@ export function TaskDetailModal() {
     requestDeleteTask(task);
   };
 
-  const handleToggle = () => {
-    toggleTaskComplete(task);
+  const handleToggle = async () => {
+    try {
+      const isCompleted = await toggleTaskComplete(task);
+      showToast(isCompleted ? 'Task marked as completed' : 'Task marked as pending', 'success');
+    } catch {
+      showToast('Failed to update status', 'error');
+    }
   };
 
   return (

@@ -4,6 +4,7 @@ import {
   ConfirmModal,
   isCommandPaletteOpenSignal,
   openCommandPalette,
+  showToast,
 } from '@/shared/ui/index.ts';
 import { authSignal, logout } from '@/slices/auth/index.ts';
 import { fetchPriorities } from '@/slices/priorities/index.ts';
@@ -61,6 +62,15 @@ export function HomePage() {
   const handleLogout = () => {
     logout();
     location.route('/login');
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      await executeDeleteTask();
+      showToast('Task moved to trash', 'success');
+    } catch {
+      showToast('Failed to delete task', 'error');
+    }
   };
 
   useEffect(() => {
@@ -128,7 +138,16 @@ export function HomePage() {
         case ' ': {
           if (activeTask) {
             e.preventDefault();
-            toggleTaskComplete(activeTask);
+            toggleTaskComplete(activeTask)
+              .then((isCompleted) => {
+                showToast(
+                  isCompleted ? 'Task marked as completed' : 'Task marked as pending',
+                  'success'
+                );
+              })
+              .catch(() => {
+                showToast('Failed to update status', 'error');
+              });
           }
           break;
         }
@@ -285,7 +304,7 @@ export function HomePage() {
         message={`Are you sure you want to move "${deletingTask?.title}" to trash? You can restore it later.`}
         confirmLabel="Move to Trash"
         cancelLabel="Cancel"
-        onConfirm={executeDeleteTask}
+        onConfirm={handleConfirmDelete}
         onCancel={cancelDeleteTask}
       />
 

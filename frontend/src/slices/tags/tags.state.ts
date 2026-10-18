@@ -1,5 +1,3 @@
-import { getErrorMessage } from '@/shared/api/errors/index.ts';
-import { showToast } from '@/shared/ui/index.ts';
 import { tasksSignal } from '@/slices/tasks/tasks.state.ts';
 import { signal } from '@preact/signals';
 import { tagsApi } from './tags.api.ts';
@@ -55,40 +53,27 @@ export async function updateTagState(tagId: number, name: string): Promise<Tag |
     return null;
   }
 
-  try {
-    const updated = await tagsApi.updateTag(tagId, clean);
-    tagsSignal.value = tagsSignal.value.map((t) => (t.tag_id === tagId ? updated : t));
+  const updated = await tagsApi.updateTag(tagId, clean);
+  tagsSignal.value = tagsSignal.value.map((t) => (t.tag_id === tagId ? updated : t));
 
-    // Sincronizar tareas que contengan esta etiqueta
-    tasksSignal.value = tasksSignal.value.map((task) => ({
-      ...task,
-      tags: task.tags.map((t) => (t.tag_id === tagId ? updated : t)),
-    }));
+  // Sincronizar tareas que contengan esta etiqueta
+  tasksSignal.value = tasksSignal.value.map((task) => ({
+    ...task,
+    tags: task.tags.map((t) => (t.tag_id === tagId ? updated : t)),
+  }));
 
-    showToast(`Tag #${clean} updated`, 'success');
-    return updated;
-  } catch (err) {
-    showToast(getErrorMessage(err, 'Failed to update tag'), 'error');
-    return null;
-  }
+  return updated;
 }
 
 export async function deleteTagState(tagId: number): Promise<boolean> {
-  try {
-    await tagsApi.deleteTag(tagId);
-    const deletedTag = tagsSignal.value.find((t) => t.tag_id === tagId);
-    tagsSignal.value = tagsSignal.value.filter((t) => t.tag_id !== tagId);
+  await tagsApi.deleteTag(tagId);
+  tagsSignal.value = tagsSignal.value.filter((t) => t.tag_id !== tagId);
 
-    // Sincronizar tareas que contengan esta etiqueta
-    tasksSignal.value = tasksSignal.value.map((task) => ({
-      ...task,
-      tags: task.tags.filter((t) => t.tag_id !== tagId),
-    }));
+  // Sincronizar tareas que contengan esta etiqueta
+  tasksSignal.value = tasksSignal.value.map((task) => ({
+    ...task,
+    tags: task.tags.filter((t) => t.tag_id !== tagId),
+  }));
 
-    showToast(`Tag #${deletedTag?.name || ''} deleted`, 'info');
-    return true;
-  } catch (err) {
-    showToast(getErrorMessage(err, 'Failed to delete tag'), 'error');
-    return false;
-  }
+  return true;
 }

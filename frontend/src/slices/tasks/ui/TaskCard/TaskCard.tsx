@@ -1,4 +1,4 @@
-import { Badge, Button, TagChip } from '@/shared/ui/index.ts';
+import { Badge, Button, TagChip, showToast } from '@/shared/ui/index.ts';
 import {
   getPriorityBadgeVariant,
   getPriorityDescription,
@@ -103,9 +103,17 @@ export function TaskCard({ task }: { task: Task }) {
           type="button"
           variant="secondary"
           size="sm"
-          onClick={(e: MouseEvent) => {
+          onClick={async (e: MouseEvent) => {
             e.stopPropagation();
-            toggleTaskComplete(task);
+            try {
+              const isCompleted = await toggleTaskComplete(task);
+              showToast(
+                isCompleted ? 'Task marked as completed' : 'Task marked as pending',
+                'success'
+              );
+            } catch {
+              showToast('Failed to update status', 'error');
+            }
           }}
         >
           {task.completed ? 'Mark Pending' : 'Mark Complete'}

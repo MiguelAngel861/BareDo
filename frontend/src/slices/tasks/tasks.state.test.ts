@@ -1,4 +1,3 @@
-import * as toastUi from '@/shared/ui/Toast/ToastContainer.tsx';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { tasksApi } from './tasks.api.ts';
 import {
@@ -79,20 +78,18 @@ describe('tasks.state optimistic updates & rollback', () => {
       expect(tasksApi.patch).toHaveBeenCalledWith('task-123', { completed: true });
     });
 
-    it('rolls back to previous status and displays error toast on network failure', async () => {
+    it('rolls back to previous status on network failure', async () => {
       vi.spyOn(tasksApi, 'patch').mockRejectedValue(new Error('Network timeout'));
-      const toastSpy = vi.spyOn(toastUi, 'showToast').mockImplementation(() => {});
 
       const togglePromise = toggleTaskComplete(sampleTask);
 
       // At 0ms it is optimistically toggled
       expect(tasksSignal.value[0]?.completed).toBe(true);
 
-      await togglePromise;
+      await expect(togglePromise).rejects.toThrow('Network timeout');
 
       // Rollback to original status: false
       expect(tasksSignal.value[0]?.completed).toBe(false);
-      expect(toastSpy).toHaveBeenCalledWith('Error: Network timeout', 'error');
     });
 
     it('optimistically updates viewingTaskSignal if the task is currently open in preview', async () => {
@@ -102,7 +99,7 @@ describe('tasks.state optimistic updates & rollback', () => {
       const togglePromise = toggleTaskComplete(sampleTask);
       expect(viewingTaskSignal.value?.completed).toBe(true);
 
-      await togglePromise;
+      await expect(togglePromise).rejects.toThrow('Server error');
 
       // Rolled back
       expect(viewingTaskSignal.value?.completed).toBe(false);
@@ -140,20 +137,18 @@ describe('tasks.state optimistic updates & rollback', () => {
     it('rolls back and restores task in tasksSignal if deletion fails on server', async () => {
       requestDeleteTask(sampleTask);
       vi.spyOn(tasksApi, 'delete').mockRejectedValue(new Error('Database lock'));
-      const toastSpy = vi.spyOn(toastUi, 'showToast').mockImplementation(() => {});
 
       const deletePromise = executeDeleteTask();
 
       // Instantly removed
       expect(tasksSignal.value).toHaveLength(0);
 
-      await deletePromise;
+      await expect(deletePromise).rejects.toThrow('Database lock');
 
       // Rolled back to previous state
       expect(tasksSignal.value).toHaveLength(1);
       expect(tasksSignal.value[0]?.task_id).toBe('task-123');
       expect(paginationSignal.value.total_items).toBe(1);
-      expect(toastSpy).toHaveBeenCalledWith('Error: Database lock', 'error');
     });
   });
 
@@ -316,7 +311,7 @@ describe('tasks.state optimistic updates & rollback', () => {
 
       vi.spyOn(tasksApi, 'updateSubtask').mockRejectedValue(new Error('Network error'));
 
-      await toggleSubtaskAction('task-123', mockSubtask);
+      await expect(toggleSubtaskAction('task-123', mockSubtask)).rejects.toThrow('Network error');
 
       // Verify rollback occurred
       expect(tasksSignal.value[0]?.subtasks[0]?.completed).toBe(false);

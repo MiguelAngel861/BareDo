@@ -1,5 +1,5 @@
 import { getErrorMessage } from '@/shared/api/errors/index.ts';
-import { Button, Checkbox, InputField, PopoutModal } from '@/shared/ui/index.ts';
+import { Button, Checkbox, InputField, PopoutModal, showToast } from '@/shared/ui/index.ts';
 import { PriorityDropdown } from '@/slices/priorities/index.ts';
 import { type Tag, TagInputChips } from '@/slices/tags/index.ts';
 import { useEffect, useState } from 'preact/hooks';
@@ -88,6 +88,7 @@ export function TaskPopoutModal() {
 
     try {
       await saveTask(payload, isEditing, editingTask?.task_id);
+      showToast(isEditing ? 'Task updated successfully' : 'Task created successfully', 'success');
     } catch (err) {
       setFormError(getErrorMessage(err, 'Failed to save task'));
     } finally {

@@ -1,4 +1,12 @@
-import { Button, ConfirmModal, EmptyState, PopoutModal, TagChip } from '@/shared/ui/index.ts';
+import { getErrorMessage } from '@/shared/api/errors/index.ts';
+import {
+  Button,
+  ConfirmModal,
+  EmptyState,
+  PopoutModal,
+  TagChip,
+  showToast,
+} from '@/shared/ui/index.ts';
 import {
   cancelEmptyTrash,
   cancelPermanentDeleteTask,
@@ -16,6 +24,7 @@ import {
   trashPaginationSignal,
   trashTasksSignal,
 } from '../../tasks.state.ts';
+import type { Task } from '../../tasks.types.ts';
 import './TrashModal.css';
 
 export function TrashModal() {
@@ -44,6 +53,33 @@ export function TrashModal() {
       });
     } catch {
       return dateStr;
+    }
+  };
+
+  const handleRestore = async (task: Task) => {
+    try {
+      await restoreTaskAction(task);
+      showToast('Task restored', 'success');
+    } catch (err) {
+      showToast(`Error: ${getErrorMessage(err, 'Failed to restore task')}`, 'error');
+    }
+  };
+
+  const handlePermanentDelete = async () => {
+    try {
+      await executePermanentDeleteTask();
+      showToast('Task permanently deleted', 'success');
+    } catch (err) {
+      showToast(`Error: ${getErrorMessage(err, 'Failed to delete task permanently')}`, 'error');
+    }
+  };
+
+  const handleEmptyTrash = async () => {
+    try {
+      await executeEmptyTrash();
+      showToast('Trash emptied', 'success');
+    } catch (err) {
+      showToast(`Error: ${getErrorMessage(err, 'Failed to empty trash')}`, 'error');
     }
   };
 
@@ -104,7 +140,7 @@ export function TrashModal() {
                       type="button"
                       variant="ghost"
                       size="sm"
-                      onClick={() => restoreTaskAction(task)}
+                      onClick={() => handleRestore(task)}
                       title={`Restore ${task.title}`}
                     >
                       RESTORE
@@ -163,7 +199,7 @@ export function TrashModal() {
         }
         confirmLabel="PURGE FOREVER"
         cancelLabel="CANCEL"
-        onConfirm={executePermanentDeleteTask}
+        onConfirm={handlePermanentDelete}
         onCancel={cancelPermanentDeleteTask}
       />
 
@@ -174,7 +210,7 @@ export function TrashModal() {
         message={`Are you sure you want to permanently delete all ${pagination.total_items} items in the trash? This cannot be undone.`}
         confirmLabel="EMPTY TRASH NOW"
         cancelLabel="CANCEL"
-        onConfirm={executeEmptyTrash}
+        onConfirm={handleEmptyTrash}
         onCancel={cancelEmptyTrash}
       />
     </>
