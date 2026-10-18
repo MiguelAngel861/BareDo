@@ -1,7 +1,8 @@
 import { act, fireEvent, render, screen } from '@testing-library/preact';
 import { describe, expect, it } from 'vitest';
 import { Toast } from './Toast.tsx';
-import { ToastContainer, showToast, toastsSignal } from './ToastContainer.tsx';
+import { ToastContainer } from './ToastContainer.tsx';
+import { showToast, toastsSignal } from './toast.state.ts';
 
 describe('Toast and ToastContainer components', () => {
   it('renders individual toast with proper variant class', () => {
