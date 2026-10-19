@@ -25,7 +25,7 @@ describe('Badge', () => {
 
   it('supports custom className and HTML attributes', () => {
     render(
-      <Badge className="custom-class" title="Tooltip">
+      <Badge class="custom-class" title="Tooltip">
         Custom
       </Badge>
     );

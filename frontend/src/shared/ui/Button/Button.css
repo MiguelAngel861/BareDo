@@ -57,7 +57,7 @@
   padding: 0 16px;
   height: 40px;
   min-height: 40px;
-  border-width: 2px;
+  border-width: 1px;
   border-style: solid;
   box-shadow: var(--shadow-action);
 }

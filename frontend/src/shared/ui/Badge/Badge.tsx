@@ -8,14 +8,14 @@ export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
   variant?: BadgeVariant;
   size?: BadgeSize;
   children: ComponentChildren;
-  className?: string;
+  class?: string;
   title?: string | undefined;
 }
 
 export function Badge({
   variant = 'default',
   size = 'sm',
-  className = '',
+  class: className = '',
   children,
   ...props
 }: BadgeProps) {

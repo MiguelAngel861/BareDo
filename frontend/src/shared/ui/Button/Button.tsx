@@ -39,7 +39,14 @@ export function Button({
       class={classes}
       aria-busy={isLoading ? 'true' : undefined}
     >
-      {children}
+      {isLoading ? (
+        <>
+          <span class="app-btn-spinner" aria-hidden="true" />
+          <span>{children}</span>
+        </>
+      ) : (
+        children
+      )}
     </button>
   );
 }
