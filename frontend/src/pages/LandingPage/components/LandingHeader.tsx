@@ -1,4 +1,3 @@
-import { Badge } from '@/shared/ui/index.ts';
 import type { JSX } from 'preact';
 
 export function LandingHeader(): JSX.Element {
@@ -24,9 +23,6 @@ export function LandingHeader(): JSX.Element {
             <span class="landing-brand-divider" aria-hidden="true" />
             <span class="landing-brand-name">BAREDO</span>
           </a>
-          <Badge variant="outline" size="sm" class="landing-header-badge">
-            {'REV_1.0 // ZERO_TELEMETRY'}
-          </Badge>
         </div>
 
         <nav class="landing-nav" aria-label="Main Navigation">

@@ -25,8 +25,8 @@ describe('LandingPage component', () => {
     // Verify creed in footer
     expect(screen.getByText('CUT THE NOISE. EXECUTE.')).toBeInTheDocument();
 
-    // Verify header calibration badge
-    expect(screen.getByText('REV_1.0 // ZERO_TELEMETRY')).toBeInTheDocument();
+    // Verify header calibration badge is removed
+    expect(screen.queryByText('REV_1.0 // ZERO_TELEMETRY')).not.toBeInTheDocument();
   });
 
   it('renders all key sections with technical inspection indices', () => {
@@ -107,7 +107,7 @@ describe('LandingPage component', () => {
     expect(screen.getByText(/QUEUE_RESTORED/i)).toBeInTheDocument();
   });
 
-  it('renders call to action buttons with keyboard affordance', () => {
+  it('renders call to action buttons without keyboard badge', () => {
     render(
       <LocationProvider>
         <LandingPage />
@@ -120,7 +120,7 @@ describe('LandingPage component', () => {
     const signInLinks = screen.getAllByRole('link', { name: /SIGN IN/i });
     expect(signInLinks.length).toBeGreaterThanOrEqual(1);
 
-    // Verify Enter key affordance badge
-    expect(screen.getByText('↵ ENTER')).toBeInTheDocument();
+    // Verify Enter key affordance badge is removed
+    expect(screen.queryByText('↵ ENTER')).not.toBeInTheDocument();
   });
 });

@@ -70,7 +70,6 @@ export function HeroSection(): JSX.Element {
             <span class="landing-eyebrow" aria-label="Product Classification">
               {'// HIGH-SPEED PRODUCTIVITY CLIENT'}
             </span>
-            <span class="landing-hero-cota">{'LOC: HOME_ROW // 0MS'}</span>
           </div>
 
           <h1 id="hero-title" class="landing-hero-title">
@@ -86,7 +85,6 @@ export function HeroSection(): JSX.Element {
           <div class="landing-hero-actions">
             <a href="/register" class="app-btn app-btn--primary app-btn--lg">
               <span>{'OPEN TERMINAL // GET STARTED'}</span>
-              <kbd class="landing-btn-kbd">↵ ENTER</kbd>
             </a>
             <a
               href="https://github.com/MiguelAngel861/BareDo"
