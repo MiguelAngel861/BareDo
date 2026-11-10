@@ -8,13 +8,13 @@ Demo in production: [https://baredo.onrender.com](https://baredo.onrender.com)
 
 Aún no hay capturas. Guarda tus imágenes en la carpeta `screenshots/` en la raíz del repo.
 
-| **Task Detail** | **Dashboard** |
-| --------------- | ------------- |
-| ![](screenshots/task-detail.png) | ![](screenshots/dashboard.png) |
+| **Task Detail** | **Command Palette** |
+| --------------- | ------------------- |
+| ![](screenshots/task-detail.png) | ![](screenshots/command-palette.png) |
 
-| **Command Palette** |
-| ------------------- |
-| ![](screenshots/command-palette.png) |
+| **Dashboard** |
+| --------------- |
+| ![](screenshots/dashboard.png) |
 
 Agrega más tablas siguiendo el mismo patrón si necesitas mostrar otras pantallas.
 
