@@ -1,12 +1,10 @@
 # BareDo
 
-A fast, keyboard-driven productivity client. Manage your tasks without touching the mouse — navigate with Vim-style keys, open the Command Palette with `Ctrl+K`, and mark items complete with instant feedback. The interface updates at 0ms using reactive signals, so there is no waiting on the server for simple actions.
+BareDo helps you manage your tasks without touching the mouse. Use your keyboard to move around, open the command palette, and check things off. When you mark a task as done, it disappears instantly — no loading, no waiting. If something goes wrong, the app fixes it automatically and lets you know with a small alert.
 
 Demo in production: [https://baredo.onrender.com](https://baredo.onrender.com)
 
 ## Screenshots
-
-Aún no hay capturas. Guarda tus imágenes en la carpeta `screenshots/` en la raíz del repo.
 
 | **Task Detail** | **Command Palette** |
 | --------------- | ------------------- |
@@ -16,35 +14,40 @@ Aún no hay capturas. Guarda tus imágenes en la carpeta `screenshots/` en la ra
 | --------------- |
 | ![](screenshots/dashboard.png) |
 
-Agrega más tablas siguiendo el mismo patrón si necesitas mostrar otras pantallas.
-
 ## What it does
 
-BareDo is a task manager built around the keyboard. You can move through your list with `J` and `K`, create tasks with `C`, edit with `E`, delete with `D`, and search everything with `Ctrl+K`. There are no loading spinners or artificial delays — when you check off a task, it disappears immediately. If something goes wrong on the server, the app rolls back the change and shows you a toast message.
+BareDo is a task manager built around the keyboard. You can move through your list with `J` and `K`, create tasks with `C`, edit with `E`, delete with `D`, and search everything with `Ctrl+K`. When you check off a task, it disappears immediately — no loading spinner, no waiting. If something goes wrong on the server, the app undoes the change on its own and lets you know.
 
-It works for anyone who wants to get things done quickly, not just developers.
+It works for anyone who wants to get things done quickly.
 
 ## Main features
 
-- **Keyboard navigation (Vim-style)** — `J`/`K` to move between tasks, `X` or Space to mark/unmark, `Enter` to open details, `E` to edit, `D` to delete, `C` to create, `?` for the shortcut guide.
-- **Command Palette** — `Ctrl+K` / `Cmd+K` opens a fuzzy-searchable palette with system actions, filters by priority and tags, and direct jumps to tasks by title.
-- **Optimistic UI with automatic rollback** — Changes appear instantly in the interface. On network or database failure, the change rolls back and an error toast is shown.
+- **Keyboard navigation** — `J`/`K` to move between tasks, `X` or Space to mark or unmark, `Enter` to open details, `E` to edit, `D` to delete, `C` to create, `?` for the shortcut guide.
+- **Command Palette** — `Ctrl+K` (or `Cmd+K`) opens a search bar. Use it to find tasks, filter by priority or tags, or jump to a task by typing its title.
+- **Instant updates** — When you mark a task as done, it disappears instantly — no loading spinner, no waiting for the server. If something goes wrong, the app undoes the change on its own and lets you know with a small alert.
+- **Your session stays saved** — If your connection drops, the app picks back up where you left off without losing anything.
 
 ## Tech stack
 
-- **Backend:** Python, Flask, SQLAlchemy, Pydantic, JWT, SQLite / PostgreSQL.
+- **Backend:** Python, Flask, SQLAlchemy, Pydantic, JWT, SQLite (development) / PostgreSQL (production).
 - **Frontend:** Preact, Vite, TypeScript, Ky (HTTP client), Zod (schema validation).
 - **Testing & Linters:** Pytest + Cov (Backend), Vitest + Testing Library (Frontend), Ruff (Python), Biome (TypeScript/CSS).
 - **Package managers:** [uv](https://docs.astral.sh/uv/) (Python), [pnpm](https://pnpm.io/) (Node).
 
 ## Getting started
 
+Get the code first:
+
 ```bash
 git clone https://github.com/MiguelAngel861/BareDo.git
 cd BareDo
 ```
 
-**Backend**
+BareDo has two parts that run at the same time: a **backend** (Python) and a **frontend** (the app in your browser). You'll need two terminal windows — one for each.
+
+### 1. Backend
+
+This server stores your tasks and handles logins. Install dependencies, copy the example env file, and start it:
 
 ```bash
 cd backend
@@ -53,7 +56,11 @@ cp .env.example .env   # edit values if needed
 uv run python wsgi.py   # runs at http://localhost:5000
 ```
 
-**Frontend**
+Keep this terminal open.
+
+### 2. Frontend
+
+This is what you interact with in the browser. Open a second terminal:
 
 ```bash
 cd frontend
@@ -62,7 +69,7 @@ cp .env.example .env   # optional: VITE_API_BASE_URL=/api/v1
 pnpm dev               # runs at http://localhost:3000
 ```
 
-The frontend proxies `/api` to the backend in development.
+While developing, the frontend sends API calls to the backend through Vite's proxy, so you don't need to type the full backend address.
 
 ### Docker Compose
 
@@ -70,9 +77,9 @@ The frontend proxies `/api` to the backend in development.
 docker compose up --build
 ```
 
-This starts `db` (Postgres 16 at `localhost:5432`) and `api` (`http://localhost:5000`, hot-reload). Backend migrations run on startup. The frontend still runs separately with `pnpm dev`.
+This starts `db` (Postgres 16 at `localhost:5433`) and `api` (`http://localhost:5000`, hot-reload). The backend runs migrations when it starts. The frontend still runs separately with `pnpm dev`.
 
-In production, the frontend is a static site served on a CDN, talking directly to the backend. In development, Vite's proxy handles the API calls.
+In production, the frontend is a static site served on a CDN, and it talks directly to the backend. While you develop, Vite's proxy handles the API calls.
 
 ## API
 
