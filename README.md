@@ -8,16 +8,15 @@ Demo in production: [https://baredo.onrender.com](https://baredo.onrender.com)
 
 Aún no hay capturas. Guarda tus imágenes en la carpeta `screenshots/` en la raíz del repo.
 
-<div align="center">
-  <img src="screenshots/dashboard.png" alt="Dashboard" width="100%"/>
-</div>
+| **Dashboard** | **Command Palette** |
+| ------------- | ------------------- |
+| ![](screenshots/dashboard.png) | ![](screenshots/command-palette.png) |
 
-<div align="center">
-  <img src="screenshots/command-palette.png" alt="Command Palette" width="49%"/>
-  <img src="screenshots/task-detail.png" alt="Task Detail" width="49%"/>
-</div>
+| **Task Detail** |
+| --------------- |
+| ![](screenshots/task-detail.png) |
 
-Agrega más bloques siguiendo el mismo patrón si necesitas mostrar otras pantallas.
+Agrega más tablas siguiendo el mismo patrón si necesitas mostrar otras pantallas.
 
 ## What it does
 
