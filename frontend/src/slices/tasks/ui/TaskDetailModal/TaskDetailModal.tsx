@@ -143,10 +143,6 @@ export function TaskDetailModal() {
 
         <footer class="task-detail-meta-grid">
           <div class="task-detail-meta-item">
-            <span class="meta-label">Task ID</span>
-            <span class="meta-value">#{task.task_id}</span>
-          </div>
-          <div class="task-detail-meta-item">
             <span class="meta-label">Created</span>
             <span class="meta-value">{formatDateTime(task.created_at)}</span>
           </div>
