@@ -48,7 +48,7 @@ export function WorkflowRitualSection(): JSX.Element {
           THE 3-SECOND RITUAL.
         </h2>
         <p class="landing-section-subhead">
-          How software engineers maintain continuous flow from morning capture to evening shutdown.
+          How anyone maintains continuous flow from morning capture to evening shutdown.
         </p>
       </div>
 

@@ -6,6 +6,8 @@ import {
   isAccessTokenExpired,
   setTokens,
 } from '../auth/index.ts';
+import type { ApiError } from '../errors/errors.ts';
+import { mapBackendError } from '../errors/errors.ts';
 
 type TokenGetter = () => string | null;
 type UnauthorizedHandler = () => void;
@@ -102,31 +104,67 @@ export const apiClient = ky.create({
           }
         }
 
-        if (response.status !== 401 || state.retryCount > 0) {
-          return response;
+        // Handle 401 with token refresh (only on first attempt to avoid loops)
+        if (response.status === 401 && state.retryCount === 0) {
+          try {
+            await refreshAccessToken();
+            const newToken = customGetToken ? customGetToken() : getAccessToken();
+            const headers = new Headers(request.headers);
+            if (newToken) {
+              headers.set('Authorization', `Bearer ${newToken}`);
+            }
+
+            return ky.retry({
+              request: new Request(request, { headers }),
+              code: 'TOKEN_REFRESHED',
+            });
+          } catch {
+            if (customOnUnauthorized) {
+              customOnUnauthorized();
+            } else {
+              clear();
+            }
+            // Fall through to normalize the 401 into a friendly error
+          }
         }
 
-        try {
-          await refreshAccessToken();
-          const newToken = customGetToken ? customGetToken() : getAccessToken();
-          const headers = new Headers(request.headers);
-          if (newToken) {
-            headers.set('Authorization', `Bearer ${newToken}`);
-          }
-
-          return ky.retry({
-            request: new Request(request, { headers }),
-            code: 'TOKEN_REFRESHED',
-          });
-        } catch {
-          if (customOnUnauthorized) {
-            customOnUnauthorized();
-          } else {
-            clear();
-          }
-          return response;
+        // Normalize every non-ok response into a friendly, user-facing error so raw
+        // HTTP statuses, internal error codes and database details never reach the UI.
+        if (!response.ok) {
+          throw await createFriendlyError(response);
         }
+
+        return response;
       },
     ],
   },
 });
+
+async function createFriendlyError(response: Response): Promise<Error> {
+  let mapped;
+  let code;
+  try {
+    // Backend error envelope is { code, message, status, details } directly
+    // (some paths may nest it under { error: {...} }; accept both).
+    const raw = (await response.json().catch(() => ({}))) as Record<string, unknown>;
+    const backendError = (raw.error ?? raw) as unknown as ApiError | undefined;
+    if (backendError?.code) {
+      code = backendError.code;
+      mapped = mapBackendError(backendError);
+    }
+  } catch {
+    // Non-JSON or empty error body: fall back to a generic friendly message.
+  }
+
+  const err = new Error(mapped?.message ?? 'An unexpected error occurred') as Error & {
+    title: string;
+    code: string;
+    status: number;
+    fieldErrors: Record<string, string> | null;
+  };
+  err.title = mapped?.title ?? 'Error';
+  err.code = code ?? String(response.status);
+  err.status = response.status;
+  err.fieldErrors = mapped?.fieldErrors ?? null;
+  return err;
+}

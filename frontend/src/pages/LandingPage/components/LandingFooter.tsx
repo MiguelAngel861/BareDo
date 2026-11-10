@@ -24,7 +24,7 @@ export function LandingFooter(): JSX.Element {
             <span class="landing-brand-name">BAREDO</span>
           </div>
           <p class="landing-footer-copy">
-            High-speed, keyboard-driven productivity client for engineers.
+            Fast keyboard-driven productivity client for getting things done.
           </p>
         </div>
 

@@ -1,4 +1,4 @@
-import { CommandPalette, ServerWarmupOverlay, ToastContainer } from '@/shared/ui/index.ts';
+import { CommandPalette, ToastContainer } from '@/shared/ui/index.ts';
 import { initAuth } from '@/slices/auth/index.ts';
 import type { ComponentChildren } from 'preact';
 import { useEffect } from 'preact/hooks';
@@ -10,7 +10,6 @@ export function AppLayout({ children }: { children: ComponentChildren }) {
 
   return (
     <div class="app-layout">
-      <ServerWarmupOverlay />
       <ToastContainer />
       <CommandPalette />
       {children}

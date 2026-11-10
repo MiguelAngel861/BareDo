@@ -17,7 +17,7 @@ const CUTS: CutItem[] = [
   },
   {
     removed: 'Bloated multi-tab project managers and endless comment threads',
-    instead: 'Focused linear queue designed for pure solo developer momentum',
+    instead: 'Focused linear queue for getting things done solo',
   },
   {
     removed: 'Mandatory mouse usage and deep nested dropdown menus',

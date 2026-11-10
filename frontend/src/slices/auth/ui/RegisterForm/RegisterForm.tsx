@@ -1,4 +1,4 @@
-import { getErrorMessage } from '@/shared/api/errors/index.ts';
+import { getErrorMessage, type FriendlyError } from '@/shared/api/errors/index.ts';
 import { Button, InputField } from '@/shared/ui/index.ts';
 import { useLocation } from 'preact-iso';
 import { useState } from 'preact/hooks';
@@ -71,6 +71,14 @@ export function RegisterForm() {
     } catch (err) {
       clearTimeout(slowTimer);
       setGlobalError(getErrorMessage(err, 'Registration failed'));
+      const friendly = err as FriendlyError;
+      const fieldErrors = friendly?.fieldErrors;
+      if (fieldErrors?.username) {
+        setUsernameError(fieldErrors.username);
+      }
+      if (fieldErrors?.password) {
+        setPasswordError(fieldErrors.password);
+      }
     } finally {
       clearTimeout(slowTimer);
       setIsSubmitting(false);

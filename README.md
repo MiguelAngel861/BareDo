@@ -4,6 +4,25 @@ A fast, keyboard-driven productivity client. Manage your tasks without touching 
 
 Demo in production: [https://baredo.onrender.com](https://baredo.onrender.com)
 
+## Screenshots
+
+Aún no hay capturas. Para agregarlas:
+
+1. Guarda tus imágenes en la carpeta `screenshots/` en la raíz del repo.
+2. Reemplaza `nombre-del-archivo.png` por el nombre real de cada imagen.
+3. Quita los marcadores `<!--` y `-->` de los bloques que quieras mostrar.
+
+<!--
+![Tablero principal de tareas](screenshots/dashboard.png)
+*Vista principal del tablero. Navegación con J/K, marca con X o Space, crea con C.*
+
+![Command Palette abierta](screenshots/command-palette.png)
+*La paleta de comandos se abre con Ctrl+K y permite buscar tareas y acciones.*
+
+![Modal de detalle de tarea](screenshots/task-detail.png)
+*Al pulsar Enter se abre el detalle de la tarea en un modal pop-out.*
+-->
+
 ## What it does
 
 BareDo is a task manager built around the keyboard. You can move through your list with `J` and `K`, create tasks with `C`, edit with `E`, delete with `D`, and search everything with `Ctrl+K`. There are no loading spinners or artificial delays — when you check off a task, it disappears immediately. If something goes wrong on the server, the app rolls back the change and shows you a toast message.
@@ -39,7 +58,7 @@ cp .env.example .env   # edit values if needed
 uv run python wsgi.py   # runs at http://localhost:5000
 ```
 
-**Frontend** (separate terminal)
+**Frontend**
 
 ```bash
 cd frontend
