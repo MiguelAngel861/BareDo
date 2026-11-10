@@ -6,22 +6,15 @@ Demo in production: [https://baredo.onrender.com](https://baredo.onrender.com)
 
 ## Screenshots
 
-Aún no hay capturas. Para agregarlas:
+Aún no hay capturas. Para agregarlas, guarda tus imágenes en la carpeta `screenshots/` en la raíz del repo y reemplaza `nombre-del-archivo.png` por el nombre real de cada imagen.
 
-1. Guarda tus imágenes en la carpeta `screenshots/` en la raíz del repo.
-2. Reemplaza `nombre-del-archivo.png` por el nombre real de cada imagen.
-3. Quita los marcadores `<!--` y `-->` de los bloques que quieras mostrar.
+| Vista | Archivo | Descripción |
+|---|---|---|
+| Tablero principal | `screenshots/dashboard.png` | Navegación con J/K, marca con X o Space, crea con C. |
+| Command Palette | `screenshots/command-palette.png` | Se abre con Ctrl+K y permite buscar tareas y acciones. |
+| Detalle de tarea | `screenshots/task-detail.png` | Al pulsar Enter se abre el detalle en un modal pop-out. |
 
-<!--
-![Tablero principal de tareas](screenshots/dashboard.png)
-*Vista principal del tablero. Navegación con J/K, marca con X o Space, crea con C.*
-
-![Command Palette abierta](screenshots/command-palette.png)
-*La paleta de comandos se abre con Ctrl+K y permite buscar tareas y acciones.*
-
-![Modal de detalle de tarea](screenshots/task-detail.png)
-*Al pulsar Enter se abre el detalle de la tarea en un modal pop-out.*
--->
+Agrega más filas siguiendo el mismo patrón si necesitas mostrar otras pantallas.
 
 ## What it does
 
