@@ -77,9 +77,15 @@ While developing, the frontend sends API calls to the backend through Vite's pro
 docker compose up --build
 ```
 
-This starts `db` (Postgres 16 at `localhost:5433`) and `api` (`http://localhost:5000`, hot-reload). The backend runs migrations when it starts. The frontend still runs separately with `pnpm dev`.
+This starts everything at once: a Postgres database, the backend API, and the frontend. The backend runs its migrations automatically when it starts, so your schema is ready out of the box.
 
-In production, the frontend is a static site served on a CDN, and it talks directly to the backend. While you develop, Vite's proxy handles the API calls.
+Here's what each service does:
+
+- **db** — Postgres 16 database, available at `localhost:5432`.
+- **api** — The Flask backend, available at `http://localhost:5000`.
+- **frontend** — The Vite dev server, available at `http://localhost:3000`. It proxies API calls to the backend automatically.
+
+Stop everything with `docker compose down`.
 
 ## API
 
@@ -122,10 +128,12 @@ cd frontend && pnpm test:run
 
 | Command | What it does |
 |---|---|
+| `docker compose up --build` | Start database, backend, and frontend together |
+| `docker compose down` | Stop and remove all services |
 | `uv run python wsgi.py` | Start the local backend |
 | `uv run pytest` | Run backend tests |
 | `uv run ruff check && uv run ruff format` | Lint and format the backend |
-| `pnpm dev` | Start the frontend with hot-reload (port 3000) |
+| `pnpm dev` | Start the frontend with hot-reload |
 | `pnpm build` | Build the frontend for production |
 | `pnpm lint` | Run Biome lint on the frontend |
 
@@ -133,20 +141,19 @@ cd frontend && pnpm test:run
 
 **Backend**
 
-| Variable | Default | Description |
-|---|---|---|
-| `FLASK_ENV` | `development` | Flask environment |
-| `DEBUG` | `false` | Debug mode |
-| `SECRET_KEY` | dev | Flask session key |
-| `DATABASE_URL` | `sqlite:///backend/instance/db.sqlite` | Database connection (`postgres://` and `postgresql://` are normalized to `postgresql+psycopg://`) |
-| `JWT_SECRET_KEY` | dev | JWT signing key |
-| `CORS_ORIGINS` | localhost dev | Allowed CORS origins (comma-separated, optional when using a reverse proxy) |
+| Variable | Description |
+|---|---|
+| `FLASK_ENV` | Flask environment (development or production) |
+| `SECRET_KEY` | Key for signing Flask session cookies |
+| `DATABASE_URL` | Database connection string |
+| `JWT_SECRET_KEY` | Key for signing login tokens |
+| `CORS_ORIGINS` | Allowed origins for cross-requests, comma-separated |
 
 **Frontend**
 
-| Variable | Default | Description |
-|---|---|---|
-| `VITE_API_BASE_URL` | `/api/v1` | API base URL (relative in development, absolute in production) |
+| Variable | Description |
+|---|---|
+| `VITE_API_BASE_URL` | Address of the backend API |
 
 ## License
 

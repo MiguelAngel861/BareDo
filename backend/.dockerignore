@@ -1,12 +1,7 @@
 .venv
 __pycache__
 *.pyc
+.git
 instance
-logs
 .env
-.env.*
-!.env.example
-.pytest_cache
-.ruff_cache
-.coverage
-tests
+.env.example
