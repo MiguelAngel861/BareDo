@@ -121,7 +121,7 @@ The API documents itself. It is built on `flask-openapi4`: every route declares 
 
 **Authentication**
 
-Register and login return a token pair (access + refresh) and the user profile; login is rate-limited to 5 attempts per minute. `POST /auth/refresh` renews the pair with the refresh token, and `GET /auth/me` returns the profile of whoever owns the token.
+Register and login return a token pair (access + refresh) and the user profile; login is rate-limited to 5 attempts per minute.
 
 ```bash
 # Register
@@ -137,14 +137,12 @@ curl -X POST http://localhost:5000/api/v1/auth/login \
 
 **Tasks**
 
-Lists your tasks with pagination and filters; `POST /tasks` creates one and `PUT`/`PATCH /tasks/<id>` update it fully or partially. Deleting is soft: `DELETE /tasks/<id>` moves the task to a trash, which you can list (`GET /tasks/trash`), empty (`DELETE /tasks/trash`), or undo (`POST /tasks/<id>/restore`). Only `DELETE /tasks/<id>/permanent` erases a task for good.
+Lists your tasks with pagination and filters.
 
 ```bash
 curl "http://localhost:5000/api/v1/tasks?page=1&per_page=5" \
   -H "Authorization: Bearer <access_token>"
 ```
-
-Every task can also carry subtasks and tags, and belongs to a priority. Those domains live in their own route files and are covered in full detail by the Swagger docs: `/subtasks`, `/tags`, and `/priorities`.
 
 ## Testing
 
