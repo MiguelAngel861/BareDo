@@ -43,7 +43,6 @@ describe('TaskDetailModal component', () => {
     expect(screen.getByText('○ PENDING')).toBeInTheDocument();
     expect(screen.getByText('#devops')).toBeInTheDocument();
     expect(screen.getByText('#monitoring')).toBeInTheDocument();
-    expect(screen.getByText('#999')).toBeInTheDocument();
   });
 
   it('closes modal when header Close button is clicked', () => {

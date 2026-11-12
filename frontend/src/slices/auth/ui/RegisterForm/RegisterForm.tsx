@@ -1,4 +1,4 @@
-import { getErrorMessage, type FriendlyError } from '@/shared/api/errors/index.ts';
+import { type FriendlyError, getErrorMessage } from '@/shared/api/errors/index.ts';
 import { Button, InputField } from '@/shared/ui/index.ts';
 import { useLocation } from 'preact-iso';
 import { useState } from 'preact/hooks';

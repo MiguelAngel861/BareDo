@@ -7,7 +7,9 @@ import {
   setTokens,
 } from '../auth/index.ts';
 import type { ApiError } from '../errors/errors.ts';
-import { mapBackendError } from '../errors/errors.ts';
+import { type MappedError, mapBackendError } from '../errors/errors.ts';
+
+export const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || '/api/v1').replace(/\/+$/, '');
 
 type TokenGetter = () => string | null;
 type UnauthorizedHandler = () => void;
@@ -45,7 +47,7 @@ async function refreshAccessToken(): Promise<void> {
     }
 
     const response = await ky.post('auth/refresh', {
-      prefixUrl: import.meta.env.VITE_API_BASE_URL || '/api/v1',
+      prefixUrl: API_BASE_URL,
       headers: {
         Authorization: `Bearer ${refreshToken}`,
       },
@@ -72,7 +74,7 @@ async function refreshAccessToken(): Promise<void> {
 let hasNotifiedServerReady = false;
 
 export const apiClient = ky.create({
-  prefixUrl: import.meta.env.VITE_API_BASE_URL || '/api/v1',
+  prefixUrl: API_BASE_URL,
   timeout: 60000,
   retry: {
     limit: 1,
@@ -141,8 +143,8 @@ export const apiClient = ky.create({
 });
 
 async function createFriendlyError(response: Response): Promise<Error> {
-  let mapped;
-  let code;
+  let mapped: MappedError | undefined;
+  let code: string | undefined;
   try {
     // Backend error envelope is { code, message, status, details } directly
     // (some paths may nest it under { error: {...} }; accept both).

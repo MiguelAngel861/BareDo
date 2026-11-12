@@ -78,8 +78,8 @@ export function HeroSection(): JSX.Element {
             EXECUTE.
           </h1>
           <p class="landing-hero-subtext">
-            The keyboard-driven productivity client that helps you get things done without
-            touching the mouse.
+            The keyboard-driven productivity client that helps you get things done without touching
+            the mouse.
           </p>
 
           <div class="landing-hero-actions">

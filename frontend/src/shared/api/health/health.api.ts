@@ -1,6 +1,7 @@
+import { API_BASE_URL } from '../client/index.ts';
+
 export function getHealthUrl(): string {
-  const apiBase = (import.meta.env.VITE_API_BASE_URL || '/api/v1').replace(/\/+$/, '');
-  const origin = apiBase ? apiBase.replace(/\/api\/v1\/?$/, '') : '';
+  const origin = API_BASE_URL.replace(/\/api\/v1\/?$/, '');
   return `${origin}/health`;
 }
 
