@@ -101,8 +101,8 @@ class TaskListQuery(BaseModel):
         try:
             parsed = [int(item.strip()) for item in self.tag_ids.split(",") if item.strip()]
             return parsed if parsed else None
-        except ValueError:
-            return None
+        except ValueError as exc:
+            raise ValueError("tag_ids debe contener solo números") from exc
 
 
 class TaskPath(BaseModel):

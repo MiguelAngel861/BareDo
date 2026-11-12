@@ -1,7 +1,7 @@
 def test_register_user(client):
     resp = client.post(
         "/api/v1/auth/register",
-        json={"username": "newuser", "password": "password123"},
+        json={"username": "newuser", "password": "Password123!"},
     )
     assert resp.status_code == 201
     data = resp.get_json()
@@ -14,27 +14,27 @@ def test_register_user(client):
 def test_register_duplicate_username(client):
     client.post(
         "/api/v1/auth/register",
-        json={"username": "dupuser", "password": "password123"},
+        json={"username": "dupuser", "password": "Password123!"},
     )
     resp = client.post(
         "/api/v1/auth/register",
-        json={"username": "dupuser", "password": "password123"},
+        json={"username": "dupuser", "password": "Password123!"},
     )
-    # Database integrity error returns 400 with our domain error format
-    assert resp.status_code == 400
+    # Duplicate username returns 409 Conflict with a friendly message
+    assert resp.status_code == 409
     data = resp.get_json()
-    assert data["code"] == "BAD_REQUEST"
-    assert "UNIQUE constraint failed" in data["message"]
+    assert data["code"] == "CONFLICT"
+    assert data["message"] == "Username already in use"
 
 
 def test_login_success(client):
     client.post(
         "/api/v1/auth/register",
-        json={"username": "loginuser", "password": "password123"},
+        json={"username": "loginuser", "password": "Password123!"},
     )
     resp = client.post(
         "/api/v1/auth/login",
-        json={"username": "loginuser", "password": "password123"},
+        json={"username": "loginuser", "password": "Password123!"},
     )
     assert resp.status_code == 200
     data = resp.get_json()
@@ -46,11 +46,11 @@ def test_login_success(client):
 def test_login_wrong_password(client):
     client.post(
         "/api/v1/auth/register",
-        json={"username": "loginuser2", "password": "password123"},
+        json={"username": "loginuser2", "password": "Password123!"},
     )
     resp = client.post(
         "/api/v1/auth/login",
-        json={"username": "loginuser2", "password": "wrongpass"},
+        json={"username": "loginuser2", "password": "Wrongpass1!"},
     )
     assert resp.status_code == 401
 

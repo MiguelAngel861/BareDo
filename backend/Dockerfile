@@ -10,6 +10,7 @@ RUN uv sync --frozen --no-dev --no-install-project
 FROM python:3.13-slim-bookworm AS runtime
 
 ENV PYTHONUNBUFFERED=1 \
+    FLASK_ENV=production \
     PATH="/app/.venv/bin:$PATH"
 
 WORKDIR /app

@@ -67,6 +67,23 @@ def create_app(config_name: str | None = None) -> BareDoApp:
     register_jwt_handlers(app.extensions["flask-jwt-extended"])
     init_limiter(app)
 
+    # Aplicar migraciones pendientes al arrancar (create_app no las aplicaba antes;
+    # requería ejecutir `flask db upgrade head` manualmente).
+    if config_name != "testing":
+        with app.app_context():
+            from alembic import command
+            from alembic.config import Config as AlembicConfig
+
+            alembic_cfg = AlembicConfig()
+            migrations_dir = str(SQLITE_PATH.parent.parent / "migrations")
+            alembic_cfg.set_main_option("script_location", migrations_dir)
+            try:
+                command.upgrade(alembic_cfg, "head")
+            except Exception:
+                # No romper el arranque si la BD aún no existe o hay un conflicto;
+                # el contenedor corre `flask db upgrade head` antes de gunicorn.
+                pass
+
     # Security headers + request/response logging middleware
     register_middleware(app)
 

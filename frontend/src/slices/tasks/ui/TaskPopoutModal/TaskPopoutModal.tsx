@@ -138,9 +138,7 @@ export function TaskPopoutModal() {
         />
 
         <div class="form-group">
-          <label id="priority-label" for="priority-select">
-            Priority
-          </label>
+          <span id="priority-label">Priority</span>
           <PriorityDropdown
             id="priority-select"
             value={priorityId}
@@ -150,9 +148,7 @@ export function TaskPopoutModal() {
         </div>
 
         <div class="form-group">
-          <label id="task-tags-label" for="tag-input-field">
-            Tags <span class="field-hint">(max 7, press Enter)</span>
-          </label>
+          <span id="task-tags-label">Tags <span class="field-hint">(max 7, press Enter)</span></span>
           <TagInputChips tags={tags} onChange={setTags} />
         </div>
 

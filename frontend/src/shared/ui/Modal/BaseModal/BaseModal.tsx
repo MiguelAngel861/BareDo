@@ -22,11 +22,15 @@ export function BaseModal({
   children,
 }: BaseModalProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const previousFocus = useRef<HTMLElement | null>(null);
 
   useLayoutEffect(() => {
     if (!isOpen) {
       return;
     }
+
+    previousFocus.current = document.activeElement as HTMLElement | null;
+    containerRef.current?.focus();
 
     const originalOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
@@ -42,6 +46,8 @@ export function BaseModal({
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       document.body.style.overflow = originalOverflow;
+      previousFocus.current?.focus();
+      previousFocus.current = null;
     };
   }, [isOpen, onClose]);
 

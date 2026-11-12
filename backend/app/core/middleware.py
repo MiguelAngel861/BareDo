@@ -3,9 +3,13 @@ from typing import Any
 from uuid import uuid4
 
 from flask import Flask, g, request
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 SENSITIVE_FIELDS = {
     "password",
+    "passwd",
+    "pwd",
+    "user_password",
     "token",
     "refresh_token",
     "secret",
@@ -26,8 +30,24 @@ def _mask_sensitive(data: Any) -> Any:
     return data
 
 
+def _truncate(value: Any, max_len: int) -> Any:
+    """Trunca strings largos para no llenar los logs con cuerpos enormes."""
+    if isinstance(value, str):
+        return value[:max_len] + ("…" if len(value) > max_len else "")
+    if isinstance(value, dict):
+        return {k: _truncate(v, max_len) for k, v in value.items()}
+    if isinstance(value, list):
+        return [_truncate(item, max_len) for item in value]
+    return value
+
+
 def register_middleware(app: Flask):
     """Register security headers and request/response logging middleware."""
+    # Confiar en X-Forwarded-For (1 nivel de proxy: nginx/Render) para que
+    # flask-limiter cuente la IP real del cliente y no la del proxy.
+    # shortcut: solo es seguro si TODO acceso pasa por el proxy de confianza;
+    # si alguien puede llegar directo al puerto de gunicorn, puede forjar IPs.
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1)
 
     @app.after_request
     def add_security_headers(response):
@@ -62,11 +82,12 @@ def register_middleware(app: Flask):
             "content_length": response.content_length,
         }
 
-        # Log request body for POST/PUT/PATCH (except sensitive fields)
+        # Log request body for POST/PUT/PATCH (except sensitive fields, truncated)
         if request.method in ("POST", "PUT", "PATCH") and request.is_json:
             body = request.get_json(silent=True)
             if body:
-                log_data["request_body"] = _mask_sensitive(body)
+                masked = _mask_sensitive(body)
+                log_data["request_body"] = _truncate(masked, 1024)
 
         if response.status_code >= 400:
             app.logger.warning("HTTP Request", extra=log_data)

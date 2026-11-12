@@ -20,6 +20,7 @@ def _sanitize_pydantic_errors(errors: list[dict]) -> list[dict]:
     clean = []
     for err in errors:
         c = dict(err)
+        c.pop("input", None)  # nunca devolver el valor que el usuario envió
         if "ctx" in c and isinstance(c["ctx"], dict):
             c["ctx"] = {k: str(v) if isinstance(v, Exception) else v for k, v in c["ctx"].items()}
         clean.append(c)
@@ -86,10 +87,14 @@ def register_error_handlers(app: Flask):
         return api_error(code="NOT_FOUND", message=message, status=404, details=str(error))
 
     @app.errorhandler(500)
-    def internal_server_error(error: HTTPException):
-        message = error.description or "Internal Server Error"
-
-        return api_error(code="INTERNAL_ERROR", message=message, status=500, details=str(error))
+    def internal_server_error(error):
+        # Una excepción genérica puede no tener .description (no es HTTPException).
+        # Nunca dejar escapar el stack trace ni detalles internos al cliente.
+        if isinstance(error, HTTPException):
+            message = error.description or "Internal Server Error"
+        else:
+            message = "Internal Server Error"
+        return api_error(code="INTERNAL_ERROR", message=message, status=500, details=None)
 
     @app.errorhandler(DataValidationError)
     def domain_validation_error_handler(error: DataValidationError):
@@ -133,7 +138,7 @@ def register_error_handlers(app: Flask):
             code="INTERNAL_ERROR",
             message="Database error",
             status=500,
-            details=str(error),
+            details=None,
         )
 
 

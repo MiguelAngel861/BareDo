@@ -1,7 +1,7 @@
 def _register_and_refresh_token(client, username):
     resp = client.post(
         "/api/v1/auth/register",
-        json={"username": username, "password": "password123"},
+        json={"username": username, "password": "Password123!"},
     )
     assert resp.status_code == 201
     return resp.get_json()["refresh_token"]

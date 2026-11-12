@@ -100,7 +100,7 @@ export function LoginForm() {
         />
 
         {globalError && (
-          <div id="global-error" class="global-error">
+          <div id="global-error" class="global-error" role="alert">
             {globalError}
           </div>
         )}

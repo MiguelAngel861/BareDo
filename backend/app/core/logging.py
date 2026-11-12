@@ -6,6 +6,8 @@ from logging.handlers import RotatingFileHandler
 
 from flask import Flask
 
+from app.core.config import BASE_DIR
+
 
 class JSONFormatter(logging.Formatter):
     def format(self, record):
@@ -70,10 +72,11 @@ def configure_logging(app: Flask):
     console_handler.setFormatter(JSONFormatter())
     app.logger.handlers = [console_handler]
 
-    # File handler for production
+    # File handler for production (ruta absoluta para no escribir en cwd arbitrario)
     if not app.debug:
-        os.makedirs("logs", exist_ok=True)
-        file_handler = RotatingFileHandler("logs/app.log", maxBytes=10485760, backupCount=10)
+        log_dir = BASE_DIR / "logs"
+        os.makedirs(log_dir, exist_ok=True)
+        file_handler = RotatingFileHandler(log_dir / "app.log", maxBytes=10485760, backupCount=10)
         file_handler.setLevel(logging.INFO)
         file_handler.setFormatter(JSONFormatter())
         app.logger.addHandler(file_handler)

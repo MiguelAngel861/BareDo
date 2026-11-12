@@ -44,7 +44,7 @@ export function CommandPalette() {
 
     window.addEventListener('keydown', handleGlobalKeyDown);
     return () => window.removeEventListener('keydown', handleGlobalKeyDown);
-  }, []);
+  }, [prioritiesSignal.value, tagsSignal.value, tasksSignal.value]);
 
   // Autofocus input on open and reset query
   useEffect(() => {
@@ -150,7 +150,7 @@ export function CommandPalette() {
     }
 
     return commands;
-  }, []);
+  }, [prioritiesSignal.value, tagsSignal.value, tasksSignal.value]);
 
   // Filter commands by query
   const filteredCommands = useMemo(() => {
@@ -208,6 +208,7 @@ export function CommandPalette() {
             placeholder="Type a command or search tasks..."
             value={query}
             onInput={(e) => setQuery((e.target as HTMLInputElement).value)}
+            aria-label="Buscar comandos o tareas"
             aria-autocomplete="list"
             aria-controls="command-palette-results"
           />
@@ -235,7 +236,7 @@ export function CommandPalette() {
               const showCategoryHeader = !prevCmd || prevCmd.category !== cmd.category;
 
               return (
-                <div key={cmd.id} class="command-palette-row">
+                <div key={cmd.id} class="command-palette-row" role="group">
                   {showCategoryHeader && (
                     <div class="command-palette-group-title">
                       <span>{cmd.category}</span>

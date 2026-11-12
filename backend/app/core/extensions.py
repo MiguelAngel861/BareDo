@@ -1,3 +1,4 @@
+import os
 import sqlite3
 
 from flask_alembic import Alembic
@@ -33,10 +34,13 @@ def init_alembic(app):
 
 
 jwt = JWTManager()
+# storage_uri configurable vía RATELIMIT_STORAGE_URI. Default memory:// (dev).
+# En producción con múltiples workers gunicorn, usar Redis (p.ej. redis://localhost:6379/0)
+# para que el rate-limit se comparta entre procesos.
 limiter = Limiter(
     key_func=get_remote_address,
     default_limits=["200 per minute", "50 per second"],
-    storage_uri="memory://",
+    storage_uri=os.environ.get("RATELIMIT_STORAGE_URI", "memory://"),
     enabled=True,
 )
 

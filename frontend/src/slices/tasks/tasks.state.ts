@@ -286,6 +286,8 @@ export async function loadTrashTasks(page = 1): Promise<void> {
     trashTasksSignal.value = res.tasks;
     trashPaginationSignal.value = res.meta;
     trashCountSignal.value = res.meta.total_items;
+  } catch {
+    // Keep existing count/tasks on error
   } finally {
     isLoadingTrashSignal.value = false;
   }

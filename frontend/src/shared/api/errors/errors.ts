@@ -25,7 +25,15 @@ export function isApiError(error: unknown): error is ApiErrorClass {
 
 export function getErrorMessage(error: unknown, fallback = 'An unexpected error occurred'): string {
   if (error instanceof Error) {
-    return error.message;
+    const name = error.name;
+    const message = error.message;
+    if (name === 'TimeoutError' || /timed out/i.test(message)) {
+      return 'La solicitud tardó demasiado. Intenta de nuevo';
+    }
+    if (name === 'NetworkError' || /failed to fetch/i.test(message)) {
+      return 'No se pudo conectar con el servidor. Intenta de nuevo';
+    }
+    return message;
   }
   return fallback;
 }

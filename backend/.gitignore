@@ -1,0 +1,9 @@
+logs/
+instance/
+__pycache__/
+*.pyc
+.env
+.venv/
+.coverage
+htmlcov/
+.pytest_cache/

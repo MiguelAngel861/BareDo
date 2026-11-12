@@ -52,7 +52,7 @@ def make_user(db_session):
     def _make_user(**overrides):
         defaults = {
             "username": "testuser",
-            "password": "testpass123",
+            "password": "Testpass123!",
         }
         defaults.update(overrides)
         password = defaults.pop("password")
@@ -92,10 +92,10 @@ def auth_headers(client, make_user):
     import uuid
 
     username = f"authuser_{uuid.uuid4().hex[:8]}"
-    user = make_user(username=username, password="authpass123")
+    user = make_user(username=username, password="Authpass123!")
     resp = client.post(
         "/api/v1/auth/login",
-        json={"username": username, "password": "authpass123"},
+        json={"username": username, "password": "Authpass123!"},
     )
     assert resp.status_code == 200
     access_token = resp.get_json()["access_token"]

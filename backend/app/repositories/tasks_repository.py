@@ -27,10 +27,12 @@ class TasksRepository(BaseRepository[Tasks]):
             stmt = stmt.where(Tasks.deleted_at.is_(None))
 
         if title := filters.get("title"):
-            stmt = stmt.where(Tasks.title.ilike(f"%{title}%"))
+            escaped = title.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+            stmt = stmt.where(Tasks.title.ilike(f"%{escaped}%", escape="\\"))
 
         if description := filters.get("description"):
-            stmt = stmt.where(Tasks.description.ilike(f"%{description}%"))
+            escaped = description.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+            stmt = stmt.where(Tasks.description.ilike(f"%{escaped}%", escape="\\"))
 
         completed = filters.get("completed")
         if completed is not None:

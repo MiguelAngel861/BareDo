@@ -16,10 +16,10 @@ def transactional(session: Session | None = None) -> Iterator[Session]:
         session.commit()
     except IntegrityError as exc:
         session.rollback()
-        raise DataValidationError(str(exc)) from exc
+        raise DataValidationError("Duplicate entry") from exc
     except SQLAlchemyError as exc:
         session.rollback()
-        raise DatabaseError(str(exc)) from exc
+        raise DatabaseError("Database operation failed") from exc
     except BaseException:
         session.rollback()
         raise

@@ -41,6 +41,18 @@ describe('ApiError and isApiError helper', () => {
     expect(getErrorMessage(null, 'Default fallback')).toBe('Default fallback');
     expect(getErrorMessage(undefined)).toBe('An unexpected error occurred');
   });
+
+  it('maps ky TimeoutError to a friendly message', () => {
+    const err = new Error('Request timed out');
+    err.name = 'TimeoutError';
+    expect(getErrorMessage(err)).toBe('La solicitud tardó demasiado. Intenta de nuevo');
+  });
+
+  it('maps ky NetworkError to a friendly message', () => {
+    const err = new Error('Failed to fetch');
+    err.name = 'NetworkError';
+    expect(getErrorMessage(err)).toBe('No se pudo conectar con el servidor. Intenta de nuevo');
+  });
 });
 
 describe('mapBackendError', () => {

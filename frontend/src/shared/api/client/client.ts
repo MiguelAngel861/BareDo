@@ -46,8 +46,7 @@ async function refreshAccessToken(): Promise<void> {
       throw new Error('No refresh token');
     }
 
-    const response = await ky.post('auth/refresh', {
-      prefixUrl: API_BASE_URL,
+    const response = await apiClient.post('auth/refresh', {
       headers: {
         Authorization: `Bearer ${refreshToken}`,
       },
@@ -74,15 +73,18 @@ async function refreshAccessToken(): Promise<void> {
 let hasNotifiedServerReady = false;
 
 export const apiClient = ky.create({
-  prefixUrl: API_BASE_URL,
+  prefix: API_BASE_URL,
   timeout: 60000,
   retry: {
-    limit: 1,
-    statusCodes: [401],
+    limit: 3,
+    methods: ['GET', 'HEAD', 'PUT', 'DELETE', 'OPTIONS', 'TRACE'],
+    statusCodes: [408, 413, 429, 500, 502, 503, 504],
+    backoffLimit: 3000,
+    retryOnTimeout: true,
   },
   hooks: {
     beforeRequest: [
-      async (request) => {
+      async ({ request }) => {
         if (isAccessTokenExpired()) {
           try {
             await refreshAccessToken();
@@ -98,7 +100,7 @@ export const apiClient = ky.create({
       },
     ],
     afterResponse: [
-      async (request, _options, response, state) => {
+      async ({ request, response, retryCount }) => {
         if (response.ok && !hasNotifiedServerReady) {
           hasNotifiedServerReady = true;
           if (customOnServerReady) {
@@ -107,7 +109,7 @@ export const apiClient = ky.create({
         }
 
         // Handle 401 with token refresh (only on first attempt to avoid loops)
-        if (response.status === 401 && state.retryCount === 0) {
+        if (response.status === 401 && retryCount === 0) {
           try {
             await refreshAccessToken();
             const newToken = customGetToken ? customGetToken() : getAccessToken();
@@ -116,10 +118,30 @@ export const apiClient = ky.create({
               headers.set('Authorization', `Bearer ${newToken}`);
             }
 
-            return ky.retry({
-              request: new Request(request, { headers }),
-              code: 'TOKEN_REFRESHED',
+            // Reintenta la petición original con el token nuevo, sin hooks de auth para evitar loop
+            const retryResponse = await ky(String(request.url), {
+              method: request.method as 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE',
+              headers,
+              timeout: 60000,
+              retry: { limit: 0 },
+              throwHttpErrors: false,
             });
+
+            if (retryResponse.status === 401) {
+              // Token aún inválido tras refresh: no buclear, notificar y normalizar error
+              if (customOnUnauthorized) {
+                customOnUnauthorized();
+              } else {
+                clear();
+              }
+              throw await createFriendlyError(retryResponse);
+            }
+
+            if (!retryResponse.ok) {
+              throw await createFriendlyError(retryResponse);
+            }
+
+            return retryResponse;
           } catch {
             if (customOnUnauthorized) {
               customOnUnauthorized();

@@ -2,7 +2,7 @@ import uuid
 
 import pytest
 
-from app.errors.exceptions import DataValidationError
+from app.errors.exceptions import ConflictError
 from app.services.auth_service import AuthService
 
 
@@ -18,11 +18,11 @@ def test_register_returns_orm_user(auth_service):
     assert user.username.startswith("svc_")
 
 
-def test_register_duplicate_raises_validation_error(auth_service):
+def test_register_duplicate_raises_conflict(auth_service):
     username = f"dup_{uuid.uuid4().hex[:8]}"
     auth_service.register(username, "password123")
 
-    with pytest.raises(DataValidationError):
+    with pytest.raises(ConflictError):
         auth_service.register(username, "password123")
 
 

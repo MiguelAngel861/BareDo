@@ -1,5 +1,6 @@
-import { fireEvent, render, screen } from '@testing-library/preact';
+import { fireEvent, render, screen, waitFor } from '@testing-library/preact';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { tagsSignal } from '@/slices/tags/index.ts';
 import { CommandPalette } from './CommandPalette.tsx';
 import {
   closeCommandPalette,
@@ -10,12 +11,23 @@ import {
 describe('CommandPalette component', () => {
   beforeEach(() => {
     closeCommandPalette();
+    tagsSignal.value = [];
     vi.restoreAllMocks();
   });
 
   it('does not render dialog content when closed', () => {
     const { container } = render(<CommandPalette />);
     expect(container.querySelector('.command-palette-container')).not.toBeInTheDocument();
+  });
+
+  it('rebuilds commands when signals change after mount', async () => {
+    openCommandPalette();
+    render(<CommandPalette />);
+    expect(screen.queryByText('Filter by: #devops')).not.toBeInTheDocument();
+
+    // Simula tags cargados tras el mount: el memo debe recalcularse
+    tagsSignal.value = [{ tag_id: 1, name: 'devops' }];
+    await waitFor(() => expect(screen.getByText('Filter by: #devops')).toBeInTheDocument());
   });
 
   it('renders command list and search input when open', () => {
