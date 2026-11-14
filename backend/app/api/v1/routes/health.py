@@ -1,5 +1,5 @@
 from flask import jsonify
-from flask_openapi4 import APIBlueprint
+from flask_openapi import APIBlueprint
 
 health_bp = APIBlueprint("health", __name__)
 

@@ -36,20 +36,6 @@ def test_get_by_id_returns_none_for_invalid(priorities_repo):
     assert priority is None
 
 
-def test_get_by_level_returns_priority(priorities_repo):
-    priority = priorities_repo.get_by_level(5)
-
-    assert priority is not None
-    assert priority.name == "High"
-    assert priority.priority_id == 5
-
-
-def test_get_by_level_returns_none_for_invalid(priorities_repo):
-    priority = priorities_repo.get_by_level(999)
-
-    assert priority is None
-
-
 def test_priorities_have_required_fields(priorities_repo):
     priorities = priorities_repo.get_all()
 

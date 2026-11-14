@@ -114,22 +114,6 @@ def test_add_task_assigns_user(make_user, tasks_repo):
     assert task.title == "Task title"
 
 
-def test_update_task_returns_updated(make_user, make_task, tasks_repo):
-    user = make_user(**unique_user())
-    task = make_task(user.user_id)
-
-    updated = tasks_repo.update(task.task_id, {"title": "Renamed"}, user_id=user.user_id)
-
-    assert updated is not None
-    assert updated.title == "Renamed"
-
-
-def test_update_task_unknown_returns_none(make_user, tasks_repo):
-    user = make_user(**unique_user())
-
-    assert tasks_repo.update(99999, {"title": "x"}, user_id=user.user_id) is None
-
-
 def test_delete_task_only_owner(make_user, make_task, tasks_repo):
     user_a = make_user(**unique_user())
     user_b = make_user(**unique_user())

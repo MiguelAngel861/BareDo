@@ -1,7 +1,7 @@
 from collections.abc import Sequence
 
 from app.core.pagination import Pagination
-from app.errors.exceptions import DatabaseError, DataValidationError, NotFoundError
+from app.errors.exceptions import DataValidationError, NotFoundError
 from app.models.subtasks import Subtasks
 from app.models.tasks import Tasks
 from app.repositories.tags_repository import TagsRepository
@@ -68,8 +68,6 @@ class TasksService(BaseService):
             return repo.create(task)
 
         task = self._execute_in_transaction(_add)
-        if not task:
-            raise DatabaseError()
         return task
 
     def update_task(self, task_id: int, task_data: dict, user_id: int) -> Tasks:
@@ -88,10 +86,7 @@ class TasksService(BaseService):
 
             return task
 
-        task = self._execute_in_transaction(_update)
-        if not task:
-            raise NotFoundError()
-        return task
+        return self._execute_in_transaction(_update)
 
     def delete_task(self, task_id: int, user_id: int) -> None:
         deleted = self._execute_in_transaction(

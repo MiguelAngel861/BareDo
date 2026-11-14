@@ -27,11 +27,9 @@ class SubtasksService(BaseService):
         return self._execute_in_transaction(_get)
 
     def create_subtask(self, task_id: int, subtask_data: dict, user_id: int) -> Subtasks:
-        title = subtask_data.get("title", "").strip()
+        title = subtask_data["title"].strip()
         if not title:
             raise DataValidationError("Title cannot be empty")
-        if len(title) > 120:
-            raise DataValidationError("Title cannot exceed 120 characters")
 
         def _create(repo: SubtasksRepository) -> Subtasks:
             self._verify_task_ownership(repo.session, task_id, user_id)
@@ -57,8 +55,6 @@ class SubtasksService(BaseService):
                 title = update_data["title"].strip()
                 if not title:
                     raise DataValidationError("Title cannot be empty")
-                if len(title) > 120:
-                    raise DataValidationError("Title cannot exceed 120 characters")
                 subtask.title = title
 
             if "completed" in update_data and update_data["completed"] is not None:

@@ -1,4 +1,4 @@
-from sqlalchemy import Select, func, select
+from sqlalchemy import Select, delete, func, select
 
 from app.models.tags import Tags
 from app.models.tasks import Tasks
@@ -88,13 +88,11 @@ class TasksRepository(BaseRepository[Tasks]):
         return True
 
     def empty_trash(self, user_id: int) -> int:
-        tasks = self.session.scalars(
-            select(Tasks).where(Tasks.user_id == user_id, Tasks.deleted_at.is_not(None))
-        ).all()
-        count = len(tasks)
-        for task in tasks:
-            self.session.delete(task)
-        return count
+        stmt = delete(Tasks).where(
+            Tasks.user_id == user_id, Tasks.deleted_at.is_not(None)
+        )
+        result = self.session.execute(stmt)
+        return result.rowcount
 
     def count_trash(self, user_id: int) -> int:
         stmt = select(func.count(Tasks.task_id)).where(

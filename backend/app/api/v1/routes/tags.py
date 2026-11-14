@@ -1,6 +1,6 @@
 from flask_jwt_extended import jwt_required
+from flask_openapi import APIBlueprint, validate_request
 
-from app.api.blueprint import BareDoBlueprint
 from app.api.helpers import get_current_user_id
 from app.api.v1.schemas.tags_schemas import (
     TagBody,
@@ -10,7 +10,7 @@ from app.api.v1.schemas.tags_schemas import (
 )
 from app.services.tags_service import TagsService
 
-tags_bp = BareDoBlueprint("tags", __name__, url_prefix="/api/v1")
+tags_bp = APIBlueprint("tags", __name__, url_prefix="/api/v1")
 service = TagsService()
 
 
@@ -25,6 +25,7 @@ def get_tags():
 
 @tags_bp.post("/tags")
 @jwt_required()
+@validate_request()
 def create_tag(body: TagCreate):
     """Create a new tag for the authenticated user."""
     user_id = get_current_user_id()
@@ -34,6 +35,7 @@ def create_tag(body: TagCreate):
 
 @tags_bp.put("/tags/<int:tag_id>")
 @jwt_required()
+@validate_request()
 def update_tag(path: TagPath, body: TagCreate):
     """Update a tag belonging to the authenticated user."""
     user_id = get_current_user_id()
@@ -43,6 +45,7 @@ def update_tag(path: TagPath, body: TagCreate):
 
 @tags_bp.delete("/tags/<int:tag_id>")
 @jwt_required()
+@validate_request()
 def delete_tag(path: TagPath):
     """Delete a tag belonging to the authenticated user."""
     user_id = get_current_user_id()

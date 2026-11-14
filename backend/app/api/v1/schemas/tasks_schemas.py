@@ -4,6 +4,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from app.api.v1.schemas.subtasks_schemas import SubtaskBody, SubtaskCreate
 from app.api.v1.schemas.tags_schemas import TagBody
+from app.errors.exceptions import DataValidationError
 
 
 class TaskBase(BaseModel):
@@ -102,7 +103,7 @@ class TaskListQuery(BaseModel):
             parsed = [int(item.strip()) for item in self.tag_ids.split(",") if item.strip()]
             return parsed if parsed else None
         except ValueError as exc:
-            raise ValueError("tag_ids debe contener solo números") from exc
+            raise DataValidationError("tag_ids debe contener solo números") from exc
 
 
 class TaskPath(BaseModel):

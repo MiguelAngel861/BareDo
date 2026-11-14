@@ -9,8 +9,8 @@ from app.errors.exceptions import DatabaseError, DataValidationError
 
 
 @contextmanager
-def transactional(session: Session | None = None) -> Iterator[Session]:
-    session = session or db.session
+def transactional() -> Iterator[Session]:
+    session = db.session
     try:
         yield session
         session.commit()

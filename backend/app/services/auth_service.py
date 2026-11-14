@@ -9,8 +9,7 @@ from app.services.base import BaseService
 # evitando ataques de enumeración por timing (login de usuario inexistente es
 # mediblemente más rápido si se salta la comprobación de contraseña).
 _DUMMY_HASH = (
-    "pbkdf2:sha256:600000$dummy$"
-    "0000000000000000000000000000000000000000000000000000000000000000"
+    "pbkdf2:sha256:600000$dummy$0000000000000000000000000000000000000000000000000000000000000000"
 )
 
 

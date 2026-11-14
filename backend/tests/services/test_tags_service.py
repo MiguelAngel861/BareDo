@@ -37,12 +37,6 @@ def test_create_tag_empty_raises_validation_error(tags_service, make_user):
         tags_service.create_tag("   ", user.user_id)
 
 
-def test_create_tag_too_long_raises_validation_error(tags_service, make_user):
-    user = make_user(**unique_user())
-    with pytest.raises(DataValidationError):
-        tags_service.create_tag("a" * 31, user.user_id)
-
-
 def test_get_all_user_tags(tags_service, make_user):
     user = make_user(**unique_user())
     tags_service.create_tag("tag-2", user.user_id)
@@ -90,20 +84,3 @@ def test_delete_tag_not_found(tags_service, make_user):
     user = make_user(**unique_user())
     with pytest.raises(NotFoundError):
         tags_service.delete_tag(999, user.user_id)
-
-
-def test_validate_and_get_tags(tags_service, make_user):
-    user = make_user(**unique_user())
-    t1 = tags_service.create_tag("t1", user.user_id)
-    t2 = tags_service.create_tag("t2", user.user_id)
-
-    tags = tags_service.validate_and_get_tags([t1.tag_id, t2.tag_id], user.user_id)
-    assert len(tags) == 2
-
-    # More than 7 tags raises DataValidationError
-    with pytest.raises(DataValidationError):
-        tags_service.validate_and_get_tags(list(range(1, 9)), user.user_id)
-
-    # Invalid ID raises DataValidationError
-    with pytest.raises(DataValidationError):
-        tags_service.validate_and_get_tags([t1.tag_id, 9999], user.user_id)

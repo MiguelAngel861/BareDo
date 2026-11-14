@@ -1,6 +1,6 @@
 from flask_jwt_extended import jwt_required
+from flask_openapi import APIBlueprint, validate_request
 
-from app.api.blueprint import BareDoBlueprint
 from app.api.helpers import get_current_user_id
 from app.api.v1.schemas.tasks_schemas import (
     TaskBody,
@@ -15,12 +15,13 @@ from app.api.v1.schemas.tasks_schemas import (
 )
 from app.services.tasks_service import TasksService
 
-tasks_bp = BareDoBlueprint("tasks", __name__, url_prefix="/api/v1")
+tasks_bp = APIBlueprint("tasks", __name__, url_prefix="/api/v1")
 service = TasksService()
 
 
 @tasks_bp.get("/tasks")
 @jwt_required()
+@validate_request()
 def get_tasks(query: TaskListQuery):
     """List tasks with pagination and filters."""
     user_id = get_current_user_id()
@@ -45,6 +46,7 @@ def get_tasks(query: TaskListQuery):
 
 @tasks_bp.get("/tasks/trash")
 @jwt_required()
+@validate_request()
 def get_trash_tasks(query: TrashListQuery):
     """List tasks currently in trash."""
     user_id = get_current_user_id()
@@ -75,6 +77,7 @@ def empty_trash():
 
 @tasks_bp.get("/tasks/<int:task_id>")
 @jwt_required()
+@validate_request()
 def get_task_by_id(path: TaskPath):
     """Get a task by ID."""
     user_id = get_current_user_id()
@@ -85,6 +88,7 @@ def get_task_by_id(path: TaskPath):
 
 @tasks_bp.post("/tasks")
 @jwt_required()
+@validate_request()
 def add_task(body: TaskCreate):
     """Create a new task."""
     user_id = get_current_user_id()
@@ -95,6 +99,7 @@ def add_task(body: TaskCreate):
 
 @tasks_bp.put("/tasks/<int:task_id>")
 @jwt_required()
+@validate_request()
 def update_task(path: TaskPath, body: TaskUpdate):
     """Update a task (full)."""
     user_id = get_current_user_id()
@@ -105,6 +110,7 @@ def update_task(path: TaskPath, body: TaskUpdate):
 
 @tasks_bp.patch("/tasks/<int:task_id>")
 @jwt_required()
+@validate_request()
 def patch_task(path: TaskPath, body: TaskPatch):
     """Update a task (partial)."""
     user_id = get_current_user_id()
@@ -115,6 +121,7 @@ def patch_task(path: TaskPath, body: TaskPatch):
 
 @tasks_bp.delete("/tasks/<int:task_id>")
 @jwt_required()
+@validate_request()
 def delete_task(path: TaskPath):
     """Soft delete a task (move to trash)."""
     user_id = get_current_user_id()
@@ -125,6 +132,7 @@ def delete_task(path: TaskPath):
 
 @tasks_bp.post("/tasks/<int:task_id>/restore")
 @jwt_required()
+@validate_request()
 def restore_task(path: TaskPath):
     """Restore a task from trash."""
     user_id = get_current_user_id()
@@ -135,6 +143,7 @@ def restore_task(path: TaskPath):
 
 @tasks_bp.delete("/tasks/<int:task_id>/permanent")
 @jwt_required()
+@validate_request()
 def permanent_delete_task(path: TaskPath):
     """Permanently delete a task."""
     user_id = get_current_user_id()

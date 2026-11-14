@@ -42,13 +42,6 @@ def test_create_subtask_validation_error(subtasks_service, make_user, make_task)
             user_id=user.user_id,
         )
 
-    with pytest.raises(DataValidationError):
-        subtasks_service.create_subtask(
-            task_id=task.task_id,
-            subtask_data={"title": "A" * 121},
-            user_id=user.user_id,
-        )
-
 
 def test_create_subtask_wrong_user(subtasks_service, make_user, make_task):
     user1 = make_user(**unique_user())

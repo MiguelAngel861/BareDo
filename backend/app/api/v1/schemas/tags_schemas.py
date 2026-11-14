@@ -20,9 +20,5 @@ class TagListResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True, extra="forbid")
 
 
-class TagUpdate(TagCreate):
-    pass
-
-
 class TagPath(BaseModel):
     tag_id: int = Field(ge=1)
