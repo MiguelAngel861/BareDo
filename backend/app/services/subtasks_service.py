@@ -67,9 +67,7 @@ class SubtasksService(BaseService):
     def delete_subtask(self, task_id: int, subtask_id: int, user_id: int) -> None:
         def _delete(repo: SubtasksRepository) -> None:
             self._verify_task_ownership(repo.session, task_id, user_id)
-            subtask = repo.get_by_id_and_task(subtask_id, task_id)
-            if not subtask:
+            if not repo.delete(subtask_id, task_id=task_id):
                 raise NotFoundError("Subtask not found")
-            repo.session.delete(subtask)
 
         return self._execute_in_transaction(_delete)

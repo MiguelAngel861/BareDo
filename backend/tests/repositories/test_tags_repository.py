@@ -1,13 +1,8 @@
-import uuid
-
 import pytest
 
 from app.models.tags import Tags
 from app.repositories.tags_repository import TagsRepository
-
-
-def unique_user():
-    return {"username": f"user_{uuid.uuid4().hex[:8]}"}
+from tests.conftest import unique_user
 
 
 @pytest.fixture

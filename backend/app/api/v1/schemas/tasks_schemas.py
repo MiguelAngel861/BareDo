@@ -77,16 +77,9 @@ class TaskListQuery(BaseModel):
     @field_validator("completed", mode="before")
     @classmethod
     def validate_completed(cls, v):
-        if isinstance(v, str):
-            if v == "":
-                return None
-            lower = v.lower()
-            if lower == "true":
-                return True
-            elif lower == "false":
-                return False
-            else:
-                raise ValueError(f"Invalid value for completed: '{v}'. Must be 'true' or 'false'.")
+        # "" en query string significa "sin filtro"; el resto lo coacciona Pydantic.
+        if v == "":
+            return None
         return v
 
     @field_validator("title", mode="before")

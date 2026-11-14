@@ -1,19 +1,15 @@
-import uuid
 from datetime import date
 
 import pytest
 
 from app.models.tasks import Tasks
 from app.repositories.tasks_repository import TasksRepository
+from tests.conftest import unique_user
 
 
 @pytest.fixture
 def tasks_repo(db_session):
     return TasksRepository(db_session)
-
-
-def unique_user():
-    return {"username": f"user_{uuid.uuid4().hex[:8]}"}
 
 
 def test_get_all_filters_by_user_and_title(make_user, make_task, tasks_repo):

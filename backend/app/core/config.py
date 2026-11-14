@@ -86,7 +86,8 @@ class ProductionConfig(Config):
 class TestingConfig(Config):
     DEBUG = False
     TESTING = True
-    SQLALCHEMY_ENGINES = {"default": "sqlite:///:memory:"}
+    # TEST_DATABASE_URL permite correr la suite contra Postgres; default sqlite en memoria.
+    SQLALCHEMY_ENGINES = {"default": os.environ.get("TEST_DATABASE_URL", "sqlite:///:memory:")}
     RATELIMIT_ENABLED = False
 
 

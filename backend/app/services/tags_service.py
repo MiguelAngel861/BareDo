@@ -53,9 +53,7 @@ class TagsService(BaseService):
 
     def delete_tag(self, tag_id: int, user_id: int) -> None:
         def _delete(repo: TagsRepository) -> None:
-            tag = repo.get_by_id(tag_id, user_id=user_id)
-            if not tag:
+            if not repo.delete(tag_id, user_id=user_id):
                 raise NotFoundError("Tag not found")
-            repo.delete(tag_id, user_id=user_id)
 
         self._execute_in_transaction(_delete)

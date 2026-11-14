@@ -24,14 +24,12 @@ def test_no_token_invalid_query_returns_401(client):
     assert resp.status_code == 401
 
 
-def test_valid_token_invalid_body_returns_422(client, auth_headers):
-    headers, _ = auth_headers
+def test_valid_token_invalid_body_returns_422(client, headers):
     resp = client.post("/api/v1/tasks", json={"title": ""}, headers=headers)
     assert resp.status_code == 422
 
 
-def test_valid_token_valid_body_returns_201(client, auth_headers):
-    headers, _ = auth_headers
+def test_valid_token_valid_body_returns_201(client, headers):
     resp = client.post(
         "/api/v1/tasks",
         json={"title": "Nueva tarea"},

@@ -1,31 +1,10 @@
-def test_list_priorities(client, auth_headers):
-    headers, user_id = auth_headers
-    resp = client.get("/api/v1/priorities", headers=headers)
-    assert resp.status_code == 200
-    data = resp.get_json()
-    assert "priorities" in data
+def test_list_priorities(client, headers):
+    data = client.get("/api/v1/priorities", headers=headers).get_json()
+
     assert len(data["priorities"]) == 5
-
-
-def test_list_priorities_sorted_by_level(client, auth_headers):
-    headers, user_id = auth_headers
-    resp = client.get("/api/v1/priorities", headers=headers)
-    assert resp.status_code == 200
-    data = resp.get_json()
-    levels = [p["level"] for p in data["priorities"]]
-    assert levels == [1, 2, 3, 4, 5]
-
-
-def test_list_priorities_has_required_fields(client, auth_headers):
-    headers, user_id = auth_headers
-    resp = client.get("/api/v1/priorities", headers=headers)
-    assert resp.status_code == 200
-    data = resp.get_json()
+    assert [p["level"] for p in data["priorities"]] == [1, 2, 3, 4, 5]
     for priority in data["priorities"]:
-        assert "priority_id" in priority
-        assert "name" in priority
-        assert "level" in priority
-        assert "description" in priority
+        assert set(priority) == {"priority_id", "name", "level", "description"}
 
 
 def test_priorities_require_auth(client):
@@ -33,8 +12,7 @@ def test_priorities_require_auth(client):
     assert resp.status_code == 401
 
 
-def test_create_task_with_valid_priority_id(client, auth_headers):
-    headers, user_id = auth_headers
+def test_create_task_with_valid_priority_id(client, headers):
     resp = client.post(
         "/api/v1/tasks",
         json={
@@ -49,8 +27,7 @@ def test_create_task_with_valid_priority_id(client, auth_headers):
     assert data["priority_id"] == 5
 
 
-def test_create_task_with_invalid_priority_id(client, auth_headers):
-    headers, user_id = auth_headers
+def test_create_task_with_invalid_priority_id(client, headers):
     resp = client.post(
         "/api/v1/tasks",
         json={

@@ -1,13 +1,8 @@
-import uuid
-
 import pytest
 
 from app.errors.exceptions import DataValidationError, NotFoundError
 from app.services.subtasks_service import SubtasksService
-
-
-def unique_user():
-    return {"username": f"user_{uuid.uuid4().hex[:8]}"}
+from tests.conftest import unique_user
 
 
 @pytest.fixture

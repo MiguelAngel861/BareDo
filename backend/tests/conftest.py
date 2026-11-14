@@ -1,4 +1,7 @@
+import uuid
+
 import pytest
+from sqlalchemy import func, select
 
 from app import create_app
 from app.core.extensions import Base
@@ -14,6 +17,34 @@ PRIORITIES_SEED = [
     {"name": "Medium-High", "level": 4, "description": "Important, do not postpone"},
     {"name": "High", "level": 5, "description": "Urgent, immediate attention"},
 ]
+
+
+def unique_user():
+    return {"username": f"user_{uuid.uuid4().hex[:8]}"}
+
+
+@pytest.fixture
+def headers(auth_headers):
+    """Solo los headers de auth, para tests que no necesitan el user_id."""
+    return auth_headers[0]
+
+
+def register_user(client, username, password="Password123!"):
+    resp = client.post("/api/v1/auth/register", json={"username": username, "password": password})
+    assert resp.status_code == 201
+    return resp.get_json()
+
+
+def api_create_task(client, headers, **fields):
+    resp = client.post("/api/v1/tasks", json=fields, headers=headers)
+    assert resp.status_code == 201
+    return resp.get_json()
+
+
+def count_rows(model, **where) -> int:
+    """Cuenta filas por fuera del identity map del ORM de la app."""
+    stmt = select(func.count()).select_from(model).filter_by(**where)
+    return _db.session.scalar(stmt)
 
 
 @pytest.fixture(scope="session")

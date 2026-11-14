@@ -8,12 +8,14 @@ _PASSWORD_COMPLEXITY_RE = re.compile(
 )
 
 
-class UserCreate(BaseModel):
+class UserCredentials(BaseModel):
     username: str = Field(min_length=3, max_length=50)
     password: str = Field(min_length=8, max_length=128)
 
     model_config = ConfigDict(extra="forbid")
 
+
+class UserCreate(UserCredentials):
     @field_validator("password")
     @classmethod
     def validate_password_complexity(cls, v: str) -> str:
@@ -25,11 +27,8 @@ class UserCreate(BaseModel):
         return v
 
 
-class UserLogin(BaseModel):
-    username: str = Field(min_length=3, max_length=50)
-    password: str = Field(min_length=8, max_length=128)
-
-    model_config = ConfigDict(extra="forbid")
+class UserLogin(UserCredentials):
+    pass
 
 
 class UserResponse(BaseModel):

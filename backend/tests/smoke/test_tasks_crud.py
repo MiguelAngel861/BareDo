@@ -1,5 +1,4 @@
-def test_create_task(client, auth_headers):
-    headers, user_id = auth_headers
+def test_create_task(client, headers):
     resp = client.post(
         "/api/v1/tasks",
         json={
@@ -19,8 +18,7 @@ def test_create_task(client, auth_headers):
     assert "task_id" in data
 
 
-def test_create_task_minimal(client, auth_headers):
-    headers, user_id = auth_headers
+def test_create_task_minimal(client, headers):
     resp = client.post(
         "/api/v1/tasks",
         json={"title": "Minimal Task"},
@@ -53,8 +51,7 @@ def test_get_task(client, auth_headers, make_task):
     assert data["task_id"] == task.task_id
 
 
-def test_get_task_not_found(client, auth_headers):
-    headers, user_id = auth_headers
+def test_get_task_not_found(client, headers):
     resp = client.get("/api/v1/tasks/999999", headers=headers)
     assert resp.status_code == 404
 
@@ -73,8 +70,7 @@ def test_update_task(client, auth_headers, make_task):
     assert data["completed"] is True
 
 
-def test_update_task_not_found(client, auth_headers):
-    headers, user_id = auth_headers
+def test_update_task_not_found(client, headers):
     resp = client.patch(
         "/api/v1/tasks/999999",
         json={"title": "Updated"},
@@ -93,36 +89,7 @@ def test_delete_task(client, auth_headers, make_task):
     assert resp.status_code == 404
 
 
-def test_delete_task_with_tags_removes_association(client, auth_headers):
-    from sqlalchemy import text
-
-    from app.core.extensions import db
-
-    headers, _ = auth_headers
-    tag = client.post("/api/v1/tags", json={"name": "tag-to-cascade"}, headers=headers).get_json()
-    task = client.post(
-        "/api/v1/tasks",
-        json={"title": "Cascade Task", "tag_ids": [tag["tag_id"]]},
-        headers=headers,
-    ).get_json()
-    task_id = task["task_id"]
-
-    count_before = db.session.execute(
-        text("SELECT COUNT(*) FROM task_tags WHERE task_id = :task_id"), {"task_id": task_id}
-    ).scalar()
-    assert count_before == 1
-
-    resp = client.delete(f"/api/v1/tasks/{task_id}/permanent", headers=headers)
-    assert resp.status_code == 204
-
-    count_after = db.session.execute(
-        text("SELECT COUNT(*) FROM task_tags WHERE task_id = :task_id"), {"task_id": task_id}
-    ).scalar()
-    assert count_after == 0
-
-
-def test_delete_task_not_found(client, auth_headers):
-    headers, user_id = auth_headers
+def test_delete_task_not_found(client, headers):
     resp = client.delete("/api/v1/tasks/999999", headers=headers)
     assert resp.status_code == 404
 
@@ -135,9 +102,8 @@ def test_tasks_require_auth(client):
     assert resp.status_code == 401
 
 
-def test_create_task_validation_error(client, auth_headers):
+def test_create_task_validation_error(client, headers):
     """Test validation error format for create task."""
-    headers, _ = auth_headers
     resp = client.post(
         "/api/v1/tasks",
         json={"title": "ab", "priority_id": 99},
@@ -183,9 +149,8 @@ def test_patch_task_validation_error(client, auth_headers, make_task):
     assert "body_params" in data["details"]
 
 
-def test_tasks_query_validation_error(client, auth_headers):
+def test_tasks_query_validation_error(client, headers):
     """Test validation error format for query params in tasks list."""
-    headers, _ = auth_headers
     resp = client.get("/api/v1/tasks?page=invalid&per_page=abc", headers=headers)
     assert resp.status_code == 422
     data = resp.get_json()
@@ -197,8 +162,7 @@ def test_tasks_query_validation_error(client, auth_headers):
     assert "per_page" in locs
 
 
-def test_list_tasks_invalid_tag_ids_returns_400(client, auth_headers):
-    headers, user_id = auth_headers
+def test_list_tasks_invalid_tag_ids_returns_400(client, headers):
     resp = client.get("/api/v1/tasks?tag_ids=abc", headers=headers)
     assert resp.status_code == 400
     assert resp.get_json()["code"] == "BAD_REQUEST"

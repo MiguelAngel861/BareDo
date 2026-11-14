@@ -26,13 +26,10 @@ class TasksRepository(BaseRepository[Tasks]):
         else:
             stmt = stmt.where(Tasks.deleted_at.is_(None))
 
-        if title := filters.get("title"):
-            escaped = title.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
-            stmt = stmt.where(Tasks.title.ilike(f"%{escaped}%", escape="\\"))
-
-        if description := filters.get("description"):
-            escaped = description.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
-            stmt = stmt.where(Tasks.description.ilike(f"%{escaped}%", escape="\\"))
+        for column, key in ((Tasks.title, "title"), (Tasks.description, "description")):
+            if value := filters.get(key):
+                escaped = value.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+                stmt = stmt.where(column.ilike(f"%{escaped}%", escape="\\"))
 
         completed = filters.get("completed")
         if completed is not None:
@@ -88,9 +85,7 @@ class TasksRepository(BaseRepository[Tasks]):
         return True
 
     def empty_trash(self, user_id: int) -> int:
-        stmt = delete(Tasks).where(
-            Tasks.user_id == user_id, Tasks.deleted_at.is_not(None)
-        )
+        stmt = delete(Tasks).where(Tasks.user_id == user_id, Tasks.deleted_at.is_not(None))
         result = self.session.execute(stmt)
         return result.rowcount
 

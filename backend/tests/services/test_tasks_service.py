@@ -1,18 +1,13 @@
-import uuid
-
 import pytest
 
 from app.errors.exceptions import NotFoundError
 from app.services.tasks_service import TasksService
+from tests.conftest import unique_user
 
 
 @pytest.fixture
 def tasks_service():
     return TasksService()
-
-
-def unique_user():
-    return {"username": f"user_{uuid.uuid4().hex[:8]}"}
 
 
 def task_payload(**overrides):

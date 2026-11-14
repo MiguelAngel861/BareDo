@@ -67,8 +67,7 @@ class TasksService(BaseService):
                 ]
             return repo.create(task)
 
-        task = self._execute_in_transaction(_add)
-        return task
+        return self._execute_in_transaction(_add)
 
     def update_task(self, task_id: int, task_data: dict, user_id: int) -> Tasks:
         tag_ids = task_data.pop("tag_ids", None)

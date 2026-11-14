@@ -9,14 +9,14 @@ def priorities_repo(db_session):
 
 
 def test_get_all_returns_all_priorities(priorities_repo):
-    priorities = priorities_repo.get_all()
+    priorities = priorities_repo.get_all_ordered()
 
     assert len(priorities) == 5
     assert [p.level for p in priorities] == [1, 2, 3, 4, 5]
 
 
 def test_get_all_sorted_by_level(priorities_repo):
-    priorities = priorities_repo.get_all()
+    priorities = priorities_repo.get_all_ordered()
 
     levels = [p.level for p in priorities]
     assert levels == sorted(levels)
@@ -37,7 +37,7 @@ def test_get_by_id_returns_none_for_invalid(priorities_repo):
 
 
 def test_priorities_have_required_fields(priorities_repo):
-    priorities = priorities_repo.get_all()
+    priorities = priorities_repo.get_all_ordered()
 
     for priority in priorities:
         assert hasattr(priority, "priority_id")
