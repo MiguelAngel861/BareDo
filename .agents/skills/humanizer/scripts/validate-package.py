@@ -7,7 +7,6 @@ import json
 import re
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parent.parent
 
 
@@ -27,9 +26,7 @@ try:
 except json.JSONDecodeError as error:
     raise SystemExit(f"Fix the JSON in .claude-plugin/plugin.json: {error}")
 try:
-    CURSOR_PLUGIN = json.loads(
-        read_package_file(ROOT / ".cursor-plugin" / "plugin.json")
-    )
+    CURSOR_PLUGIN = json.loads(read_package_file(ROOT / ".cursor-plugin" / "plugin.json"))
 except json.JSONDecodeError as error:
     raise SystemExit(f"Fix the JSON in .cursor-plugin/plugin.json: {error}")
 
@@ -65,9 +62,7 @@ package_versions = {
     str(CURSOR_PLUGIN.get("version", "")),
 }
 if len(package_versions) != 1:
-    raise SystemExit(
-        f"Use one package version in all files: {sorted(package_versions)}"
-    )
+    raise SystemExit(f"Use one package version in all files: {sorted(package_versions)}")
 
 skill_files = {path.relative_to(ROOT) for path in ROOT.rglob("SKILL.md")}
 if SKILL_PATH.is_symlink() or skill_files != {Path("SKILL.md")}:
@@ -83,7 +78,9 @@ skill_description = " ".join(
     require_match(
         re.search(r"(?m)^description: \|\n((?:  .*\n)+)", yaml_metadata + "\n"),
         "Write the SKILL.md description as an indented block",
-    ).group(1).split()
+    )
+    .group(1)
+    .split()
 )
 MARKETPLACE = json.loads(read_package_file(ROOT / ".claude-plugin" / "marketplace.json"))
 package_descriptions = {
@@ -99,19 +96,17 @@ if len(package_descriptions) != 1 or not skill_description.startswith(
         f"{sorted(package_descriptions)}"
     )
 
-skill_patterns = dict(
-    (int(number), name)
-    for number, name in re.findall(r"(?m)^### ([0-9]+)\. (.+)$", SKILL)
-)
+skill_patterns = {
+    int(number): name for number, name in re.findall(r"(?m)^### ([0-9]+)\. (.+)$", SKILL)
+}
 pattern_numbers = list(skill_patterns)
 pattern_count = len(pattern_numbers)
 if pattern_count == 0 or pattern_numbers != list(range(1, pattern_count + 1)):
     raise SystemExit(f"Number SKILL.md patterns from 1 upward without gaps: {pattern_numbers}")
 
-readme_patterns = dict(
-    (int(number), name)
-    for number, name in re.findall(r"(?m)^\| ([0-9]+) \| \*\*(.+?)\*\*", README)
-)
+readme_patterns = {
+    int(number): name for number, name in re.findall(r"(?m)^\| ([0-9]+) \| \*\*(.+?)\*\*", README)
+}
 if sorted(readme_patterns) != pattern_numbers:
     raise SystemExit(
         f"List patterns 1 through {pattern_count} once each in the README tables: {sorted(readme_patterns)}"
@@ -129,9 +124,7 @@ if f"## The {pattern_count} patterns" not in README:
 # A renumber can leave a section reference pointing at the wrong pattern or at
 # nothing. CHANGELOG.md keeps the numbers each release used, so read SKILL.md only.
 skill_references = sorted({int(number) for number in re.findall(r"§([0-9]+)", SKILL)})
-missing_patterns = [
-    number for number in skill_references if not 1 <= number <= pattern_count
-]
+missing_patterns = [number for number in skill_references if not 1 <= number <= pattern_count]
 if missing_patterns:
     raise SystemExit(
         f"Point every SKILL.md section reference at a pattern from 1 to "

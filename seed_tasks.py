@@ -1,9 +1,10 @@
 import json
-import urllib.request
 import urllib.error
-from datetime import datetime, timedelta, UTC
+import urllib.request
+from datetime import UTC, datetime, timedelta
 
 BASE = "http://localhost:5000/api/v1"
+
 
 def api_request(method, path, data=None, token=None):
     url = f"{BASE}{path}"
@@ -20,28 +21,27 @@ def api_request(method, path, data=None, token=None):
         raw = e.read().decode("utf-8")
         try:
             return e.code, json.loads(raw)
-        except Exception:
+        except ValueError:
             return e.code, {"raw": raw}
 
+
 # 1. Registrar o loguear a damian
-status, body = api_request("POST", "/auth/register", {
-    "username": "damian",
-    "password": "miguelscott"
-})
+status, body = api_request(
+    "POST", "/auth/register", {"username": "damian", "password": "miguelscott"}
+)
 
 if status not in (200, 201):
     print("Usuario ya existe o registro falló, haciendo login...")
-    status, body = api_request("POST", "/auth/login", {
-        "username": "damian",
-        "password": "miguelscott"
-    })
+    status, body = api_request(
+        "POST", "/auth/login", {"username": "damian", "password": "miguelscott"}
+    )
 
 if status not in (200, 201):
     print(f"Error autenticando: {status} {body}")
     raise SystemExit(1)
 
 token = body["access_token"]
-print(f"Autenticado como damian. Token obtenido.")
+print("Autenticado como damian. Token obtenido.")
 
 # 2. Crear tags para tener tag_ids válidos
 tag_names = ["Urgente", "Personal", "Trabajo", "Hogar", "Estudio", "Salud", "Compras"]
