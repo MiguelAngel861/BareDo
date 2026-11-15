@@ -11,6 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
+  BACKEND_DIR: backend
   FRONTEND_DIR: frontend
   PYTHON_VERSION: '3.14'
   NODE_VERSION: '22'
@@ -29,7 +30,7 @@ jobs:
         with:
           filters: |
             backend:
-              - 'backend/**'
+              - '${{ env.BACKEND_DIR }}/**'
               - '.github/workflows/ci.yml'
             frontend:
               - '${{ env.FRONTEND_DIR }}/**'
@@ -42,7 +43,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: backend
+        working-directory: ${{ env.BACKEND_DIR }}
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
@@ -63,7 +64,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: backend
+        working-directory: ${{ env.BACKEND_DIR }}
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
