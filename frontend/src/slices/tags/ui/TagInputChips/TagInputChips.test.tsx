@@ -35,7 +35,7 @@ describe('TagInputChips', () => {
     const handleChange = vi.fn();
     render(<TagInputChips tags={[]} onChange={handleChange} />);
 
-    const input = screen.getByRole('textbox');
+    const input = screen.getByRole('combobox');
     fireEvent.focus(input);
     fireEvent.input(input, { target: { value: 'urg' } });
 
@@ -47,7 +47,7 @@ describe('TagInputChips', () => {
     const handleChange = vi.fn();
     render(<TagInputChips tags={[]} onChange={handleChange} />);
 
-    const input = screen.getByRole('textbox');
+    const input = screen.getByRole('combobox');
     fireEvent.focus(input);
     fireEvent.input(input, { target: { value: 'personal' } });
 
@@ -59,7 +59,7 @@ describe('TagInputChips', () => {
     const handleChange = vi.fn();
     render(<TagInputChips tags={[]} onChange={handleChange} />);
 
-    const input = screen.getByRole('textbox');
+    const input = screen.getByRole('combobox');
     fireEvent.focus(input);
     fireEvent.input(input, { target: { value: 'wo' } });
 
@@ -76,7 +76,7 @@ describe('TagInputChips', () => {
     const handleChange = vi.fn();
     render(<TagInputChips tags={[]} onChange={handleChange} />);
 
-    const input = screen.getByRole('textbox');
+    const input = screen.getByRole('combobox');
     fireEvent.focus(input);
     fireEvent.input(input, { target: { value: 'newtag' } });
 
@@ -90,7 +90,7 @@ describe('TagInputChips', () => {
     const handleChange = vi.fn();
     render(<TagInputChips tags={[tag1, tag2]} onChange={handleChange} />);
 
-    const input = screen.getByRole('textbox');
+    const input = screen.getByRole('combobox');
     fireEvent.keyDown(input, { key: 'Backspace' });
 
     expect(handleChange).toHaveBeenCalledWith([tag1]);
@@ -100,7 +100,7 @@ describe('TagInputChips', () => {
     const handleChange = vi.fn();
     render(<TagInputChips tags={[]} onChange={handleChange} />);
 
-    const input = screen.getByRole('textbox');
+    const input = screen.getByRole('combobox');
     fireEvent.focus(input);
     fireEvent.input(input, { target: { value: 'ho' } });
 
@@ -120,7 +120,7 @@ describe('TagInputChips', () => {
     const handleChange = vi.fn();
     render(<TagInputChips tags={sevenTags} onChange={handleChange} />);
 
-    const input = screen.getByRole('textbox');
+    const input = screen.getByRole('combobox');
     expect(input).toBeDisabled();
     expect(screen.getByPlaceholderText('Max tags reached')).toBeInTheDocument();
   });

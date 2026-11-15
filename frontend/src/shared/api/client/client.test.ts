@@ -6,7 +6,7 @@ const mockFetch = vi.fn();
 beforeEach(() => {
   vi.restoreAllMocks();
   mockFetch.mockReset();
-  (globalThis as any).fetch = mockFetch;
+  (globalThis as { fetch: typeof fetch }).fetch = mockFetch;
 });
 
 afterEach(() => {
@@ -36,15 +36,14 @@ describe('apiClient', () => {
   it('retries once after 401 when token refresh succeeds (ky flow)', async () => {
     const onUnauthorized = vi.fn();
     const onTokenRefreshed = vi.fn();
-    const validToken =
-      'a.' + btoa(JSON.stringify({ exp: 9999999999999, sub: '1' })) + '.c';
+    const validToken = `a.${btoa(JSON.stringify({ exp: 9999999999999, sub: '1' }))}.c`;
 
     configureApiAuth(() => validToken, onUnauthorized, onTokenRefreshed, vi.fn());
     localStorage.setItem('access_token', validToken);
     localStorage.setItem('refresh_token', 'rt');
 
     const urls: string[] = [];
-    mockFetch.mockImplementation((input: any) => {
+    mockFetch.mockImplementation((input: RequestInfo | URL) => {
       const url = input instanceof Request ? input.url : String(input);
       urls.push(url);
       if (url.includes('auth/refresh')) {
@@ -73,8 +72,7 @@ describe('apiClient', () => {
   it('calls onUnauthorized when refresh fails with network error', async () => {
     const onUnauthorized = vi.fn();
     const onTokenRefreshed = vi.fn();
-    const validToken =
-      'a.' + btoa(JSON.stringify({ exp: 9999999999999, sub: '1' })) + '.c';
+    const validToken = `a.${btoa(JSON.stringify({ exp: 9999999999999, sub: '1' }))}.c`;
 
     configureApiAuth(() => validToken, onUnauthorized, onTokenRefreshed, vi.fn());
     localStorage.setItem('access_token', validToken);

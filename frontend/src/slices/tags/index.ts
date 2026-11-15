@@ -1,16 +1,16 @@
-export { TagInputChips } from './ui/TagInputChips/index.ts';
-export { TagFilterDropdown, type TagFilterDropdownProps } from './ui/TagFilterDropdown/index.ts';
-export { ManageTagsModal } from './ui/ManageTagsModal/index.ts';
+export { tagsApi } from './tags.api.ts';
 export {
-  tagsSignal,
-  isManageTagsModalOpenSignal,
-  openManageTagsModal,
   closeManageTagsModal,
+  deleteTagState,
   fetchTags,
   findOrCreateTag,
-  updateTagState,
-  deleteTagState,
+  isManageTagsModalOpenSignal,
   normalizeTagName,
+  openManageTagsModal,
+  tagsSignal,
+  updateTagState,
 } from './tags.state.ts';
-export { tagsApi } from './tags.api.ts';
 export * from './tags.types.ts';
+export { ManageTagsModal } from './ui/ManageTagsModal/index.ts';
+export { TagFilterDropdown, type TagFilterDropdownProps } from './ui/TagFilterDropdown/index.ts';
+export { TagInputChips } from './ui/TagInputChips/index.ts';

@@ -6,12 +6,12 @@ Estilo: **Swiss Industrial Brutalist** + **Premium Utilitarian Minimalism**
 
 ## Configuration
 
-| Dial | Level | Description |
-|------|-------|-------------|
-| **Creativity** | `2` | Ultra-minimal, Swiss, silent, monochrome. Sin experimentos tipográficos. Cada elemento existe solo por función |
-| **Density** | `5` | Balanced — task manager diario con suficiente espacio para respirar |
-| **Variance** | `2` | Predictable, symmetric grids. Layouts repetibles y predecibles — no hay dos layouts distintos |
-| **Motion Intent** | `5` | Subtle hover/entrance cues. CSS transitions, no spring physics. Funcional, no decorativo |
+| Dial              | Level | Description                                                                                                    |
+| ----------------- | ----- | -------------------------------------------------------------------------------------------------------------- |
+| **Creativity**    | `2`   | Ultra-minimal, Swiss, silent, monochrome. Sin experimentos tipográficos. Cada elemento existe solo por función |
+| **Density**       | `5`   | Balanced — task manager diario con suficiente espacio para respirar                                            |
+| **Variance**      | `2`   | Predictable, symmetric grids. Layouts repetibles y predecibles — no hay dos layouts distintos                  |
+| **Motion Intent** | `5`   | Subtle hover/entrance cues. CSS transitions, no spring physics. Funcional, no decorativo                       |
 
 > **Swiss Brutalism = función > forma.** No hay decoración por decoración. Cada shadow, cada borde, cada color existe para comunicar estado o jerarquía. La densidad es balanced pero la varianza es mínima: el usuario debe poder predecir dónde está cada cosa.
 
@@ -31,30 +31,30 @@ Interfaz restraint, densa pero legible, como un manual técnico industrial. La a
 
 ### Light Mode
 
-| Nombre Semántico | Token | Valor | Rol Funcional |
-|---|---|---|---|
-| **Paper White** | `--bg` | `#f7f7f7` | Fondo general — papel de documentación técnica, nunca azul-white clínico |
-| **Clean Surface** | `--surface` | `#ffffff` | Superficies elevadas (cards, modales). Solo elevación por sombra |
-| **Carbon Ink** | `--text` | `#111111` | Texto primario — depth de tinta carbón, nunca negro puro |
-| **Steel Muted** | `--text-muted` | `#4b5563` | Texto secundario, metadata, descripciones |
-| **Whisper Border** | `--border` | `#d1d5db` | Bordes sutiles, divisores — 1px structural lines |
-| **Carbon Border** | `--border-strong` | `--text` | Bordes de énfasis — headers, secciones, acciones primarias |
-| **Signal Red** | `--danger` | `#dc2626` | Errores, acciones destructivas — único accent funcional |
-| **Status Green** | `--success` | `#15803d` | Éxito, estados positivos |
-| **Focus Carbon** | `--focus-ring` | `--text` | Outline de accesibilidad — siempre visible |
+| Nombre Semántico   | Token             | Valor     | Rol Funcional                                                            |
+| ------------------ | ----------------- | --------- | ------------------------------------------------------------------------ |
+| **Paper White**    | `--bg`            | `#f7f7f7` | Fondo general — papel de documentación técnica, nunca azul-white clínico |
+| **Clean Surface**  | `--surface`       | `#ffffff` | Superficies elevadas (cards, modales). Solo elevación por sombra         |
+| **Carbon Ink**     | `--text`          | `#111111` | Texto primario — depth de tinta carbón, nunca negro puro                 |
+| **Steel Muted**    | `--text-muted`    | `#4b5563` | Texto secundario, metadata, descripciones                                |
+| **Whisper Border** | `--border`        | `#d1d5db` | Bordes sutiles, divisores — 1px structural lines                         |
+| **Carbon Border**  | `--border-strong` | `--text`  | Bordes de énfasis — headers, secciones, acciones primarias               |
+| **Signal Red**     | `--danger`        | `#dc2626` | Errores, acciones destructivas — único accent funcional                  |
+| **Status Green**   | `--success`       | `#15803d` | Éxito, estados positivos                                                 |
+| **Focus Carbon**   | `--focus-ring`    | `--text`  | Outline de accesibilidad — siempre visible                               |
 
 ### Dark Mode (`prefers-color-scheme: dark`)
 
-| Nombre Semántico | Token | Valor |
-|---|---|---|
-| **Void Black** | `--bg` | `#0c0c0e` |
-| **Dark Surface** | `--surface` | `#17171a` |
-| **Light Ink** | `--text` | `#f4f4f5` |
-| **Muted Steel** | `--text-muted` | `#9ca3af` |
-| **Dark Border** | `--border` | `#333338` |
-| **Light Border** | `--border-strong` | `--text` |
-| **Signal Red Light** | `--danger` | `#f87171` |
-| **Status Green Light** | `--success` | `#4ade80` |
+| Nombre Semántico       | Token             | Valor     |
+| ---------------------- | ----------------- | --------- |
+| **Void Black**         | `--bg`            | `#0c0c0e` |
+| **Dark Surface**       | `--surface`       | `#17171a` |
+| **Light Ink**          | `--text`          | `#f4f4f5` |
+| **Muted Steel**        | `--text-muted`    | `#9ca3af` |
+| **Dark Border**        | `--border`        | `#333338` |
+| **Light Border**       | `--border-strong` | `--text`  |
+| **Signal Red Light**   | `--danger`        | `#f87171` |
+| **Status Green Light** | `--success`       | `#4ade80` |
 
 ### Reglas de Color (Explícitas)
 
@@ -72,25 +72,25 @@ Interfaz restraint, densa pero legible, como un manual técnico industrial. La a
 
 ### Font Stack
 
-| Rol | Familia | Pesos | Por Qué |
-|---|---|---|---|
-| **Display / Títulos** | `"Satoshi"` | 700, 800, 900 | Geometric sans con personalidad industrial. No genérica como Inter |
-| **UI / Body** | `"Outfit"` | 300, 400, 500, 600, 700 | Clean, moderna, excelente legibilidad a 1rem |
-| **Mono / Metadata** | `"JetBrains Mono"` | 400, 700 | Monospace para datos, timestamps, acciones. Comunica "esto es información técnica" |
+| Rol                   | Familia            | Pesos                   | Por Qué                                                                            |
+| --------------------- | ------------------ | ----------------------- | ---------------------------------------------------------------------------------- |
+| **Display / Títulos** | `"Satoshi"`        | 700, 800, 900           | Geometric sans con personalidad industrial. No genérica como Inter                 |
+| **UI / Body**         | `"Outfit"`         | 300, 400, 500, 600, 700 | Clean, moderna, excelente legibilidad a 1rem                                       |
+| **Mono / Metadata**   | `"JetBrains Mono"` | 400, 700                | Monospace para datos, timestamps, acciones. Comunica "esto es información técnica" |
 
 ### Typographic Hierarchy
 
-| Elemento | Font | Peso | Tamaño | Tracking | Casing | Por Qué |
-|---|---|---|---|---|---|---|
-| `h1`–`h4` | Display | 800 | `clamp()` | `-0.03em` | Uppercase | Headings comprimidos comunican autoridad industrial |
-| `.site-title` | Display | 800 | `2.25rem` | `-0.04em` | — | Identidad de marca, no decorative |
-| `.task-title` | Display | 700 | `1.0625rem` | `-0.01em` | — | Título de tarea — weight crea jerarquía sin size |
-| Body | UI | 400 | `1rem` | normal | — | Legibilidad neutral |
-| Botones (acciones) | Mono | 700 | `0.75rem` | `0.06em` | Uppercase | Mono + uppercase = "esto es una acción técnica" |
-| Botones (general) | Mono | 700 | `0.875rem` | `0.05em` | Uppercase | Consistencia con acciones |
-| Metadata/task-meta | Mono | 700 | `0.75rem` | `0.05em` | Uppercase | Datos técnicos — fechas, estados, IDs |
-| Status/auth-status | Mono | 400 | `0.8125rem` | `0.05em` | Uppercase | Estado del sistema |
-| Errores | UI | 400 | `0.75rem` | normal | — | Errores van en UI normal, no mono |
+| Elemento           | Font    | Peso | Tamaño      | Tracking  | Casing    | Por Qué                                             |
+| ------------------ | ------- | ---- | ----------- | --------- | --------- | --------------------------------------------------- |
+| `h1`–`h4`          | Display | 800  | `clamp()`   | `-0.03em` | Uppercase | Headings comprimidos comunican autoridad industrial |
+| `.site-title`      | Display | 800  | `2.25rem`   | `-0.04em` | —         | Identidad de marca, no decorative                   |
+| `.task-title`      | Display | 700  | `1.0625rem` | `-0.01em` | —         | Título de tarea — weight crea jerarquía sin size    |
+| Body               | UI      | 400  | `1rem`      | normal    | —         | Legibilidad neutral                                 |
+| Botones (acciones) | Mono    | 700  | `0.75rem`   | `0.06em`  | Uppercase | Mono + uppercase = "esto es una acción técnica"     |
+| Botones (general)  | Mono    | 700  | `0.875rem`  | `0.05em`  | Uppercase | Consistencia con acciones                           |
+| Metadata/task-meta | Mono    | 700  | `0.75rem`   | `0.05em`  | Uppercase | Datos técnicos — fechas, estados, IDs               |
+| Status/auth-status | Mono    | 400  | `0.8125rem` | `0.05em`  | Uppercase | Estado del sistema                                  |
+| Errores            | UI      | 400  | `0.75rem`   | normal    | —         | Errores van en UI normal, no mono                   |
 
 ### Typographic Rules (Explícitas)
 
@@ -124,11 +124,11 @@ Interfaz restraint, densa pero legible, como un manual técnico industrial. La a
 
 ### Física de Resorte (Botones)
 
-| Estado | Transform | Shadow | Comunicado |
-|---|---|---|---|
-| Default | `none` | `3px 3px 0px` (acciones: `2px 2px 0px`) | Estado neutral — listo para acción |
-| Hover | `translate(-1px, -1px)` | `5px 5px 0px` (acciones: `3px 3px 0px`) | Preparándose para ser press |
-| Active | `translate(2px, 2px)` | `1px 1px 0px` | Siendo press — feedback táctil |
+| Estado  | Transform               | Shadow                                  | Comunicado                         |
+| ------- | ----------------------- | --------------------------------------- | ---------------------------------- |
+| Default | `none`                  | `3px 3px 0px` (acciones: `2px 2px 0px`) | Estado neutral — listo para acción |
+| Hover   | `translate(-1px, -1px)` | `5px 5px 0px` (acciones: `3px 3px 0px`) | Preparándose para ser press        |
+| Active  | `translate(2px, 2px)`   | `1px 1px 0px`                           | Siendo press — feedback táctil     |
 
 ### Shadow Rules (Explícitas)
 
@@ -143,15 +143,15 @@ Interfaz restraint, densa pero legible, como un manual técnico industrial. La a
 
 ### Anchos de Borde
 
-| Elemento | Ancho | Estilo | Por Qué |
-|---|---|---|---|
-| Headers, secciones | `2px solid` | `var(--text)` | Separación fuerte — kommunicates jerarquía |
-| Cards, modales, auth | `1px solid` | `var(--text)` | Estructura visual sin ser aggressivo |
-| Inputs, selects, dropdowns | `2px solid` | `var(--border)` → hover/focus: `var(--text)` | Interacción clara — borde cambia estado |
-| Divisores internos | `2px solid` | `var(--border)` | Separación de contenido |
-| Empty state | `2px dashed` | `var(--border)` | Comunica "vacío" — dashed = no content |
-| Errores globales | `2px solid` | `var(--danger)` | Error = rojo, siempre visible |
-| Task actions buttons | `1px solid` | `var(--text)` / `var(--danger)` | Acciones de tarea |
+| Elemento                   | Ancho        | Estilo                                       | Por Qué                                    |
+| -------------------------- | ------------ | -------------------------------------------- | ------------------------------------------ |
+| Headers, secciones         | `2px solid`  | `var(--text)`                                | Separación fuerte — kommunicates jerarquía |
+| Cards, modales, auth       | `1px solid`  | `var(--text)`                                | Estructura visual sin ser aggressivo       |
+| Inputs, selects, dropdowns | `2px solid`  | `var(--border)` → hover/focus: `var(--text)` | Interacción clara — borde cambia estado    |
+| Divisores internos         | `2px solid`  | `var(--border)`                              | Separación de contenido                    |
+| Empty state                | `2px dashed` | `var(--border)`                              | Comunica "vacío" — dashed = no content     |
+| Errores globales           | `2px solid`  | `var(--danger)`                              | Error = rojo, siempre visible              |
+| Task actions buttons       | `1px solid`  | `var(--text)` / `var(--danger)`              | Acciones de tarea                          |
 
 ### Border Rules
 
@@ -173,20 +173,20 @@ Interfaz restraint, densa pero legible, como un manual técnico industrial. La a
 
 ### Breakpoints
 
-| Breakpoint | Uso | Device |
-|---|---|---|
-| `25rem` (400px) | Mobile task layout | S21 Ultra (412px) |
-| `40rem` (640px) | Desktop task layout (row), filter widths | Small laptop |
-| `60rem` | Contenedor principal centrado | Laptop/ desktop |
+| Breakpoint      | Uso                                      | Device            |
+| --------------- | ---------------------------------------- | ----------------- |
+| `25rem` (400px) | Mobile task layout                       | S21 Ultra (412px) |
+| `40rem` (640px) | Desktop task layout (row), filter widths | Small laptop      |
+| `60rem`         | Contenedor principal centrado            | Laptop/ desktop   |
 
 ### Patrones de Layout
 
-| Patrón | Uso | Por Qué |
-|---|---|---|
-| `flex` + `gap` | Headers, formularios, acciones, filters | Simple, predictable |
+| Patrón                   | Uso                                        | Por Qué                     |
+| ------------------------ | ------------------------------------------ | --------------------------- |
+| `flex` + `gap`           | Headers, formularios, acciones, filters    | Simple, predictable         |
 | `flex-direction: column` | Task items (mobile), sections, form groups | Vertical stacking en mobile |
-| `flex-direction: row` | Task items (desktop ≥40rem), header | Horizontal en desktop |
-| `flex-wrap: wrap` | Filtros, task-meta | Wrap when no space |
+| `flex-direction: row`    | Task items (desktop ≥40rem), header        | Horizontal en desktop       |
+| `flex-wrap: wrap`        | Filtros, task-meta                         | Wrap when no space          |
 
 ---
 
@@ -327,14 +327,14 @@ body::before {
 
 ## 10. Animaciones
 
-| Elemento | Animación | Timing | Por Qué |
-|---|---|---|---|
-| Toast | `slideIn` (translateX 100% → 0) | `0.3s cubic-bezier(0.16, 1, 0.3, 1)` | Entra desde fuera — no interrumpe |
-| Modal | `fadeIn` (opacity 0 → 1) | `0.15s ease` | Rápido — no bloquea al usuario |
-| Pop-out | `popIn` (scale 0.96 → 1 + translateY 8px → 0) | `0.2s cubic-bezier(0.16, 1, 0.3, 1)` | Aparece con peso |
-| Skeleton | `pulseSkeleton` (opacity 0.4 → 0.9) | `1.5s ease-in-out infinite` | Indica carga activa |
-| Button hover | transform + shadow | `0.2s cubic-bezier(0.16, 1, 0.3, 1)` | Feedback táctil |
-| Dropdown icon | rotate 180deg | `0.2s ease` | Indica estado abierto/cerrado |
+| Elemento      | Animación                                     | Timing                               | Por Qué                           |
+| ------------- | --------------------------------------------- | ------------------------------------ | --------------------------------- |
+| Toast         | `slideIn` (translateX 100% → 0)               | `0.3s cubic-bezier(0.16, 1, 0.3, 1)` | Entra desde fuera — no interrumpe |
+| Modal         | `fadeIn` (opacity 0 → 1)                      | `0.15s ease`                         | Rápido — no bloquea al usuario    |
+| Pop-out       | `popIn` (scale 0.96 → 1 + translateY 8px → 0) | `0.2s cubic-bezier(0.16, 1, 0.3, 1)` | Aparece con peso                  |
+| Skeleton      | `pulseSkeleton` (opacity 0.4 → 0.9)           | `1.5s ease-in-out infinite`          | Indica carga activa               |
+| Button hover  | transform + shadow                            | `0.2s cubic-bezier(0.16, 1, 0.3, 1)` | Feedback táctil                   |
+| Dropdown icon | rotate 180deg                                 | `0.2s ease`                          | Indica estado abierto/cerrado     |
 
 ### Animation Rules (Explícitas)
 

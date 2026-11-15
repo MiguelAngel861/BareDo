@@ -1,5 +1,5 @@
-import { InputField, TagChip } from '@/shared/ui/index.ts';
 import { useEffect, useRef, useState } from 'preact/hooks';
+import { InputField, TagChip } from '@/shared/ui/index.ts';
 import { fetchTags, findOrCreateTag, normalizeTagName, tagsSignal } from '../../tags.state.ts';
 import type { Tag } from '../../tags.types.ts';
 import './TagInputChips.css';

@@ -1,6 +1,6 @@
 import type { JSX } from 'preact';
-import { useLocation } from 'preact-iso';
 import { useEffect } from 'preact/hooks';
+import { useLocation } from 'preact-iso';
 import { InteractiveSandbox } from './InteractiveSandbox.tsx';
 
 export function HeroSection(): JSX.Element {
@@ -67,9 +67,7 @@ export function HeroSection(): JSX.Element {
       <div class="landing-hero-content">
         <div class="landing-hero-copy">
           <div class="landing-hero-meta-row">
-            <span class="landing-eyebrow" aria-label="Product Classification">
-              {'// HIGH-SPEED PRODUCTIVITY CLIENT'}
-            </span>
+            <span class="landing-eyebrow">{'// HIGH-SPEED PRODUCTIVITY CLIENT'}</span>
           </div>
 
           <h1 id="hero-title" class="landing-hero-title">

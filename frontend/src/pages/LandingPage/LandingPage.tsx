@@ -1,5 +1,5 @@
-import { useDocumentTitle } from '@/shared/hooks/index.ts';
 import type { JSX } from 'preact';
+import { useDocumentTitle } from '@/shared/hooks/index.ts';
 import {
   CovenantSection,
   HeroSection,

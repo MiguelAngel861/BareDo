@@ -1,3 +1,5 @@
+import { useEffect } from 'preact/hooks';
+import { useLocation } from 'preact-iso';
 import { useDocumentTitle } from '@/shared/hooks/index.ts';
 import {
   Button,
@@ -9,19 +11,12 @@ import {
 import { authSignal, logout } from '@/slices/auth/index.ts';
 import { fetchPriorities } from '@/slices/priorities/index.ts';
 import {
-  ManageTagsModal,
   fetchTags,
   isManageTagsModalOpenSignal,
+  ManageTagsModal,
   openManageTagsModal,
 } from '@/slices/tags/index.ts';
 import {
-  ShortcutHelpModal,
-  TaskDetailModal,
-  TaskFiltersBar,
-  TaskList,
-  TaskPagination,
-  TaskPopoutModal,
-  TrashModal,
   cancelDeleteTask,
   closeShortcutHelpModal,
   deletingTaskSignal,
@@ -38,16 +33,21 @@ import {
   openViewModal,
   paginationSignal,
   requestDeleteTask,
+  ShortcutHelpModal,
+  selectedTaskIdSignal,
   selectNextTask,
   selectPrevTask,
-  selectedTaskIdSignal,
+  TaskDetailModal,
+  TaskFiltersBar,
+  TaskList,
+  TaskPagination,
+  TaskPopoutModal,
+  TrashModal,
   tasksSignal,
   toggleTaskComplete,
   trashCountSignal,
   viewingTaskSignal,
 } from '@/slices/tasks/index.ts';
-import { useLocation } from 'preact-iso';
-import { useEffect } from 'preact/hooks';
 import './HomePage.css';
 
 export function HomePage() {

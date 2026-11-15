@@ -10,10 +10,7 @@ export function clear(): void {
   localStorage.removeItem(REFRESH_KEY);
 }
 
-export function setTokens(response: {
-  access_token: string;
-  refresh_token: string;
-}): void {
+export function setTokens(response: { access_token: string; refresh_token: string }): void {
   localStorage.setItem(ACCESS_KEY, response.access_token);
   localStorage.setItem(REFRESH_KEY, response.refresh_token);
 }

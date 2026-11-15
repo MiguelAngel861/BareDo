@@ -1,6 +1,6 @@
-import { LandingPage, HomePage, LoginPage, RegisterPage, NotFoundPage } from '@/pages/index.ts';
-import { authSignal } from '@/slices/auth/index.ts';
 import { LocationProvider, Route, Router } from 'preact-iso';
+import { HomePage, LandingPage, LoginPage, NotFoundPage, RegisterPage } from '@/pages/index.ts';
+import { authSignal } from '@/slices/auth/index.ts';
 import { AppLayout } from './layout/AppLayout.tsx';
 import { AuthGuard } from './layout/AuthGuard.tsx';
 

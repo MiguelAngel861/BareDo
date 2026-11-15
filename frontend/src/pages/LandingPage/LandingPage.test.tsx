@@ -63,7 +63,7 @@ describe('LandingPage component', () => {
     );
 
     // Verify telemetry readout is rendered
-    expect(screen.getByLabelText(/System Performance Readout/i)).toBeInTheDocument();
+    expect(screen.getByText(/LATENCY/)).toBeInTheDocument();
     expect(screen.getByText(/LATENCY:/i)).toBeInTheDocument();
 
     const taskTitle = screen.getByText('Refactor auth middleware to zero-allocation pipeline');

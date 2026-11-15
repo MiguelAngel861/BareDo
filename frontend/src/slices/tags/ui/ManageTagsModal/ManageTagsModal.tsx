@@ -1,3 +1,4 @@
+import { useState } from 'preact/hooks';
 import { getErrorMessage } from '@/shared/api/errors/index.ts';
 import {
   Badge,
@@ -6,11 +7,10 @@ import {
   EmptyState,
   InputField,
   PopoutModal,
-  TagChip,
   showToast,
+  TagChip,
 } from '@/shared/ui/index.ts';
 import { tasksSignal } from '@/slices/tasks/tasks.state.ts';
-import { useState } from 'preact/hooks';
 import {
   closeManageTagsModal,
   deleteTagState,

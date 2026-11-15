@@ -1,11 +1,11 @@
-export { LoginForm, RegisterForm, AuthCard } from './ui/index.ts';
-export {
-  authSignal,
-  login,
-  register,
-  logout,
-  initAuth,
-  type AuthState,
-} from './auth.state.ts';
 export { authApi } from './auth.api.ts';
+export {
+  type AuthState,
+  authSignal,
+  initAuth,
+  login,
+  logout,
+  register,
+} from './auth.state.ts';
 export * from './auth.types.ts';
+export { AuthCard, LoginForm, RegisterForm } from './ui/index.ts';

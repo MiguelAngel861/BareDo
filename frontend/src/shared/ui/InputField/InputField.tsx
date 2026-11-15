@@ -103,6 +103,7 @@ export function InputField({
       )}
 
       <div class="app-input-field__control">
+        {/* biome-ignore lint/a11y/useAriaPropsSupportedByRole: el rol se resuelve en runtime (combobox cuando hay aria-expanded) */}
         <input
           {...(inputRef ? { ref: inputRef } : {})}
           id={id}
@@ -120,6 +121,7 @@ export function InputField({
           aria-autocomplete={ariaAutocomplete}
           aria-expanded={ariaExpanded}
           aria-haspopup={ariaHasPopup}
+          {...(ariaExpanded !== undefined ? { role: 'combobox' as const } : {})}
           aria-invalid={hasError ? 'true' : undefined}
           aria-describedby={describedBy}
           class={[

@@ -1,7 +1,7 @@
-import { useDocumentTitle } from '@/shared/hooks/index.ts';
-import { LoginForm, authSignal } from '@/slices/auth/index.ts';
-import { useLocation } from 'preact-iso';
 import { useEffect } from 'preact/hooks';
+import { useLocation } from 'preact-iso';
+import { useDocumentTitle } from '@/shared/hooks/index.ts';
+import { authSignal, LoginForm } from '@/slices/auth/index.ts';
 
 export function LoginPage() {
   useDocumentTitle('Sign In — BareDo');

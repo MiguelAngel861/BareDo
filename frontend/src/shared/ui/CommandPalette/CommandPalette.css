@@ -115,9 +115,11 @@
   text-align: left;
   outline: none;
   box-shadow: var(--shadow-action);
-  transition: transform 0.1s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.15s
-    cubic-bezier(0.16, 1, 0.3, 1), border-color 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow
-    0.12s cubic-bezier(0.16, 1, 0.3, 1);
+  transition:
+    transform 0.1s cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 0.15s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.15s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.12s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .command-palette-item:hover,

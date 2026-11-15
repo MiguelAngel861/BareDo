@@ -35,7 +35,9 @@
 
 .app-tag-chip--clickable {
   cursor: pointer;
-  transition: background-color 0.15s ease, color 0.15s ease;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
 }
 
 .app-tag-chip--clickable:hover {

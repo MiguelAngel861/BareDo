@@ -31,7 +31,9 @@
   line-height: 1.4;
   cursor: pointer;
   animation: toastSlideIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 @media (hover: hover) {

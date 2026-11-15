@@ -1,7 +1,7 @@
-import { tasksSignal } from '@/slices/tasks/tasks.state.ts';
-import type { Task } from '@/slices/tasks/tasks.types.ts';
 import { fireEvent, render, screen } from '@testing-library/preact';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { tasksSignal } from '@/slices/tasks/tasks.state.ts';
+import type { Task } from '@/slices/tasks/tasks.types.ts';
 import * as tagsState from '../../tags.state.ts';
 import type { Tag } from '../../tags.types.ts';
 import { ManageTagsModal } from './ManageTagsModal.tsx';

@@ -1,5 +1,5 @@
-import { Badge } from '@/shared/ui/index.ts';
 import type { JSX } from 'preact';
+import { Badge } from '@/shared/ui/index.ts';
 
 interface CutItem {
   removed: string;

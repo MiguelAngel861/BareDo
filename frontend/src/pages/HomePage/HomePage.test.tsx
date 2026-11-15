@@ -1,3 +1,6 @@
+import { fireEvent, render, screen } from '@testing-library/preact';
+import { LocationProvider } from 'preact-iso';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { authSignal, logout } from '@/slices/auth/index.ts';
 import { fetchPriorities } from '@/slices/priorities/index.ts';
 import { fetchTags, openManageTagsModal } from '@/slices/tags/index.ts';
@@ -14,9 +17,6 @@ import {
   selectPrevTask,
   trashCountSignal,
 } from '@/slices/tasks/index.ts';
-import { fireEvent, render, screen } from '@testing-library/preact';
-import { LocationProvider } from 'preact-iso';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { HomePage } from './HomePage.tsx';
 
 const mockRoute = vi.fn();

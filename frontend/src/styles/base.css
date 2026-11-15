@@ -216,7 +216,9 @@ h4,
   color: var(--text);
   font-size: 0.875rem;
   font-family: inherit;
-  transition: border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1), outline 0.2s ease;
+  transition:
+    border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+    outline 0.2s ease;
 }
 
 .form-group input:focus-visible,

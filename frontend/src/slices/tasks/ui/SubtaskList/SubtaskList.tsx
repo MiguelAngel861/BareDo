@@ -1,6 +1,6 @@
+import { useState } from 'preact/hooks';
 import { getErrorMessage } from '@/shared/api/errors/index.ts';
 import { Badge, Button, Checkbox, CloseIcon, InputField, showToast } from '@/shared/ui/index.ts';
-import { useState } from 'preact/hooks';
 import { addSubtaskAction, deleteSubtaskAction, toggleSubtaskAction } from '../../tasks.state.ts';
 import type { Subtask, SubtaskId, TaskId } from '../../tasks.types.ts';
 import './SubtaskList.css';
