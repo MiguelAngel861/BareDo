@@ -6,10 +6,6 @@
   gap: 1.25rem;
 }
 
-.task-form .app-input-field {
-  margin-bottom: 0 !important;
-}
-
 .task-form .form-group {
   margin-bottom: 0;
   display: flex;

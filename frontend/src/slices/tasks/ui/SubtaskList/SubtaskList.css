@@ -76,9 +76,9 @@
 .subtask-item .app-checkbox {
   flex: 1;
   min-width: 0;
-  display: inline-flex !important;
-  align-items: center !important;
-  margin: 0 !important;
+  display: inline-flex;
+  align-items: center;
+  margin: 0;
 }
 
 .subtask-item .app-checkbox__label {
@@ -142,7 +142,6 @@
 
 .subtasks-add-field {
   flex: 1;
-  margin: 0 !important;
 }
 
 .subtasks-add-field .app-input-field__control {
@@ -176,5 +175,4 @@
   box-sizing: border-box;
   flex-shrink: 0;
   min-width: 64px;
-  margin: 0 !important;
 }

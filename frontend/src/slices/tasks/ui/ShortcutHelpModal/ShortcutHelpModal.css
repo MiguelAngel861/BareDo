@@ -4,11 +4,10 @@
   width: 100%;
   max-width: 44rem;
   background-color: var(--surface);
-  border: 2px solid var(--text) !important;
-  box-shadow: var(--shadow-hard-lg) !important;
+  border: 2px solid var(--text);
+  box-shadow: var(--shadow-hard-lg);
   border-radius: 0;
   overflow: hidden;
-  padding: 0 !important;
   box-sizing: border-box;
 }
 

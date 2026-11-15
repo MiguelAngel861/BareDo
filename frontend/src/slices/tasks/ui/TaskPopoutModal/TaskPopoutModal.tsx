@@ -113,6 +113,7 @@ export function TaskPopoutModal() {
           placeholder="Task title (max 40 chars)"
           value={title}
           error={titleError}
+          noMargin={true}
           onInput={(val) => setTitle(val)}
         />
 
@@ -134,6 +135,7 @@ export function TaskPopoutModal() {
           type="date"
           label="Due Date"
           value={dueDate}
+          noMargin={true}
           onInput={(val) => setDueDate(val)}
         />
 

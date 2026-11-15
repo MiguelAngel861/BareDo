@@ -61,7 +61,7 @@
 .toast-close {
   background: transparent;
   border: none;
-  box-shadow: none !important;
+  box-shadow: none;
   color: var(--text-muted);
   font-family: var(--font-mono);
   font-size: 1.125rem;
@@ -70,7 +70,7 @@
   cursor: pointer;
   padding: 0 4px;
   margin-left: 4px;
-  transform: none !important;
+  transform: none;
   transition: color 0.15s ease;
 }
 
@@ -78,8 +78,8 @@
 .toast-close:active,
 .toast-close:focus {
   background: transparent;
-  box-shadow: none !important;
-  transform: none !important;
+  box-shadow: none;
+  transform: none;
   color: var(--text);
   outline: none;
 }

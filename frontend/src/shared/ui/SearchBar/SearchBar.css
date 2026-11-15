@@ -74,26 +74,18 @@
   height: 100%;
   padding: 0;
   margin: 0;
-  border: none !important;
+  border: none;
   border-radius: 0;
-  background: transparent !important;
+  background: transparent;
   color: var(--text);
   font-family: var(--font-ui);
   font-size: 0.875rem;
   font-weight: 500;
   letter-spacing: -0.01em;
   line-height: 1;
-  outline: none !important;
-  box-shadow: none !important;
+  outline: none;
+  box-shadow: none;
   box-sizing: border-box;
-}
-
-.search-bar-container .search-bar-input:hover,
-.search-bar-container .search-bar-input:focus,
-.search-bar-container .search-bar-input:focus-visible {
-  border: none !important;
-  outline: none !important;
-  box-shadow: none !important;
 }
 
 .search-bar-container .search-bar-input::placeholder {

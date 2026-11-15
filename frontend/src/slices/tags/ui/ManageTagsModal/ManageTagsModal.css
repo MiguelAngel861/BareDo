@@ -22,11 +22,8 @@
   width: 100%;
 }
 
-.manage-tags-create-bar .manage-tags-create-field,
 .manage-tags-create-field {
   flex: 1;
-  margin: 0 !important;
-  margin-bottom: 0 !important;
 }
 
 .manage-tags-create-bar .app-input-field__control {
@@ -48,7 +45,6 @@
   max-height: 40px;
   box-sizing: border-box;
   min-width: 120px;
-  margin: 0 !important;
   flex-shrink: 0;
 }
 
@@ -101,11 +97,8 @@
   width: 100%;
 }
 
-.manage-tag-edit-form .manage-tag-edit-field,
 .manage-tag-edit-field {
   flex: 1;
-  margin: 0 !important;
-  margin-bottom: 0 !important;
 }
 
 .manage-tag-edit-form .app-input-field__control {
@@ -125,7 +118,6 @@
   background-color: var(--surface);
   color: var(--text);
   border-radius: 0;
-  margin: 0 !important;
 }
 
 .manage-tag-edit-form .app-btn {
@@ -133,5 +125,4 @@
   min-height: 32px;
   max-height: 32px;
   box-sizing: border-box;
-  margin: 0 !important;
 }

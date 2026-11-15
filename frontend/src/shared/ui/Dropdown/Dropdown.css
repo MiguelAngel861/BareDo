@@ -154,7 +154,6 @@
 }
 
 /* Enfoque accesible */
-.custom-dropdown:focus-visible .dropdown-trigger,
 .dropdown-trigger:focus-visible {
   border-color: var(--text);
   box-shadow: var(--shadow-action-hover);

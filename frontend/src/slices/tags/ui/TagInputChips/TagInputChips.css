@@ -28,11 +28,6 @@
   width: 100%;
 }
 
-.tag-input-field-wrapper {
-  margin: 0 !important;
-  margin-bottom: 0 !important;
-}
-
 .tag-combobox-wrapper input,
 .tag-combobox-wrapper .app-input-field__input {
   width: 100%;
