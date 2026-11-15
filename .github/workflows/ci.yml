@@ -14,7 +14,7 @@ env:
   BACKEND_DIR: backend
   FRONTEND_DIR: frontend
   PYTHON_VERSION: '3.14'
-  NODE_VERSION: '22'
+  NODE_VERSION: '26'
 
 jobs:
   changes:

@@ -6,31 +6,35 @@ Demo in production: [https://baredo.onrender.com](https://baredo.onrender.com)
 
 ## Screenshots
 
-| **Task Detail** | **Command Palette** |
-| --------------- | ------------------- |
+| Task Detail | Command Palette |
+|-------------|-----------------|
 | ![](screenshots/task-detail.png) | ![](screenshots/command-palette.png) |
 
-| **Dashboard** |
-| --------------- |
+| Dashboard |
+|-----------|
 | ![](screenshots/dashboard.png) |
 
 ## Main features
 
-- **Keyboard navigation**: `X` or Space to mark or unmark, `Enter` to open details, `?` for the shortcut guide.
-- **Command Palette**: `Ctrl+K` (or `Cmd+K`) opens a search bar to find tasks, filter by priority or tags, or jump to a task by typing its title.
-- **Instant updates**: the list updates before the server answers, and rolls back on failure.
-- **Saved session**: if your connection drops, the app picks back up where you left off.
+- Keyboard navigation: `X` or Space to mark or unmark, `Enter` to open details, `?` for the shortcut guide.
+- Command Palette: `Ctrl+K` (or `Cmd+K`) opens a search bar to find tasks, filter by priority or tags, or jump to a task by typing its title.
+- Instant updates: the list updates before the server answers, and rolls back on failure.
+- Saved session: if your connection drops, the app picks back up where you left off.
 
 ## Tech stack
 
-- **Backend:** Python, Flask, SQLAlchemy, Pydantic, JWT, SQLite (development) / PostgreSQL (production).
-- **Frontend:** Preact, Vite, TypeScript, Ky (HTTP client), Zod (schema validation).
-- **Testing & Linters:** Pytest + Cov (Backend), Vitest + Testing Library (Frontend), Ruff (Python), Biome (TypeScript/CSS).
-- **Package managers:** [uv](https://docs.astral.sh/uv/) (Python), [pnpm](https://pnpm.io/) (Node).
+Backend: Python, Flask, SQLAlchemy, Pydantic, JWT, SQLite (development) / PostgreSQL (production).
+
+Frontend: Preact, Vite, TypeScript, Ky (HTTP client), Zod (schema validation).
+
+Testing & linters: Pytest + Cov (backend), Vitest + Testing Library (frontend), Ruff (Python), Biome (TypeScript/CSS).
+
+Package managers: [uv](https://docs.astral.sh/uv/) (Python), [pnpm](https://pnpm.io/) (Node).
 
 ## Architecture
 
-**Backend** (Flask, layered):
+Backend (Flask, layered):
+
 ```
 backend/app/
 ├── api/v1/        # HTTP routes (tasks, auth, tags, subtasks, priorities, health) and Pydantic schemas
@@ -43,7 +47,8 @@ backend/app/
 └── utils/         # Shared helpers (sorting)
 ```
 
-**Frontend** (Preact, organized by slices):
+Frontend (Preact, organized by slices):
+
 ```
 frontend/src/
 ├── pages/        # Views: Landing, Home, Login, Register, 404
@@ -55,9 +60,9 @@ frontend/src/
 
 | Tool | Version | Why |
 |---|---|---|
-| Python | 3.13+ | Backend requirement (`requires-python` in `backend/pyproject.toml`) |
+| Python | 3.14+ | Backend requirement (`requires-python` in `backend/pyproject.toml`) |
 | [uv](https://docs.astral.sh/uv/) | latest | Python dependencies and scripts |
-| Node | 20 LTS or 22 | Frontend (Vite 6) |
+| Node | 26 | Frontend (Vite 8) |
 | [pnpm](https://pnpm.io/) | 12.18.0 | Frontend package manager (pinned in `frontend/package.json`) |
 | Docker | recent | Optional, for the Compose setup |
 
@@ -70,7 +75,7 @@ git clone https://github.com/MiguelAngel861/BareDo.git
 cd BareDo
 ```
 
-BareDo has two parts that run at the same time: a **backend** (Python) and a **frontend** (the app in your browser). You'll need two terminal windows, one for each.
+BareDo has two parts that run at the same time: a backend (Python) and a frontend (the app in your browser). You'll need two terminal windows, one for each.
 
 ### 1. Backend
 
@@ -107,9 +112,9 @@ This starts everything at once: a Postgres database, the backend API, and the fr
 
 Here's what each service does:
 
-- **db**: Postgres 16 database, available at `localhost:5432`.
-- **api**: The Flask backend, available at `http://localhost:5000`.
-- **frontend**: The Vite dev server, available at `http://localhost:3000`. It proxies API calls to the backend.
+- db: Postgres 16 database, available at `localhost:5432`.
+- api: The Flask backend, available at `http://localhost:5000`.
+- frontend: The Vite dev server, available at `http://localhost:3000`. It proxies API calls to the backend.
 
 Stop everything with `docker compose down`.
 
@@ -117,9 +122,9 @@ Stop everything with `docker compose down`.
 
 Base URL: `http://localhost:5000/api/v1` locally, `https://baredo-api.onrender.com/api/v1` in production.
 
-The API documents itself. It is built on `flask-openapi4`: every route declares its input and output as Pydantic schemas, and those declarations generate an OpenAPI 3.1 spec. That means you can try the whole API from the browser without writing curl: open the Swagger UI at `http://localhost:5000/openapi/swagger`, or read the raw spec at `http://localhost:5000/openapi/openapi.json`. Everything except register, login, and health requires an `Authorization: Bearer <access_token>` header.
+The API documents itself. It is built on `flask-openapi` and `flask-openapi-swagger`: every route declares its input and output as Pydantic schemas, and those declarations generate an OpenAPI 3.1 spec. That means you can try the whole API from the browser without writing curl: open the Swagger UI at `http://localhost:5000/openapi/swagger`, or read the raw spec at `http://localhost:5000/openapi/openapi.json`. Everything except register, login, and health requires an `Authorization: Bearer <access_token>` header.
 
-**Authentication**
+### Authentication
 
 Register and login return a token pair (access + refresh) and the user profile; login is rate-limited to 5 attempts per minute.
 
@@ -135,7 +140,7 @@ curl -X POST http://localhost:5000/api/v1/auth/login \
   -d '{"username":"miguel","password":"Password123"}'
 ```
 
-**Tasks**
+### Tasks
 
 Lists your tasks with pagination and filters.
 
@@ -169,7 +174,7 @@ cd frontend && pnpm test:run
 
 ## Environment variables
 
-**Backend**
+Backend
 
 | Variable | Description |
 |---|---|
@@ -179,7 +184,7 @@ cd frontend && pnpm test:run
 | `JWT_SECRET_KEY` | Key for signing login tokens |
 | `CORS_ORIGINS` | Allowed origins for cross-requests, comma-separated |
 
-**Frontend**
+Frontend
 
 | Variable | Description |
 |---|---|
