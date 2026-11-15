@@ -1,4 +1,4 @@
-name: CI
+name: Continuous Integration (backend & frontend)
 
 on:
   push:
@@ -6,8 +6,18 @@ on:
   pull_request:
     branches: [dev, main]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  FRONTEND_DIR: frontend
+  PYTHON_VERSION: '3.14'
+  NODE_VERSION: '22'
+
 jobs:
   changes:
+    name: Detect changed directories
     runs-on: ubuntu-latest
     outputs:
       backend: ${{ steps.filter.outputs.backend }}
@@ -22,10 +32,11 @@ jobs:
               - 'backend/**'
               - '.github/workflows/ci.yml'
             frontend:
-              - 'frontend/**'
+              - '${{ env.FRONTEND_DIR }}/**'
               - '.github/workflows/ci.yml'
 
-  lint:
+  backend-lint:
+    name: Backend - Ruff (lint & format)
     needs: changes
     if: needs.changes.outputs.backend == 'true'
     runs-on: ubuntu-latest
@@ -37,12 +48,16 @@ jobs:
       - uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
-          python-version: '3.14'
-      - run: uv sync --frozen
-      - run: uv run ruff check
-      - run: uv run ruff format --check
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Install dependencies (uv sync --frozen)
+        run: uv sync --frozen
+      - name: Ruff check
+        run: uv run ruff check
+      - name: Ruff format
+        run: uv run ruff format --check
 
-  test:
+  backend-test:
+    name: Backend - Pytest (tests & coverage)
     needs: changes
     if: needs.changes.outputs.backend == 'true'
     runs-on: ubuntu-latest
@@ -54,29 +69,79 @@ jobs:
       - uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
-          python-version: '3.14'
-      - run: uv sync --frozen
-      - run: uv run pytest
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Install dependencies (uv sync --frozen)
+        run: uv sync --frozen
+      - name: Run tests
+        run: uv run pytest
 
-  frontend-ci:
+  frontend-lint:
+    name: Frontend - Biome (lint)
     needs: changes
     if: needs.changes.outputs.frontend == 'true'
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: frontend
+        working-directory: ${{ env.FRONTEND_DIR }}
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
         with:
-          version: 12.18.0
+          package_json_file: ${{ env.FRONTEND_DIR }}/package.json
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'pnpm'
-          cache-dependency-path: 'frontend/pnpm-lock.yaml'
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm lint
-      - run: pnpm typecheck
-      - run: pnpm test:run
-      - run: pnpm build
+          cache-dependency-path: '${{ env.FRONTEND_DIR }}/pnpm-lock.yaml'
+      - name: Install dependencies (pnpm install --frozen-lockfile)
+        run: pnpm install --frozen-lockfile
+      - name: Lint (Biome)
+        run: pnpm lint
+
+  frontend-test:
+    name: Frontend - TypeScript & Vitest
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ env.FRONTEND_DIR }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: ${{ env.FRONTEND_DIR }}/package.json
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+          cache-dependency-path: '${{ env.FRONTEND_DIR }}/pnpm-lock.yaml'
+      - name: Install dependencies (pnpm install --frozen-lockfile)
+        run: pnpm install --frozen-lockfile
+      - name: Typecheck (tsc)
+        run: pnpm typecheck
+      - name: Tests (Vitest)
+        run: pnpm test:run
+
+  frontend-build:
+    name: Frontend - Vite production build
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ env.FRONTEND_DIR }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: ${{ env.FRONTEND_DIR }}/package.json
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+          cache-dependency-path: '${{ env.FRONTEND_DIR }}/pnpm-lock.yaml'
+      - name: Install dependencies (pnpm install --frozen-lockfile)
+        run: pnpm install --frozen-lockfile
+      - name: Production build (Vite)
+        run: pnpm build
