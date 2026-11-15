@@ -1,6 +1,5 @@
-from sqlalchemy import text
-
-from app.core.extensions import db
+from app.models import Tasks, TaskTags
+from tests.conftest import api_create_task, count_rows
 
 
 def test_soft_delete_and_list_trash(client, auth_headers, make_task):
@@ -42,23 +41,16 @@ def test_soft_delete_and_list_trash(client, auth_headers, make_task):
     assert trash_data["tasks"][0]["deleted_at"] is not None
 
 
-def test_restore_task_preserves_tags(client, auth_headers):
-    headers, _ = auth_headers
+def test_restore_task_preserves_tags(client, headers):
     tag = client.post("/api/v1/tags", json={"name": "restore-tag"}, headers=headers).get_json()
-    task = client.post(
-        "/api/v1/tasks",
-        json={"title": "Tag Task", "tag_ids": [tag["tag_id"]]},
-        headers=headers,
-    ).get_json()
+    task = api_create_task(client, headers, title="Tag Task", tag_ids=[tag["tag_id"]])
     task_id = task["task_id"]
 
     # Delete task (soft delete)
     assert client.delete(f"/api/v1/tasks/{task_id}", headers=headers).status_code == 204
 
     # Association in task_tags is preserved
-    count = db.session.execute(
-        text("SELECT COUNT(*) FROM task_tags WHERE task_id = :task_id"), {"task_id": task_id}
-    ).scalar()
+    count = count_rows(TaskTags, task_id=task_id)
     assert count == 1
 
     # Restore task
@@ -75,14 +67,9 @@ def test_restore_task_preserves_tags(client, auth_headers):
     assert any(t["task_id"] == task_id for t in active_resp.get_json()["tasks"])
 
 
-def test_permanent_delete_task(client, auth_headers):
-    headers, _ = auth_headers
+def test_permanent_delete_task(client, headers):
     tag = client.post("/api/v1/tags", json={"name": "perm-tag"}, headers=headers).get_json()
-    task = client.post(
-        "/api/v1/tasks",
-        json={"title": "Perm Task", "tag_ids": [tag["tag_id"]]},
-        headers=headers,
-    ).get_json()
+    task = api_create_task(client, headers, title="Perm Task", tag_ids=[tag["tag_id"]])
     task_id = task["task_id"]
 
     # Soft delete first
@@ -93,15 +80,11 @@ def test_permanent_delete_task(client, auth_headers):
     assert perm_resp.status_code == 204
 
     # Now hard deleted: row is completely gone
-    task_count = db.session.execute(
-        text("SELECT COUNT(*) FROM tasks WHERE task_id = :task_id"), {"task_id": task_id}
-    ).scalar()
+    task_count = count_rows(Tasks, task_id=task_id)
     assert task_count == 0
 
     # Association is cascaded
-    tag_assoc_count = db.session.execute(
-        text("SELECT COUNT(*) FROM task_tags WHERE task_id = :task_id"), {"task_id": task_id}
-    ).scalar()
+    tag_assoc_count = count_rows(TaskTags, task_id=task_id)
     assert tag_assoc_count == 0
 
 
@@ -137,6 +120,10 @@ def test_trash_user_isolation(client, auth_headers, make_user, make_task):
     # Create task for user 2
     t2 = make_task(u2.user_id, title="User2 Trashed Task")
     # Soft delete t2 in DB directly
+    from sqlalchemy import text
+
+    from app.core.extensions import db
+
     db.session.execute(
         text("UPDATE tasks SET deleted_at = CURRENT_TIMESTAMP WHERE task_id = :task_id"),
         {"task_id": t2.task_id},
@@ -156,7 +143,5 @@ def test_trash_user_isolation(client, auth_headers, make_user, make_task):
 
     # User 1 empty trash does not delete User 2's task
     client.delete("/api/v1/tasks/trash", headers=headers1)
-    t2_count = db.session.execute(
-        text("SELECT COUNT(*) FROM tasks WHERE task_id = :task_id"), {"task_id": t2.task_id}
-    ).scalar()
+    t2_count = count_rows(Tasks, task_id=t2.task_id)
     assert t2_count == 1

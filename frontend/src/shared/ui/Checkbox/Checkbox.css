@@ -16,15 +16,7 @@ label.app-checkbox,
   opacity: 0.55;
 }
 
-.app-checkbox__native {
-  position: absolute !important;
-  opacity: 0 !important;
-  width: 1px !important;
-  height: 1px !important;
-  margin: -1px !important;
-  overflow: hidden !important;
-  clip: rect(0, 0, 0, 0) !important;
-}
+/* Oculto via .visually-hidden; la clase queda como ancla para el selector de focus */
 
 .app-checkbox__box {
   display: flex;
@@ -37,7 +29,9 @@ label.app-checkbox,
   background-color: var(--surface);
   border-radius: 0;
   box-sizing: border-box;
-  transition: background-color 0.15s ease, border-color 0.15s ease;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
 }
 
 .app-checkbox__indicator {

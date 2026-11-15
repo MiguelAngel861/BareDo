@@ -1,8 +1,8 @@
+import { useEffect, useState } from 'preact/hooks';
 import { getErrorMessage } from '@/shared/api/errors/index.ts';
 import { Button, Checkbox, InputField, PopoutModal, showToast } from '@/shared/ui/index.ts';
 import { PriorityDropdown } from '@/slices/priorities/index.ts';
 import { type Tag, TagInputChips } from '@/slices/tags/index.ts';
-import { useEffect, useState } from 'preact/hooks';
 import {
   closeFormModal,
   editingTaskSignal,
@@ -113,6 +113,7 @@ export function TaskPopoutModal() {
           placeholder="Task title (max 40 chars)"
           value={title}
           error={titleError}
+          noMargin={true}
           onInput={(val) => setTitle(val)}
         />
 
@@ -134,6 +135,7 @@ export function TaskPopoutModal() {
           type="date"
           label="Due Date"
           value={dueDate}
+          noMargin={true}
           onInput={(val) => setDueDate(val)}
         />
 
@@ -148,7 +150,9 @@ export function TaskPopoutModal() {
         </div>
 
         <div class="form-group">
-          <span id="task-tags-label">Tags <span class="field-hint">(max 7, press Enter)</span></span>
+          <span id="task-tags-label">
+            Tags <span class="field-hint">(max 7, press Enter)</span>
+          </span>
           <TagInputChips tags={tags} onChange={setTags} />
         </div>
 

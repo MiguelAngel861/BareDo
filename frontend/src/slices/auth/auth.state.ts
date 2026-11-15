@@ -1,19 +1,33 @@
+import { signal } from '@preact/signals';
 import { clear, getAccessToken, hasToken, setTokens } from '@/shared/api/auth/index.ts';
 import { configureApiAuth } from '@/shared/api/client/index.ts';
-import { signal } from '@preact/signals';
-import { authApi } from './auth.api.ts';
-import type { User } from './auth.types.ts';
+import { tagsSignal } from '@/slices/tags/tags.state.ts';
 import {
-  tasksSignal,
   filtersSignal,
   paginationSignal,
-  trashTasksSignal,
+  tasksSignal,
   trashCountSignal,
+  trashTasksSignal,
 } from '@/slices/tasks/tasks.state.ts';
-import { tagsSignal } from '@/slices/tags/tags.state.ts';
+import { authApi } from './auth.api.ts';
+import type { User } from './auth.types.ts';
 
-const DEFAULT_FILTERS = { page: 1, per_page: 5, title: '', completed: undefined, priority_id: undefined, tag_ids: undefined };
-const DEFAULT_PAGINATION = { page: 1, per_page: 5, total_pages: 1, total_items: 0, has_prev: false, has_next: false };
+const DEFAULT_FILTERS = {
+  page: 1,
+  per_page: 5,
+  title: '',
+  completed: undefined,
+  priority_id: undefined,
+  tag_ids: undefined,
+};
+const DEFAULT_PAGINATION = {
+  page: 1,
+  per_page: 5,
+  total_pages: 1,
+  total_items: 0,
+  has_prev: false,
+  has_next: false,
+};
 
 export interface AuthState {
   token: string | null;

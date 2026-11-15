@@ -1,5 +1,5 @@
-import { InputField, type InputFieldProps } from '@/shared/ui/index.ts';
 import { useState } from 'preact/hooks';
+import { InputField, type InputFieldProps } from '@/shared/ui/index.ts';
 import './PasswordInput.css';
 
 export interface PasswordInputProps extends Omit<InputFieldProps, 'type' | 'endAdornment'> {

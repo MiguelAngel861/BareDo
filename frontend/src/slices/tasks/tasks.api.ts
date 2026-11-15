@@ -12,43 +12,29 @@ import type {
   TaskUpdate,
 } from './tasks.types.ts';
 
-interface SearchParams {
-  page?: string;
-  per_page?: string;
-  title?: string;
-  completed?: string;
-  priority_id?: string;
-  sort?: string;
-  tag_ids?: string;
-  [key: string]: string | undefined;
-}
-
-function toSearchParams(params: TaskListParams): SearchParams {
-  const result: SearchParams = {};
+function toSearchParams(params: TaskListParams): URLSearchParams {
+  const result = new URLSearchParams();
   if (params.page !== undefined) {
-    result.page = String(params.page);
+    result.set('page', String(params.page));
   }
   if (params.per_page !== undefined) {
-    result.per_page = String(params.per_page);
+    result.set('per_page', String(params.per_page));
   }
   if (params.title) {
-    result.title = params.title;
+    result.set('title', params.title);
   }
   if (params.completed !== undefined) {
-    result.completed = String(params.completed);
+    result.set('completed', String(params.completed));
   }
   if (params.priority_id !== undefined) {
-    result.priority_id = String(params.priority_id);
+    result.set('priority_id', String(params.priority_id));
   }
   if (params.sort) {
-    result.sort = params.sort;
+    result.set('sort', params.sort);
   }
-  if (params.tag_ids !== undefined) {
-    if (Array.isArray(params.tag_ids)) {
-      result.tag_ids = params.tag_ids.join(',');
-    } else {
-      result.tag_ids = params.tag_ids;
-    }
+  // Formato lista: un param por ID (?tag_ids=5&tag_ids=7)
+  for (const id of params.tag_ids ?? []) {
+    result.append('tag_ids', String(id));
   }
   return result;
 }

@@ -1,9 +1,9 @@
+import { fireEvent, render, screen } from '@testing-library/preact';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   prioritiesSignal,
   priorityDescriptionsSignal,
 } from '@/slices/priorities/priorities.state.ts';
-import { fireEvent, render, screen } from '@testing-library/preact';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { PriorityDropdown } from './PriorityDropdown.tsx';
 
 describe('PriorityDropdown component', () => {

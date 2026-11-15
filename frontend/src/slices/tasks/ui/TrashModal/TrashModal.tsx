@@ -4,8 +4,8 @@ import {
   ConfirmModal,
   EmptyState,
   PopoutModal,
-  TagChip,
   showToast,
+  TagChip,
 } from '@/shared/ui/index.ts';
 import {
   cancelEmptyTrash,

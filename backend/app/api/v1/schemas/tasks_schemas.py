@@ -25,6 +25,12 @@ class TaskBody(TaskBase):
 
     model_config = ConfigDict(from_attributes=True, extra="forbid")
 
+    @field_validator("description", mode="before")
+    @classmethod
+    def _null_description_to_empty(cls, v):
+        # Filas viejas pueden tener description NULL; la API siempre devuelve string.
+        return "" if v is None else v
+
 
 class TaskResponse(BaseModel):
     tasks: list[TaskBody]
@@ -69,23 +75,16 @@ class TaskListQuery(BaseModel):
     description: str | None = None
     completed: bool | None = None
     priority_id: int | None = Field(default=None, ge=1, le=5)
-    tag_ids: str | None = None
+    tag_ids: list[int] | None = None
 
     model_config = ConfigDict(extra="forbid")
 
     @field_validator("completed", mode="before")
     @classmethod
     def validate_completed(cls, v):
-        if isinstance(v, str):
-            if v == "":
-                return None
-            lower = v.lower()
-            if lower == "true":
-                return True
-            elif lower == "false":
-                return False
-            else:
-                raise ValueError(f"Invalid value for completed: '{v}'. Must be 'true' or 'false'.")
+        # "" en query string significa "sin filtro"; el resto lo coacciona Pydantic.
+        if v == "":
+            return None
         return v
 
     @field_validator("title", mode="before")
@@ -95,14 +94,14 @@ class TaskListQuery(BaseModel):
             return None
         return v
 
-    def get_parsed_tag_ids(self) -> list[int] | None:
-        if not self.tag_ids:
+    @field_validator("tag_ids", mode="before")
+    @classmethod
+    def parse_tag_ids(cls, v):
+        # Formato lista: ?tag_ids=5&tag_ids=7; vacio significa sin filtro.
+        if v is None:
             return None
-        try:
-            parsed = [int(item.strip()) for item in self.tag_ids.split(",") if item.strip()]
-            return parsed if parsed else None
-        except ValueError as exc:
-            raise ValueError("tag_ids debe contener solo números") from exc
+        parsed = [int(i) for i in v if str(i).strip()]
+        return parsed or None
 
 
 class TaskPath(BaseModel):

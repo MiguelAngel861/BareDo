@@ -1,7 +1,7 @@
-export { CommandPalette, type CommandOption } from './CommandPalette.tsx';
+export { type CommandOption, CommandPalette } from './CommandPalette.tsx';
 export {
+  closeCommandPalette,
   isCommandPaletteOpenSignal,
   openCommandPalette,
-  closeCommandPalette,
   toggleCommandPalette,
 } from './command-palette.state.ts';

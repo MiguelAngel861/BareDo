@@ -1,5 +1,5 @@
-import { InputField, TagChip } from '@/shared/ui/index.ts';
 import { useEffect, useRef, useState } from 'preact/hooks';
+import { TagChip } from '@/shared/ui/index.ts';
 import { fetchTags, findOrCreateTag, normalizeTagName, tagsSignal } from '../../tags.state.ts';
 import type { Tag } from '../../tags.types.ts';
 import './TagInputChips.css';
@@ -199,10 +199,11 @@ export function TagInputChips({
         </div>
 
         <div class="tag-combobox-wrapper">
-          <InputField
-            inputRef={inputRef}
+          <input
+            ref={inputRef}
             type="text"
             id="tag-input-field"
+            class="app-input-field__input"
             placeholder={
               tags.length >= MAX_TAGS ? 'Max tags reached' : 'Type to search or add tag...'
             }
@@ -210,22 +211,23 @@ export function TagInputChips({
             autoComplete="off"
             disabled={tags.length >= MAX_TAGS}
             value={inputValue}
-            className="tag-input-field-wrapper"
-            noMargin={true}
             onFocus={() => {
               if (tags.length < MAX_TAGS) {
                 setIsOpen(true);
               }
             }}
-            onInput={(val) => {
-              setInputValue(val);
+            onInput={(e) => {
+              setInputValue((e.target as HTMLInputElement).value);
               setIsOpen(true);
               setHighlightedIndex(-1);
             }}
             onKeyDown={handleKeyDown}
-            aria-autocomplete="list"
+            // Rol literal: Biome valida el aria-expanded contra él en estático
+            role="combobox"
             aria-expanded={isOpen}
+            aria-autocomplete="list"
             aria-haspopup="listbox"
+            aria-controls="tag-combobox-list"
           />
 
           {isOpen && tags.length < MAX_TAGS && options.length > 0 && (

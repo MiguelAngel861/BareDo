@@ -1,10 +1,10 @@
-import { Badge, Button, TagChip, showToast } from '@/shared/ui/index.ts';
+import { useEffect, useRef } from 'preact/hooks';
+import { Badge, Button, showToast, TagChip } from '@/shared/ui/index.ts';
 import {
   getPriorityBadgeVariant,
   getPriorityDescription,
   getPriorityLabel,
 } from '@/slices/priorities/index.ts';
-import { useEffect, useRef } from 'preact/hooks';
 import {
   openEditModal,
   openViewModal,

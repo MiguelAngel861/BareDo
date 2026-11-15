@@ -1,3 +1,4 @@
+import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { Button } from '@/shared/ui/Button/index.ts';
 import { BaseModal } from '@/shared/ui/Modal/index.ts';
 import { prioritiesSignal } from '@/slices/priorities/priorities.state.ts';
@@ -10,7 +11,6 @@ import {
   setFilter,
   tasksSignal,
 } from '@/slices/tasks/tasks.state.ts';
-import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import './CommandPalette.css';
 import {
   closeCommandPalette,
@@ -198,7 +198,7 @@ export function CommandPalette() {
       ariaLabel="Command Palette"
       containerClassName="command-palette-container"
     >
-      <div onKeyDown={handleKeyDown}>
+      <div role="group" onKeyDown={handleKeyDown}>
         <div class="command-palette-header">
           <span class="command-palette-badge">COMMAND PALETTE</span>
           <input

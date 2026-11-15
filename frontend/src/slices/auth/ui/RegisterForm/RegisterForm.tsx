@@ -1,11 +1,11 @@
+import { useState } from 'preact/hooks';
+import { useLocation } from 'preact-iso';
 import { type FriendlyError, getErrorMessage } from '@/shared/api/errors/index.ts';
 import { Button, InputField } from '@/shared/ui/index.ts';
-import { useLocation } from 'preact-iso';
-import { useState } from 'preact/hooks';
 import { register } from '../../auth.state.ts';
 import { AuthCard } from '../AuthCard/index.ts';
-import { PasswordInput } from '../PasswordInput/index.ts';
 import { validatePasswordField, validateUsernameField } from '../auth.validation.ts';
+import { PasswordInput } from '../PasswordInput/index.ts';
 
 export function RegisterForm() {
   const location = useLocation();

@@ -1,15 +1,9 @@
-def _register_and_refresh_token(client, username):
-    resp = client.post(
-        "/api/v1/auth/register",
-        json={"username": username, "password": "Password123!"},
-    )
-    assert resp.status_code == 201
-    return resp.get_json()["refresh_token"]
+from tests.conftest import register_user
 
 
 def test_refresh_token_issue(client):
     username = "refreshuser"
-    refresh_token = _register_and_refresh_token(client, username)
+    refresh_token = register_user(client, username)["refresh_token"]
     resp = client.post(
         "/api/v1/auth/refresh",
         headers={"Authorization": f"Bearer {refresh_token}"},
@@ -22,7 +16,7 @@ def test_refresh_token_issue(client):
 
 
 def test_refresh_token_validates_new_token(client):
-    refresh_token = _register_and_refresh_token(client, "refreshuser2")
+    refresh_token = register_user(client, "refreshuser2")["refresh_token"]
     resp = client.post(
         "/api/v1/auth/refresh",
         headers={"Authorization": f"Bearer {refresh_token}"},

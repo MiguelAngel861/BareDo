@@ -6,8 +6,8 @@
   width: 100%;
   max-width: 40rem;
   overflow: hidden;
-  border: 2px solid var(--text) !important;
-  box-shadow: var(--shadow-hard-lg) !important;
+  border: 2px solid var(--text);
+  box-shadow: var(--shadow-hard-lg);
   background-color: var(--surface);
   border-radius: 0;
   box-sizing: border-box;
@@ -115,9 +115,11 @@
   text-align: left;
   outline: none;
   box-shadow: var(--shadow-action);
-  transition: transform 0.1s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.15s
-    cubic-bezier(0.16, 1, 0.3, 1), border-color 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow
-    0.12s cubic-bezier(0.16, 1, 0.3, 1);
+  transition:
+    transform 0.1s cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 0.15s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.15s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.12s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .command-palette-item:hover,

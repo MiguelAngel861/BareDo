@@ -1,7 +1,7 @@
-import { CommandPalette, ToastContainer } from '@/shared/ui/index.ts';
-import { initAuth } from '@/slices/auth/index.ts';
 import type { ComponentChildren } from 'preact';
 import { useEffect } from 'preact/hooks';
+import { CommandPalette, ToastContainer } from '@/shared/ui/index.ts';
+import { initAuth } from '@/slices/auth/index.ts';
 
 export function AppLayout({ children }: { children: ComponentChildren }) {
   useEffect(() => {

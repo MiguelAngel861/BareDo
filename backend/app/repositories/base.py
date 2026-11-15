@@ -1,7 +1,7 @@
 from collections.abc import Sequence
 from typing import Any
 
-from sqlalchemy import Select, asc, desc, func, inspect, select, update
+from sqlalchemy import Select, asc, desc, func, inspect, select
 from sqlalchemy.orm import Session
 
 from app.core.pagination import Pagination
@@ -56,16 +56,6 @@ class BaseRepository[T]:
     def create(self, entity: T) -> T:
         self.session.add(entity)
         return entity
-
-    def update(self, entity_id: int, data: dict[str, Any], **extra_filters: Any) -> T | None:
-        stmt = (
-            update(self.model)
-            .where(self._pk_column == entity_id)
-            .filter_by(**extra_filters)
-            .values(**data)
-            .returning(self.model)
-        )
-        return self.session.scalar(stmt)
 
     def delete(self, entity_id: int, **extra_filters: Any) -> bool:
         entity = self.get_by_id(entity_id, **extra_filters)

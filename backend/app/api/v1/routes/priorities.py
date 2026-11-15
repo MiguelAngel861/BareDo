@@ -1,10 +1,10 @@
 from flask_jwt_extended import jwt_required
+from flask_openapi import APIBlueprint
 
-from app.api.blueprint import BareDoBlueprint
 from app.api.v1.schemas.priorities_schemas import PriorityBody, PriorityResponse
 from app.services.priorities_service import PrioritiesService
 
-priorities_bp = BareDoBlueprint("priorities", __name__, url_prefix="/api/v1")
+priorities_bp = APIBlueprint("priorities", __name__, url_prefix="/api/v1")
 service = PrioritiesService()
 
 

@@ -71,8 +71,7 @@ def test_delete_subtask(client, auth_headers, make_task):
     assert len(resp_list.get_json()["subtasks"]) == 0
 
 
-def test_create_task_with_initial_subtasks(client, auth_headers):
-    headers, _ = auth_headers
+def test_create_task_with_initial_subtasks(client, headers):
     resp = client.post(
         "/api/v1/tasks",
         json={

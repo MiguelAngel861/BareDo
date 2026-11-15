@@ -28,11 +28,6 @@
   width: 100%;
 }
 
-.tag-input-field-wrapper {
-  margin: 0 !important;
-  margin-bottom: 0 !important;
-}
-
 .tag-combobox-wrapper input,
 .tag-combobox-wrapper .app-input-field__input {
   width: 100%;
@@ -92,7 +87,9 @@
   background-color: var(--surface);
   border-bottom: 1px solid var(--border);
   cursor: pointer;
-  transition: background-color 0.1s ease, color 0.1s ease;
+  transition:
+    background-color 0.1s ease,
+    color 0.1s ease;
 }
 
 .tag-combobox-item:last-child {

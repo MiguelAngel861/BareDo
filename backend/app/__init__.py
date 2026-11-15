@@ -1,7 +1,6 @@
-import mimetypes
 import os
 
-from flask_openapi4 import Info, OpenAPI
+from flask_openapi import Info, OpenAPI
 from pydantic import BaseModel
 
 from app.api.v1.routes.auth import auth_bp
@@ -10,7 +9,7 @@ from app.api.v1.routes.priorities import priorities_bp
 from app.api.v1.routes.subtasks import subtasks_bp
 from app.api.v1.routes.tags import tags_bp
 from app.api.v1.routes.tasks import tasks_bp
-from app.core.config import SQLITE_PATH, config
+from app.core.config import config
 from app.core.cors import setup_cors
 from app.core.extensions import db, init_alembic, init_limiter, jwt
 from app.core.logging import configure_logging
@@ -34,10 +33,6 @@ class BareDoApp(OpenAPI):
 
 
 def create_app(config_name: str | None = None) -> BareDoApp:
-    # Ensure Windows registry doesn't cause text/plain MIME types for JS/CSS assets
-    mimetypes.add_type("application/javascript", ".js")
-    mimetypes.add_type("text/css", ".css")
-
     if config_name is None:
         config_name = os.environ.get("FLASK_ENV", "default")
 
@@ -49,9 +44,6 @@ def create_app(config_name: str | None = None) -> BareDoApp:
     )
 
     app.config.from_object(config[config_name])
-
-    # Ensure the instance folder exists (sqlite default DB lives there)
-    os.makedirs(SQLITE_PATH.parent, exist_ok=True)
 
     # Configure logging
     configure_logging(app)
@@ -67,23 +59,8 @@ def create_app(config_name: str | None = None) -> BareDoApp:
     register_jwt_handlers(app.extensions["flask-jwt-extended"])
     init_limiter(app)
 
-    # Aplicar migraciones pendientes al arrancar (create_app no las aplicaba antes;
-    # requería ejecutir `flask db upgrade head` manualmente).
-    if config_name != "testing":
-        with app.app_context():
-            from alembic import command
-            from alembic.config import Config as AlembicConfig
-
-            alembic_cfg = AlembicConfig()
-            migrations_dir = str(SQLITE_PATH.parent.parent / "migrations")
-            alembic_cfg.set_main_option("script_location", migrations_dir)
-            try:
-                command.upgrade(alembic_cfg, "head")
-            except Exception:
-                # No romper el arranque si la BD aún no existe o hay un conflicto;
-                # el contenedor corre `flask db upgrade head` antes de gunicorn.
-                pass
-
+    # Las migraciones corren en el arranque del contenedor: start.sh ejecuta
+    # `flask db upgrade head` antes de gunicorn. En dev correrlas a mano.
     # Security headers + request/response logging middleware
     register_middleware(app)
 

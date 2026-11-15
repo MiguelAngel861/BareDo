@@ -76,8 +76,8 @@ export function TaskFiltersBar() {
           Tag
         </label>
         <TagFilterDropdown
-          value={typeof filters.tag_ids === 'string' ? filters.tag_ids : undefined}
-          onChange={(val) => setFilter('tag_ids', val)}
+          value={filters.tag_ids?.length === 1 ? String(filters.tag_ids[0]) : undefined}
+          onChange={(val) => setFilter('tag_ids', val === undefined ? undefined : [Number(val)])}
         />
       </div>
     </div>

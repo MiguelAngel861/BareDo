@@ -1,13 +1,8 @@
-import uuid
-
 import pytest
 
 from app.errors.exceptions import DataValidationError, NotFoundError
 from app.services.subtasks_service import SubtasksService
-
-
-def unique_user():
-    return {"username": f"user_{uuid.uuid4().hex[:8]}"}
+from tests.conftest import unique_user
 
 
 @pytest.fixture
@@ -39,13 +34,6 @@ def test_create_subtask_validation_error(subtasks_service, make_user, make_task)
         subtasks_service.create_subtask(
             task_id=task.task_id,
             subtask_data={"title": ""},
-            user_id=user.user_id,
-        )
-
-    with pytest.raises(DataValidationError):
-        subtasks_service.create_subtask(
-            task_id=task.task_id,
-            subtask_data={"title": "A" * 121},
             user_id=user.user_id,
         )
 

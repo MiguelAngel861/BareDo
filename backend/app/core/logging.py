@@ -8,6 +8,34 @@ from flask import Flask
 
 from app.core.config import BASE_DIR
 
+# Atributos estándar de LogRecord que no se repiten en el JSON de extra fields.
+_RESERVED_FIELDS = frozenset(
+    {
+        "name",
+        "msg",
+        "args",
+        "created",
+        "filename",
+        "funcName",
+        "levelname",
+        "levelno",
+        "lineno",
+        "module",
+        "msecs",
+        "message",
+        "pathname",
+        "process",
+        "processName",
+        "relativeCreated",
+        "thread",
+        "threadName",
+        "exc_info",
+        "exc_text",
+        "stack_info",
+        "getMessage",
+    }
+)
+
 
 class JSONFormatter(logging.Formatter):
     def format(self, record):
@@ -21,34 +49,8 @@ class JSONFormatter(logging.Formatter):
             "line": record.lineno,
         }
 
-        # Add extra fields if present
         for key, value in record.__dict__.items():
-            if key not in [
-                "name",
-                "msg",
-                "args",
-                "created",
-                "filename",
-                "funcName",
-                "levelname",
-                "levelno",
-                "lineno",
-                "module",
-                "msecs",
-                "message",
-                "msg",
-                "name",
-                "pathname",
-                "process",
-                "processName",
-                "relativeCreated",
-                "thread",
-                "threadName",
-                "exc_info",
-                "exc_text",
-                "stack_info",
-                "getMessage",
-            ]:
+            if key not in _RESERVED_FIELDS:
                 log_data[key] = value
 
         if record.exc_info:

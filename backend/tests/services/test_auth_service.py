@@ -7,7 +7,7 @@ from app.services.auth_service import AuthService
 
 
 @pytest.fixture
-def auth_service(app):
+def auth_service():
     return AuthService()
 
 

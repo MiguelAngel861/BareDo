@@ -23,9 +23,6 @@ export interface InputFieldProps {
   endAdornment?: ComponentChildren;
   noMargin?: boolean;
   'aria-label'?: string;
-  'aria-autocomplete'?: 'none' | 'inline' | 'list' | 'both';
-  'aria-expanded'?: boolean | 'true' | 'false';
-  'aria-haspopup'?: 'true' | 'false' | 'menu' | 'listbox' | 'tree' | 'grid' | 'dialog' | boolean;
   onInput?: (value: string, e: Event) => void;
   onChange?: (value: string, e: Event) => void;
   onKeyDown?: (e: KeyboardEvent) => void;
@@ -55,9 +52,6 @@ export function InputField({
   endAdornment,
   noMargin = false,
   'aria-label': ariaLabel,
-  'aria-autocomplete': ariaAutocomplete,
-  'aria-expanded': ariaExpanded,
-  'aria-haspopup': ariaHasPopup,
   onInput,
   onChange,
   onKeyDown,
@@ -117,9 +111,6 @@ export function InputField({
           minLength={minLength}
           autoComplete={autoComplete}
           aria-label={ariaLabel}
-          aria-autocomplete={ariaAutocomplete}
-          aria-expanded={ariaExpanded}
-          aria-haspopup={ariaHasPopup}
           aria-invalid={hasError ? 'true' : undefined}
           aria-describedby={describedBy}
           class={[

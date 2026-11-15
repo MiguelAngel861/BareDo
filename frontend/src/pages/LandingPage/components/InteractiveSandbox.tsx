@@ -1,6 +1,6 @@
-import { Badge, Button, Checkbox, TagChip } from '@/shared/ui/index.ts';
 import type { JSX } from 'preact';
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
+import { Badge, Button, Checkbox, TagChip } from '@/shared/ui/index.ts';
 
 export interface DemoTask {
   id: number;
@@ -232,7 +232,7 @@ export function InteractiveSandbox(): JSX.Element {
           <span class="sandbox-hud-key">[C] NEW</span>
         </div>
 
-        <div class="sandbox-telemetry" aria-label="System Performance Readout">
+        <div class="sandbox-telemetry">
           <span class="sandbox-telemetry-item">
             LATENCY: <strong class="telemetry-value">{latency}ms</strong>
           </span>

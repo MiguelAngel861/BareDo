@@ -1,6 +1,6 @@
 from flask_jwt_extended import jwt_required
+from flask_openapi import APIBlueprint, validate_request
 
-from app.api.blueprint import BareDoBlueprint
 from app.api.helpers import get_current_user_id
 from app.api.v1.schemas.subtasks_schemas import (
     SubtaskBody,
@@ -12,12 +12,13 @@ from app.api.v1.schemas.subtasks_schemas import (
 from app.api.v1.schemas.tasks_schemas import TaskPath
 from app.services.subtasks_service import SubtasksService
 
-subtasks_bp = BareDoBlueprint("subtasks", __name__, url_prefix="/api/v1")
+subtasks_bp = APIBlueprint("subtasks", __name__, url_prefix="/api/v1")
 service = SubtasksService()
 
 
 @subtasks_bp.get("/tasks/<int:task_id>/subtasks")
 @jwt_required()
+@validate_request()
 def get_subtasks(path: TaskPath):
     """List subtasks for a task."""
     user_id = get_current_user_id()
@@ -27,6 +28,7 @@ def get_subtasks(path: TaskPath):
 
 @subtasks_bp.post("/tasks/<int:task_id>/subtasks")
 @jwt_required()
+@validate_request()
 def create_subtask(path: TaskPath, body: SubtaskCreate):
     """Create a subtask for a task."""
     user_id = get_current_user_id()
@@ -36,6 +38,7 @@ def create_subtask(path: TaskPath, body: SubtaskCreate):
 
 @subtasks_bp.patch("/tasks/<int:task_id>/subtasks/<int:subtask_id>")
 @jwt_required()
+@validate_request()
 def update_subtask(path: SubtaskPath, body: SubtaskUpdate):
     """Update a subtask (title and/or completed)."""
     user_id = get_current_user_id()
@@ -47,6 +50,7 @@ def update_subtask(path: SubtaskPath, body: SubtaskUpdate):
 
 @subtasks_bp.delete("/tasks/<int:task_id>/subtasks/<int:subtask_id>")
 @jwt_required()
+@validate_request()
 def delete_subtask(path: SubtaskPath):
     """Delete a subtask."""
     user_id = get_current_user_id()

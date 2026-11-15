@@ -1,6 +1,6 @@
-import * as tagsState from '@/slices/tags/tags.state.ts';
 import { fireEvent, render, screen } from '@testing-library/preact';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import * as tagsState from '@/slices/tags/tags.state.ts';
 import * as taskState from '../../tasks.state.ts';
 import type { Task } from '../../tasks.types.ts';
 import { TaskPopoutModal } from './TaskPopoutModal.tsx';

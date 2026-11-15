@@ -1,4 +1,4 @@
-import { Badge, Button, PopoutModal, TagChip, showToast } from '@/shared/ui/index.ts';
+import { Badge, Button, PopoutModal, showToast, TagChip } from '@/shared/ui/index.ts';
 import {
   getPriorityBadgeVariant,
   getPriorityDescription,

@@ -1,7 +1,7 @@
-import { authSignal } from '@/slices/auth/index.ts';
 import type { ComponentChildren } from 'preact';
-import { useLocation } from 'preact-iso';
 import { useEffect } from 'preact/hooks';
+import { useLocation } from 'preact-iso';
+import { authSignal } from '@/slices/auth/index.ts';
 
 export function AuthGuard({ children }: { children: ComponentChildren }) {
   const location = useLocation();

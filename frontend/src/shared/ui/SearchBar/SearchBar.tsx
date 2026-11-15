@@ -212,7 +212,7 @@ export function SearchBar({
       />
 
       <div class="search-bar-actions">
-        {isLoading && <span class="search-bar-spinner" aria-label="Loading..." />}
+        {isLoading && <span class="search-bar-spinner" role="status" aria-label="Loading..." />}
 
         {hasValue && !disabled && (
           <button

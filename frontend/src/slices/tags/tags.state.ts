@@ -1,5 +1,5 @@
-import { tasksSignal } from '@/slices/tasks/tasks.state.ts';
 import { signal } from '@preact/signals';
+import { tasksSignal } from '@/slices/tasks/tasks.state.ts';
 import { tagsApi } from './tags.api.ts';
 import type { Tag } from './tags.types.ts';
 

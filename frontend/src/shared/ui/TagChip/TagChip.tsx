@@ -42,9 +42,7 @@ export function TagChip({
     <span
       class={classes}
       title={title}
-      onClick={isClickable ? onClick : undefined}
-      role={isClickable ? 'button' : undefined}
-      tabIndex={isClickable ? 0 : undefined}
+      {...(isClickable ? { onClick, role: 'button' as const, tabIndex: 0 } : {})}
     >
       <span class="app-tag-chip__label">{content}</span>
       {isRemovable && (

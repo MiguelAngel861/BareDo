@@ -1,7 +1,7 @@
-import { authSignal } from '@/slices/auth/index.ts';
 import { render, screen } from '@testing-library/preact';
 import { LocationProvider } from 'preact-iso';
 import { beforeEach, describe, expect, it } from 'vitest';
+import { authSignal } from '@/slices/auth/index.ts';
 import { AuthGuard } from './AuthGuard.tsx';
 
 describe('AuthGuard component', () => {
