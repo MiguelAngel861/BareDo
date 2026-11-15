@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING
+
 from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required
 from flask_openapi import APIBlueprint
 
@@ -5,8 +7,10 @@ from app.api.helpers import get_current_user_id
 from app.api.v1.schemas.auth_schemas import TokenResponse, UserCreate, UserLogin, UserResponse
 from app.core.extensions import limiter
 from app.errors.exceptions import NotFoundError, UnauthorizedError
-from app.models.users import Users
 from app.services.auth_service import AuthService
+
+if TYPE_CHECKING:
+    from app.models.users import Users
 
 auth_bp = APIBlueprint("auth", __name__, url_prefix="/api/v1/auth")
 auth_service = AuthService()

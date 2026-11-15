@@ -23,7 +23,7 @@ class AuthService(BaseService):
         user.set_password(password)
         try:
             return self._execute_in_transaction(lambda repo: repo.create(user))
-        except DataValidationError as exc:
+        except (DataValidationError, ConflictError) as exc:
             raise ConflictError("Username already in use") from exc
 
     def login(self, username: str, password: str) -> Users | None:

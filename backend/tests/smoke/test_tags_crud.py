@@ -108,7 +108,7 @@ def test_create_and_filter_tasks_with_tags(client, headers):
 
     # Filter tasks by both tags (OR)
     filter_both = client.get(
-        f"/api/v1/tasks?tag_ids={tag1['tag_id']},{tag2['tag_id']}", headers=headers
+        f"/api/v1/tasks?tag_ids={tag1['tag_id']}&tag_ids={tag2['tag_id']}", headers=headers
     )
     assert filter_both.status_code == 200
     assert len(filter_both.get_json()["tasks"]) == 2

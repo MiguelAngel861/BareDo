@@ -45,6 +45,9 @@ def _cors_origins_from_env() -> list[str]:
 
 def _sqlalchemy_engines() -> dict[str, str | dict]:
     url = _db_url_from_env() or _default_db_url()
+    # La carpeta instance/ solo hace falta para la BD sqlite por defecto.
+    if url.startswith("sqlite:///") and ":memory:" not in url:
+        SQLITE_PATH.parent.mkdir(parents=True, exist_ok=True)
     if url.startswith("postgresql"):
         return {
             "default": {

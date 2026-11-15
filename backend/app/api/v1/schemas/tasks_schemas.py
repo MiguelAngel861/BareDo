@@ -4,7 +4,6 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from app.api.v1.schemas.subtasks_schemas import SubtaskBody, SubtaskCreate
 from app.api.v1.schemas.tags_schemas import TagBody
-from app.errors.exceptions import DataValidationError
 
 
 class TaskBase(BaseModel):
@@ -25,6 +24,12 @@ class TaskBody(TaskBase):
     subtasks: list[SubtaskBody] = Field(default_factory=list)
 
     model_config = ConfigDict(from_attributes=True, extra="forbid")
+
+    @field_validator("description", mode="before")
+    @classmethod
+    def _null_description_to_empty(cls, v):
+        # Filas viejas pueden tener description NULL; la API siempre devuelve string.
+        return "" if v is None else v
 
 
 class TaskResponse(BaseModel):
@@ -70,7 +75,7 @@ class TaskListQuery(BaseModel):
     description: str | None = None
     completed: bool | None = None
     priority_id: int | None = Field(default=None, ge=1, le=5)
-    tag_ids: str | None = None
+    tag_ids: list[int] | None = None
 
     model_config = ConfigDict(extra="forbid")
 
@@ -89,14 +94,14 @@ class TaskListQuery(BaseModel):
             return None
         return v
 
-    def get_parsed_tag_ids(self) -> list[int] | None:
-        if not self.tag_ids:
+    @field_validator("tag_ids", mode="before")
+    @classmethod
+    def parse_tag_ids(cls, v):
+        # Formato lista: ?tag_ids=5&tag_ids=7; vacio significa sin filtro.
+        if v is None:
             return None
-        try:
-            parsed = [int(item.strip()) for item in self.tag_ids.split(",") if item.strip()]
-            return parsed if parsed else None
-        except ValueError as exc:
-            raise DataValidationError("tag_ids debe contener solo números") from exc
+        parsed = [int(i) for i in v if str(i).strip()]
+        return parsed or None
 
 
 class TaskPath(BaseModel):

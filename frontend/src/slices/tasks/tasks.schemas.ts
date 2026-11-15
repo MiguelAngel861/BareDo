@@ -1,5 +1,5 @@
-import { TagSchema } from '@/slices/tags/tags.schemas.ts';
 import { z } from 'zod';
+import { TagSchema } from '@/slices/tags/tags.schemas.ts';
 
 export const SubtaskSchema = z.object({
   subtask_id: z.union([z.string(), z.number()]),
@@ -67,7 +67,7 @@ export const TaskListParamsSchema = z.object({
   completed: z.boolean().optional(),
   priority_id: z.number().int().positive().optional(),
   sort: z.string().optional(),
-  tag_ids: z.union([z.string(), z.array(z.number().int())]).optional(),
+  tag_ids: z.array(z.number().int()).optional(),
 });
 
 export const PaginationMetaSchema = z.object({

@@ -31,7 +31,7 @@ def get_tasks(query: TaskListQuery):
         "description": query.description,
         "completed": query.completed,
         "priority_id": query.priority_id,
-        "tag_ids": query.get_parsed_tag_ids(),
+        "tag_ids": query.tag_ids,
     }
 
     tasks, pagination = service.get_all_tasks(

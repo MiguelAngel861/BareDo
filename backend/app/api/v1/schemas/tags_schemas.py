@@ -21,4 +21,4 @@ class TagListResponse(BaseModel):
 
 
 class TagPath(BaseModel):
-    tag_id: int = Field(ge=1)
+    tag_id: int = Field(description="ID of the tag")

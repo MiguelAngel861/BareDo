@@ -162,7 +162,7 @@ def test_tasks_query_validation_error(client, headers):
     assert "per_page" in locs
 
 
-def test_list_tasks_invalid_tag_ids_returns_400(client, headers):
+def test_list_tasks_invalid_tag_ids_returns_422(client, headers):
     resp = client.get("/api/v1/tasks?tag_ids=abc", headers=headers)
-    assert resp.status_code == 400
-    assert resp.get_json()["code"] == "BAD_REQUEST"
+    assert resp.status_code == 422
+    assert resp.get_json()["code"] == "VALIDATION_ERROR"

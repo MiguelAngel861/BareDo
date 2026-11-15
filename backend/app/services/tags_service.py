@@ -28,7 +28,7 @@ class TagsService(BaseService):
 
         try:
             return self._execute_in_transaction(_create)
-        except DataValidationError as exc:
+        except (DataValidationError, ConflictError) as exc:
             # Carrera entre el chequeo previo y el insert (constraint uq_user_tag_name)
             raise ConflictError(f"Tag '{cleaned_name}' already exists") from exc
 

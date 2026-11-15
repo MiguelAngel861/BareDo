@@ -1,4 +1,4 @@
-from datetime import UTC, date, datetime
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
 from sqlalchemy import ForeignKey, String, false, func
@@ -15,19 +15,21 @@ class Tasks(Base):
     __tablename__ = "tasks"
 
     task_id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.user_id"), nullable=False)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.user_id"), nullable=False, index=True)
     title: Mapped[str] = mapped_column(String(40), nullable=False)
     description: Mapped[str] = mapped_column(String(500), nullable=True)
     priority_id: Mapped[int] = mapped_column(
         ForeignKey("priorities.priority_id"), nullable=False, default=3, server_default="3"
     )
     due_date: Mapped[datetime] = mapped_column(
-        nullable=False, default=date.today, server_default=func.current_date()
+        nullable=False, default=lambda: datetime.now(UTC), server_default=func.current_date()
     )
-    completed: Mapped[bool] = mapped_column(nullable=False, default=False, server_default=false())
+    completed: Mapped[bool] = mapped_column(
+        nullable=False, default=False, server_default=false(), index=True
+    )
 
     created_at: Mapped[datetime] = mapped_column(
-        nullable=False, default=lambda: datetime.now(UTC), server_default=func.now()
+        nullable=False, default=lambda: datetime.now(UTC), server_default=func.now(), index=True
     )
     updated_at: Mapped[datetime] = mapped_column(
         nullable=False,
