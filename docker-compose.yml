@@ -10,6 +10,8 @@ services:
       SECRET_KEY: ${SECRET_KEY}
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
       CORS_ORIGINS: ${CORS_ORIGINS}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     ports:
       - "127.0.0.1:5000:5000"
     healthcheck:
