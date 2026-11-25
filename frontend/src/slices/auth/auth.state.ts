@@ -106,8 +106,8 @@ export async function initAuth(): Promise<void> {
       isLoading: false,
     };
   } catch (err: unknown) {
-    // Solo cerrar sesión si el servidor respondió explícitamente con 401 Unauthorized
-    // Si el servidor está apagado, iniciando (cold start), 502/503 o hay error de red, NO borrar sesión
+    // Solo cerrar sesión si el servidor respondió explícitamente con 401 Unauthorized.
+    // Cualquier otro error (red, 502/503...) conserva la sesión y detiene la carga.
     if (err && typeof err === 'object' && 'response' in err) {
       const response = (err as { response?: Response }).response;
       if (response && response.status === 401) {
@@ -115,7 +115,6 @@ export async function initAuth(): Promise<void> {
         return;
       }
     }
-    // El servidor puede estar en cold start; conservar el token y mantener isLoading: false
     authSignal.value = {
       ...authSignal.value,
       isLoading: false,

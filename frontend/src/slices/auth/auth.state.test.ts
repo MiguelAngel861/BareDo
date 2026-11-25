@@ -19,7 +19,7 @@ describe('auth.state initAuth resilience', () => {
     logout();
   });
 
-  it('does not logout on cold start / network error', async () => {
+  it('does not logout on network error', async () => {
     vi.spyOn(authApi, 'me').mockRejectedValue(new Error('Failed to fetch'));
 
     await initAuth();
@@ -51,7 +51,7 @@ describe('auth.state initAuth resilience', () => {
     };
     const meSpy = vi
       .spyOn(authApi, 'me')
-      .mockRejectedValueOnce(new Error('Cold start'))
+      .mockRejectedValueOnce(new Error('Network error'))
       .mockResolvedValueOnce(mockUser);
 
     await initAuth();

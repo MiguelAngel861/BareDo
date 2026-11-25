@@ -41,19 +41,12 @@ export function LoginForm() {
     setIsSubmitting(true);
     setSubmitText('Logging in...');
 
-    const slowTimer = window.setTimeout(() => {
-      setSubmitText('Iniciando servidor (espera ~30s)...');
-    }, 3500);
-
     try {
       await login(username, password);
-      clearTimeout(slowTimer);
       location.route('/');
     } catch (err) {
-      clearTimeout(slowTimer);
       setGlobalError(getErrorMessage(err, 'Login failed'));
     } finally {
-      clearTimeout(slowTimer);
       setIsSubmitting(false);
       setSubmitText('Login');
     }
