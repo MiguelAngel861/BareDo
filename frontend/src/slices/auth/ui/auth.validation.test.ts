@@ -19,8 +19,9 @@ describe('auth.validation', () => {
   });
 
   describe('validatePasswordField', () => {
-    it('returns null for valid passwords', () => {
-      expect(validatePasswordField('password123')).toBeNull();
+    it('returns null for valid (complex) passwords', () => {
+      expect(validatePasswordField('Password123!')).toBeNull();
+      expect(validatePasswordField('Abcdef1@')).toBeNull();
     });
 
     it('returns error when password is empty or too short', () => {
@@ -31,6 +32,18 @@ describe('auth.validation', () => {
     it('returns error when password is too long', () => {
       expect(validatePasswordField('a'.repeat(129))).toBe(
         'Password must be 128 characters or less'
+      );
+    });
+
+    it('rejects weak passwords that the backend would reject with 422', () => {
+      expect(validatePasswordField('password123')).toBe(
+        'Password must include at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&)'
+      );
+      expect(validatePasswordField('Password123')).toBe(
+        'Password must include at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&)'
+      );
+      expect(validatePasswordField('Password!')).toBe(
+        'Password must include at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&)'
       );
     });
   });

@@ -83,15 +83,15 @@ describe('RegisterForm component', () => {
     );
 
     fireEvent.input(screen.getByLabelText(/^username$/i), { target: { value: 'newuser' } });
-    fireEvent.input(screen.getByLabelText(/^password$/i), { target: { value: 'password123' } });
+    fireEvent.input(screen.getByLabelText(/^password$/i), { target: { value: 'Password123!' } });
     fireEvent.input(screen.getByLabelText(/^confirm password$/i), {
-      target: { value: 'password123' },
+      target: { value: 'Password123!' },
     });
 
     fireEvent.click(screen.getByRole('button', { name: /register/i }));
 
     await waitFor(() => {
-      expect(registerSpy).toHaveBeenCalledWith('newuser', 'password123');
+      expect(registerSpy).toHaveBeenCalledWith('newuser', 'Password123!');
     });
   });
 
@@ -105,9 +105,9 @@ describe('RegisterForm component', () => {
     );
 
     fireEvent.input(screen.getByLabelText(/^username$/i), { target: { value: 'existinguser' } });
-    fireEvent.input(screen.getByLabelText(/^password$/i), { target: { value: 'password123' } });
+    fireEvent.input(screen.getByLabelText(/^password$/i), { target: { value: 'Password123!' } });
     fireEvent.input(screen.getByLabelText(/^confirm password$/i), {
-      target: { value: 'password123' },
+      target: { value: 'Password123!' },
     });
 
     fireEvent.click(screen.getByRole('button', { name: /register/i }));

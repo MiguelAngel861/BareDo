@@ -127,7 +127,7 @@ export function RegisterForm() {
           placeholder="Create a password"
           value={password}
           error={passwordError}
-          hint="Minimum 8 characters"
+          hint="Minimum 8 characters: one uppercase, one lowercase, one number, and one symbol (@$!%*?&)"
           onInput={(val) => setPassword(val)}
           onBlur={handlePasswordBlur}
         />
