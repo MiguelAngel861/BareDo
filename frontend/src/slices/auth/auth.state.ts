@@ -82,7 +82,7 @@ configureApiAuth(
 
 let hasServerReadyListener = false;
 
-export async function initAuth(): Promise<void> {
+export async function initAuth(retries = 3, delayMs = 1000): Promise<void> {
   if (!authSignal.value.token) {
     authSignal.value = { ...authSignal.value, isLoading: false };
     return;
@@ -97,29 +97,40 @@ export async function initAuth(): Promise<void> {
     });
   }
 
-  try {
-    const user = await authApi.me();
-    authSignal.value = {
-      ...authSignal.value,
-      user,
-      isAuthenticated: true,
-      isLoading: false,
-    };
-  } catch (err: unknown) {
-    // Solo cerrar sesión si el servidor respondió explícitamente con 401 Unauthorized.
-    // Cualquier otro error (red, 502/503...) conserva la sesión y detiene la carga.
-    if (err && typeof err === 'object' && 'response' in err) {
-      const response = (err as { response?: Response }).response;
-      if (response && response.status === 401) {
-        logout();
-        return;
+  let lastErr: unknown;
+  for (let i = 0; i < retries; i++) {
+    try {
+      const user = await authApi.me();
+      authSignal.value = {
+        ...authSignal.value,
+        user,
+        isAuthenticated: true,
+        isLoading: false,
+      };
+      return;
+    } catch (err: unknown) {
+      lastErr = err;
+      // Solo cerrar sesión si el servidor respondió explícitamente con 401 Unauthorized.
+      if (err && typeof err === 'object' && 'response' in err) {
+        const response = (err as { response?: Response }).response;
+        if (response && response.status === 401) {
+          logout();
+          return;
+        }
+      }
+      // Error de red o transitorio: reintentar con backoff acotado
+      if (i < retries - 1) {
+        await new Promise((resolve) => setTimeout(resolve, delayMs));
       }
     }
-    authSignal.value = {
-      ...authSignal.value,
-      isLoading: false,
-    };
   }
+
+  // Tras agotar los reintentos, parar la carga para no quedar en infinito.
+  // La sesión se conserva en localStorage; el usuario puede recargar de nuevo.
+  authSignal.value = {
+    ...authSignal.value,
+    isLoading: false,
+  };
 }
 
 export async function login(username: string, password: string): Promise<void> {

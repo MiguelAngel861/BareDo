@@ -26,6 +26,7 @@ describe('auth.state initAuth resilience', () => {
 
     expect(authSignal.value.token).toBe('mock-token');
     expect(authSignal.value.isAuthenticated).toBe(true);
+    expect(authSignal.value.isLoading).toBe(false);
     expect(localStorage.getItem('access_token')).toBe('mock-token');
   });
 
@@ -43,7 +44,7 @@ describe('auth.state initAuth resilience', () => {
     expect(localStorage.getItem('access_token')).toBeNull();
   });
 
-  it('retries and populates user when server-ready event is dispatched', async () => {
+  it('recovers automatically after transient network error without server-ready event', async () => {
     const mockUser = {
       user_id: 'u1',
       username: 'tester',
@@ -54,15 +55,22 @@ describe('auth.state initAuth resilience', () => {
       .mockRejectedValueOnce(new Error('Network error'))
       .mockResolvedValueOnce(mockUser);
 
-    await initAuth();
-    expect(authSignal.value.user).toBeNull();
-
-    window.dispatchEvent(new CustomEvent('server-ready'));
-    // Wait for the async callback
-    await new Promise((resolve) => setTimeout(resolve, 10));
+    await initAuth(2, 0);
 
     expect(meSpy).toHaveBeenCalledTimes(2);
     expect(authSignal.value.user).toEqual(mockUser);
+    expect(authSignal.value.isAuthenticated).toBe(true);
+    expect(authSignal.value.isLoading).toBe(false);
+  });
+
+  it('stops loading after exhausting retries on persistent network error', async () => {
+    vi.spyOn(authApi, 'me').mockRejectedValue(new Error('Persistent network error'));
+
+    await initAuth(2, 0);
+
+    expect(authApi.me).toHaveBeenCalledTimes(2);
+    expect(authSignal.value.user).toBeNull();
+    expect(authSignal.value.isLoading).toBe(false);
     expect(authSignal.value.isAuthenticated).toBe(true);
   });
 });
