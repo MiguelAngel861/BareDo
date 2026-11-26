@@ -97,7 +97,6 @@ export async function initAuth(retries = 3, delayMs = 1000): Promise<void> {
     });
   }
 
-  let lastErr: unknown;
   for (let i = 0; i < retries; i++) {
     try {
       const user = await authApi.me();
@@ -109,7 +108,6 @@ export async function initAuth(retries = 3, delayMs = 1000): Promise<void> {
       };
       return;
     } catch (err: unknown) {
-      lastErr = err;
       // Solo cerrar sesión si el servidor respondió explícitamente con 401 Unauthorized.
       if (err && typeof err === 'object' && 'response' in err) {
         const response = (err as { response?: Response }).response;
