@@ -2,7 +2,7 @@
 
 BareDo is a task manager built around the keyboard. Move through your list with `J` and `K`, create tasks with `C`, edit with `E`, delete with `D`, and search everything with `Ctrl+K`. Checking off a task removes it right away, before the server confirms. If the request fails, the app undoes the change on its own and shows a small alert.
 
-Demo in production: [https://baredo.onrender.com](https://baredo.onrender.com)
+Live at: [https://baredo.lunarblade.qzz.io](https://baredo.lunarblade.qzz.io)
 
 ## Screenshots
 
@@ -23,13 +23,12 @@ Demo in production: [https://baredo.onrender.com](https://baredo.onrender.com)
 
 ## Tech stack
 
-Backend: Python, Flask, SQLAlchemy, Pydantic, JWT, SQLite (development) / PostgreSQL (production).
-
-Frontend: Preact, Vite, TypeScript, Ky (HTTP client), Zod (schema validation).
-
-Testing & linters: Pytest + Cov (backend), Vitest + Testing Library + Playwright (frontend), Ruff (Python), Biome (TypeScript/CSS).
-
-Package managers: [uv](https://docs.astral.sh/uv/) (Python), [pnpm](https://pnpm.io/) (Node).
+- Backend: Python, Flask, SQLAlchemy, Pydantic, JWT, SQLite/PostgreSQL.
+- Frontend: Preact, Vite, TypeScript, Ky, Zod.
+- Testing & linters: 
+  - Backend: Pytest, Cov (testing); Ruff (linter).
+  - Backend: Vitest, Testing Library, Playwright (testing); Biome (linter).
+- Package managers: [uv](https://docs.astral.sh/uv/) (Python), [pnpm](https://pnpm.io/) (Node).
 
 ## Architecture
 
@@ -37,22 +36,22 @@ Backend (Flask, layered):
 
 ```
 backend/app/
-├── api/v1/        # HTTP routes (tasks, auth, tags, subtasks, priorities, health) and Pydantic schemas
-├── services/      # Business logic; orchestrates repositories
-├── repositories/  # Data access with SQLAlchemy (one base + one per domain)
-├── models/        # Database models (users, tasks, subtasks, tags, priorities)
-├── core/          # Config, DB helpers, extensions, logging, middleware, CORS, pagination
-├── errors/        # Centralized error handling (handlers, schemas, exceptions)
-└── utils/         # Shared helpers (sorting)
+├── api/v1/        # HTTP routes and Pydantic schemas
+├── services/      # Business logic
+├── repositories/  # Data access (one base + one per domain)
+├── models/        # Database models
+├── core/          # Configuration (DB helpers, extensions, logging, middleware, CORS, pagination)
+├── errors/        # Centralized error handling
+└── utils/         # Shared helpers
 ```
 
 Frontend (Preact, organized by slices):
 
 ```
 frontend/src/
-├── app/          # Entry point, router, and layout (AppLayout, AuthGuard)
-├── pages/        # Views: Landing, Home, Login, Register, 404
-├── slices/       # One slice per domain: state (signals), api (ky), schemas (zod), types, and UI
+├── app/          # Entry point, router, and layout
+├── pages/        # Views 
+├── slices/       # One slice per domain: state, api, schemas, types, and UI
 ├── shared/       # Reusable UI components, HTTP client, auth session, and hooks
 └── styles/       # Global CSS tokens and base styles
 ```
@@ -124,9 +123,9 @@ Stop everything with `docker compose down`.
 
 ## API
 
-Base URL: `http://localhost:5000/api/v1` locally, `https://baredo-api.onrender.com/api/v1` in production.
+Base URL: `http://localhost:5000/api/v1` (in production, the backend is only reached through the frontend's Nginx proxy and is not exposed directly).
 
-The API documents itself. It is built on `flask-openapi` and `flask-openapi-swagger`: every route declares its input and output as Pydantic schemas, and those declarations generate an OpenAPI 3.1 spec. That means you can try the whole API from the browser without writing curl: open the Swagger UI at `http://localhost:5000/openapi/swagger`, or read the raw spec at `http://localhost:5000/openapi/openapi.json`. Everything except register, login, and health requires an `Authorization: Bearer <access_token>` header.
+When running the backend locally, the API documents itself using `flask-openapi` and `flask-openapi-swagger`: every route declares its input and output as Pydantic schemas, and those declarations generate an OpenAPI 3.1 spec. That means you can try the whole API from the browser without writing curl: open the Swagger UI at `http://localhost:5000/openapi/swagger`, or read the raw spec at `http://localhost:5000/openapi/openapi.json`. Everything except register, login, and health requires an `Authorization: Bearer <access_token>` header.
 
 ### Authentication
 
