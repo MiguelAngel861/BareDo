@@ -1,4 +1,6 @@
 import { signal } from '@preact/signals';
+import { getErrorMessage } from '@/shared/api/errors/index.ts';
+import { showToast } from '@/shared/ui/Toast/toast.state.ts';
 import { tasksApi } from './tasks.api.ts';
 import type {
   PaginationMeta,
@@ -111,8 +113,8 @@ export async function loadTasks(): Promise<void> {
     } else {
       selectedTaskIdSignal.value = null;
     }
-  } catch {
-    // Si falla la carga de red, se mantiene el estado previo de tareas
+  } catch (err) {
+    showToast(getErrorMessage(err, 'No se pudieron cargar las tareas'), 'error');
   } finally {
     isLoadingTasksSignal.value = false;
   }

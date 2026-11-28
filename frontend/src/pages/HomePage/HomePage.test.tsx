@@ -115,6 +115,26 @@ describe('HomePage component', () => {
     expect(document.title).toBe('Tasks — BareDo');
   });
 
+  it('does not load data when no user is loaded yet', () => {
+    authSignal.value = {
+      token: 'valid-token',
+      user: null,
+      isAuthenticated: true,
+      isLoading: true,
+    };
+
+    render(
+      <LocationProvider>
+        <HomePage />
+      </LocationProvider>
+    );
+
+    expect(loadTasks).not.toHaveBeenCalled();
+    expect(fetchPriorities).not.toHaveBeenCalled();
+    expect(fetchTags).not.toHaveBeenCalled();
+    expect(fetchTrashCount).not.toHaveBeenCalled();
+  });
+
   it('renders header with username, task count, and action buttons', () => {
     render(
       <LocationProvider>

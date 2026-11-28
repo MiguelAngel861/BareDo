@@ -57,6 +57,7 @@ def _sqlalchemy_engines() -> dict[str, str | dict]:
                 "pool_timeout": 30,
                 "pool_size": 5,
                 "max_overflow": 2,
+                "connect_args": {"connect_timeout": 5},
             }
         }
     return {"default": url}
@@ -77,13 +78,6 @@ class DevelopmentConfig(Config):
 
 class ProductionConfig(Config):
     DEBUG = False
-
-    def __init__(self):
-        super().__init__()
-        if self.SECRET_KEY == "dev-secret-change-in-production":
-            raise RuntimeError("SECRET_KEY must be set in production")
-        if self.JWT_SECRET_KEY == "dev-jwt-secret-change-in-production":
-            raise RuntimeError("JWT_SECRET_KEY must be set in production")
 
 
 class TestingConfig(Config):

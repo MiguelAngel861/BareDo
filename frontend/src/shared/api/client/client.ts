@@ -46,10 +46,12 @@ async function refreshAccessToken(): Promise<void> {
       throw new Error('No refresh token');
     }
 
-    const response = await apiClient.post('auth/refresh', {
+    const response = await ky.post(`${API_BASE_URL}/auth/refresh`, {
       headers: {
         Authorization: `Bearer ${refreshToken}`,
       },
+      timeout: 10000,
+      retry: { limit: 0 },
     });
 
     const data = await response.json<{
@@ -70,11 +72,9 @@ async function refreshAccessToken(): Promise<void> {
   }
 }
 
-let hasNotifiedServerReady = false;
-
 export const apiClient = ky.create({
   prefix: API_BASE_URL,
-  timeout: 60000,
+  timeout: 10000,
   retry: {
     limit: 3,
     methods: ['GET', 'HEAD', 'PUT', 'DELETE', 'OPTIONS', 'TRACE'],
@@ -101,11 +101,8 @@ export const apiClient = ky.create({
     ],
     afterResponse: [
       async ({ request, response, retryCount }) => {
-        if (response.ok && !hasNotifiedServerReady) {
-          hasNotifiedServerReady = true;
-          if (customOnServerReady) {
-            customOnServerReady();
-          }
+        if (response.ok && customOnServerReady) {
+          customOnServerReady();
         }
 
         // Handle 401 with token refresh (only on first attempt to avoid loops)
@@ -122,7 +119,7 @@ export const apiClient = ky.create({
             const retryResponse = await ky(String(request.url), {
               method: request.method as 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE',
               headers,
-              timeout: 60000,
+              timeout: 10000,
               retry: { limit: 0 },
               throwHttpErrors: false,
             });
@@ -139,6 +136,10 @@ export const apiClient = ky.create({
 
             if (!retryResponse.ok) {
               throw await createFriendlyError(retryResponse);
+            }
+
+            if (customOnServerReady) {
+              customOnServerReady();
             }
 
             return retryResponse;

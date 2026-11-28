@@ -4,6 +4,8 @@ RUN npm install -g pnpm@12.18.0
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN pnpm install --frozen-lockfile
 COPY . .
+ARG VITE_API_BASE_URL=/api/v1
+ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
 RUN pnpm build
 
 FROM nginx:alpine

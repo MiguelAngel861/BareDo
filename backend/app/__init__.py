@@ -45,6 +45,18 @@ def create_app(config_name: str | None = None) -> BareDoApp:
 
     app.config.from_object(config[config_name])
 
+    # from_object recibe la clase (no la instancia), así que ProductionConfig.__init__
+    # nunca se ejecuta: todos los guards de producción viven aquí.
+    if config_name == "production":
+        if os.environ.get("SECRET_KEY") in (None, "", "dev-secret-change-in-production"):
+            raise RuntimeError("SECRET_KEY must be set in production")
+        if os.environ.get("JWT_SECRET_KEY") in (None, "", "dev-jwt-secret-change-in-production"):
+            raise RuntimeError("JWT_SECRET_KEY must be set in production")
+        if not os.environ.get("CORS_ORIGINS"):
+            raise RuntimeError("CORS_ORIGINS must be set in production")
+        if not os.environ.get("RATELIMIT_STORAGE_URI"):
+            raise RuntimeError("RATELIMIT_STORAGE_URI must be set in production")
+
     # Configure logging
     configure_logging(app)
 

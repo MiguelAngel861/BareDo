@@ -8,8 +8,11 @@ from app.services.base import BaseService
 # Hash ficticio para comparar en tiempo constante cuando el usuario no existe,
 # evitando ataques de enumeración por timing (login de usuario inexistente es
 # mediblemente más rápido si se salta la comprobación de contraseña).
+# Debe usar el mismo algoritmo que los hashes reales de usuarios (scrypt, Werkzeug 3.1 default)
+# para que no exista diferencia de timing ni un dummy más caro que un login real.
 _DUMMY_HASH = (
-    "pbkdf2:sha256:600000$dummy$0000000000000000000000000000000000000000000000000000000000000000"
+    "scrypt:32768:8:1$h5Tl0UHRlIONqCa9$"
+    "aa85fd7e8e2857a3da76666b30e59bd6903521e15ab0cb48586052dc6e584c65d9fafdbfbe4a6ec08c4c9b05c242fc60fe8592b82018ca68d8ff1a64a683bb7c"
 )
 
 
