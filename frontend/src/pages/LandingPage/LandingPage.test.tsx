@@ -55,21 +55,21 @@ describe('LandingPage component', () => {
     expect(screen.getByText('[ 04 / 04 ] // ATTENTION_COVENANT')).toBeInTheDocument();
   });
 
-  it('renders interactive sandbox with latency telemetry and supports task toggle', () => {
+  it('renders clean BareDo task demo without fake telemetry and supports task toggle', () => {
     render(
       <LocationProvider>
         <LandingPage />
       </LocationProvider>
     );
 
-    // Verify telemetry readout is rendered
-    expect(screen.getByText(/LATENCY/)).toBeInTheDocument();
-    expect(screen.getByText(/LATENCY:/i)).toBeInTheDocument();
+    expect(screen.getByText('TASKS')).toBeInTheDocument();
+    expect(screen.getByText('3 tasks')).toBeInTheDocument();
+    expect(screen.queryByText(/LATENCY/i)).not.toBeInTheDocument();
+    expect(screen.queryByText('SIMULATE')).not.toBeInTheDocument();
 
-    const taskTitle = screen.getByText('Refactor auth middleware to zero-allocation pipeline');
+    const taskTitle = screen.getByText('Refactor auth middleware');
     expect(taskTitle).toBeInTheDocument();
 
-    // Click task row to toggle
     const taskRow = taskTitle.closest('li');
     expect(taskRow).toBeInTheDocument();
     if (taskRow) {
@@ -78,7 +78,7 @@ describe('LandingPage component', () => {
     }
   });
 
-  it('supports keyboard navigation inside sandbox region', () => {
+  it('supports keyboard navigation, inline task creation, and deletion inside demo', () => {
     render(
       <LocationProvider>
         <LandingPage />
@@ -86,25 +86,36 @@ describe('LandingPage component', () => {
     );
 
     const sandbox = screen.getByRole('region', {
-      name: /Interactive Vim Keyboard Sandbox/i,
+      name: /Interactive BareDo Task Demo/i,
     });
     expect(sandbox).toBeInTheDocument();
 
-    // Press 'j' to move cursor down
+    const getRows = () => sandbox.querySelectorAll('li.sandbox-task-row');
+
+    // Initial selection is row 0; press 'j' to move to row 1
     fireEvent.keyDown(sandbox, { key: 'j' });
-    expect(screen.getByText(/FOCUS TASK_02/i)).toBeInTheDocument();
+    expect(getRows()[1]?.className).toContain('is-selected');
 
-    // Press 'k' to move cursor up
+    // Press 'k' to move back to row 0
     fireEvent.keyDown(sandbox, { key: 'k' });
-    expect(screen.getByText(/FOCUS TASK_01/i)).toBeInTheDocument();
+    expect(getRows()[0]?.className).toContain('is-selected');
 
-    // Press 'c' to append a task
+    // Press Space to toggle completion on selected row
+    fireEvent.keyDown(sandbox, { key: ' ' });
+    expect(getRows()[0]?.className).toContain('is-completed');
+
+    // Press 'c' to open inline input, type a real task, and submit
     fireEvent.keyDown(sandbox, { key: 'c' });
-    expect(screen.getByText(/APPENDED TASK_04/i)).toBeInTheDocument();
+    const input = screen.getByLabelText('New task title');
+    fireEvent.input(input, { target: { value: 'Deploy release v2.0' } });
+    fireEvent.submit(input.closest('form') as HTMLFormElement);
+    expect(screen.getByText('Deploy release v2.0')).toBeInTheDocument();
+    expect(screen.getByText('4 tasks')).toBeInTheDocument();
 
-    // Press 'r' to reset
-    fireEvent.keyDown(sandbox, { key: 'r' });
-    expect(screen.getByText(/QUEUE_RESTORED/i)).toBeInTheDocument();
+    // Press 'd' to delete newly created selected task
+    fireEvent.keyDown(sandbox, { key: 'd' });
+    expect(screen.queryByText('Deploy release v2.0')).not.toBeInTheDocument();
+    expect(screen.getByText('3 tasks')).toBeInTheDocument();
   });
 
   it('renders call to action buttons without keyboard badge', () => {

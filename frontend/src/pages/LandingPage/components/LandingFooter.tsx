@@ -48,7 +48,7 @@ export function LandingFooter(): JSX.Element {
               GITHUB
             </a>
             <span class="landing-footer-divider">&middot;</span>
-            <span class="landing-footer-link">MIT LICENSE</span>
+            <span class="landing-footer-link">ALL RIGHTS RESERVED</span>
           </div>
         </div>
       </div>

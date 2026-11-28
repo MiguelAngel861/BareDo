@@ -104,9 +104,25 @@
 
 /* Primary: Main call-to-action */
 .app-btn--primary {
+  --btn-primary-shadow: #9ca3af;
   background-color: var(--text);
   color: var(--bg);
   border-color: var(--text);
+}
+
+.app-btn--primary.app-btn--sm,
+.app-btn--primary.app-btn--md {
+  box-shadow: 2px 2px 0px 0px var(--btn-primary-shadow);
+}
+
+.app-btn--primary.app-btn--lg {
+  box-shadow: 3px 3px 0px 0px var(--btn-primary-shadow);
+}
+
+@media (prefers-color-scheme: dark) {
+  .app-btn--primary {
+    --btn-primary-shadow: #000000;
+  }
 }
 
 @media (hover: hover) {
@@ -117,20 +133,40 @@
     outline: 1px solid var(--text);
     outline-offset: -1px;
   }
+
+  .app-btn--primary.app-btn--sm:hover:not(:disabled),
+  .app-btn--primary.app-btn--md:hover:not(:disabled) {
+    box-shadow: var(--shadow-action-hover);
+  }
+
+  .app-btn--primary.app-btn--lg:hover:not(:disabled) {
+    box-shadow: var(--shadow-hard-lg);
+  }
+}
+
+.app-btn--primary:active:not(:disabled) {
+  box-shadow: 1px 1px 0px 0px var(--btn-primary-shadow);
 }
 
 /* Secondary: Neutral / supporting action */
 .app-btn--secondary {
+  --btn-secondary-hover-bg: #ebebee;
   background-color: var(--surface);
   color: var(--text);
   border-color: var(--border-strong);
 }
 
+@media (prefers-color-scheme: dark) {
+  .app-btn--secondary {
+    --btn-secondary-hover-bg: #27272a;
+  }
+}
+
 @media (hover: hover) {
   .app-btn--secondary:hover:not(:disabled) {
-    background-color: var(--text);
-    color: var(--bg);
-    border-color: var(--text);
+    background-color: var(--btn-secondary-hover-bg);
+    color: var(--text);
+    border-color: var(--border-strong);
   }
 }
 
@@ -159,9 +195,9 @@
 
 @media (hover: hover) {
   .app-btn--ghost:hover:not(:disabled) {
-    background-color: var(--text);
-    color: var(--bg);
-    border-color: var(--text);
+    background-color: var(--surface);
+    color: var(--text);
+    border-color: var(--border-strong);
     box-shadow: var(--shadow-action);
   }
 }
