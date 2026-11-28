@@ -27,7 +27,7 @@ Backend: Python, Flask, SQLAlchemy, Pydantic, JWT, SQLite (development) / Postgr
 
 Frontend: Preact, Vite, TypeScript, Ky (HTTP client), Zod (schema validation).
 
-Testing & linters: Pytest + Cov (backend), Vitest + Testing Library (frontend), Ruff (Python), Biome (TypeScript/CSS).
+Testing & linters: Pytest + Cov (backend), Vitest + Testing Library + Playwright (frontend), Ruff (Python), Biome (TypeScript/CSS).
 
 Package managers: [uv](https://docs.astral.sh/uv/) (Python), [pnpm](https://pnpm.io/) (Node).
 
@@ -41,9 +41,8 @@ backend/app/
 ├── services/      # Business logic; orchestrates repositories
 ├── repositories/  # Data access with SQLAlchemy (one base + one per domain)
 ├── models/        # Database models (users, tasks, subtasks, tags, priorities)
-├── core/          # App factory, config, extensions, logging, CORS, pagination
+├── core/          # Config, DB helpers, extensions, logging, middleware, CORS, pagination
 ├── errors/        # Centralized error handling (handlers, schemas, exceptions)
-├── seeds/         # Initial data (priorities)
 └── utils/         # Shared helpers (sorting)
 ```
 
@@ -51,9 +50,11 @@ Frontend (Preact, organized by slices):
 
 ```
 frontend/src/
+├── app/          # Entry point, router, and layout (AppLayout, AuthGuard)
 ├── pages/        # Views: Landing, Home, Login, Register, 404
 ├── slices/       # One slice per domain: state (signals), api (ky), schemas (zod), types, and UI
-└── shared/ui/    # Reusable components (Button, Modal, Dropdown, EmptyState)
+├── shared/       # Reusable UI components, HTTP client, auth session, and hooks
+└── styles/       # Global CSS tokens and base styles
 ```
 
 ## Prerequisites
@@ -64,7 +65,7 @@ frontend/src/
 | [uv](https://docs.astral.sh/uv/) | latest | Python dependencies and scripts |
 | Node | 26 | Frontend (Vite 8) |
 | [pnpm](https://pnpm.io/) | 12.18.0 | Frontend package manager (pinned in `frontend/package.json`) |
-| Docker | recent | Optional, for the Compose setup |
+| Docker | recent | Optional, for the Compose setup (uses an external Postgres database) |
 
 ## Getting started
 
@@ -79,13 +80,14 @@ BareDo has two parts that run at the same time: a backend (Python) and a fronten
 
 ### 1. Backend
 
-This server stores your tasks and handles logins. Install dependencies, copy the example env file, and start it:
+This server stores your tasks and handles logins. Install dependencies, copy the example env file, run the migrations, and start it:
 
 ```bash
 cd backend
 uv sync
-cp .env.example .env   # edit values if needed
-uv run python wsgi.py   # runs at http://localhost:5000
+cp .env.example .env                                   # edit values if needed
+uv run python -m flask --app wsgi:app db upgrade head  # creates the schema and seeds priorities
+uv run python wsgi.py                                  # runs at http://localhost:5000
 ```
 
 Keep this terminal open.
@@ -104,17 +106,19 @@ While developing, the frontend sends API calls to the backend through Vite's pro
 
 ### Docker Compose
 
+Compose does not spin up a database container; it expects an external Postgres instance. Copy the root `.env.example` to `.env`, set your secrets and `DATABASE_URL` (use `host.docker.internal` if Postgres runs on your host), then run:
+
 ```bash
+cp .env.example .env
 docker compose up --build
 ```
 
-This starts everything at once: a Postgres database, the backend API, and the frontend. The backend runs its migrations automatically when it starts, so your schema is ready out of the box.
+The backend runs its migrations automatically on startup via `start.sh`, so your schema is ready out of the box.
 
 Here's what each service does:
 
-- db: Postgres 16 database, available at `localhost:5432`.
-- api: The Flask backend, available at `http://localhost:5000`.
-- frontend: The Vite dev server, available at `http://localhost:3000`. It proxies API calls to the backend.
+- api: The Flask backend served by Gunicorn, bound to `127.0.0.1:5000`.
+- frontend: Production build served by Nginx, bound to `127.0.0.1:3000`. It proxies `/api` and `/health` to the backend.
 
 Stop everything with `docker compose down`.
 
@@ -126,18 +130,18 @@ The API documents itself. It is built on `flask-openapi` and `flask-openapi-swag
 
 ### Authentication
 
-Register and login return a token pair (access + refresh) and the user profile; login is rate-limited to 5 attempts per minute.
+Register and login return a token pair (access + refresh) and the user profile. Passwords must be at least 8 characters and include uppercase, lowercase, a number, and a symbol (`@$!%*?&`). Register is rate-limited to 10 attempts per hour, and login to 5 per minute.
 
 ```bash
 # Register
 curl -X POST http://localhost:5000/api/v1/auth/register \
   -H "Content-Type: application/json" \
-  -d '{"username":"miguel","password":"Password123"}'
+  -d '{"username":"miguel","password":"Password123!"}'
 
 # Login
 curl -X POST http://localhost:5000/api/v1/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"username":"miguel","password":"Password123"}'
+  -d '{"username":"miguel","password":"Password123!"}'
 ```
 
 ### Tasks
@@ -157,20 +161,26 @@ cd backend && uv run pytest
 
 # Frontend: Vitest + Testing Library
 cd frontend && pnpm test:run
+
+# Frontend: Playwright end-to-end tests (starts backend and frontend automatically)
+cd frontend && pnpm test:e2e
 ```
 
 ## Useful commands
 
 | Command | What it does |
 |---|---|
-| `docker compose up --build` | Start database, backend, and frontend together |
+| `docker compose up --build` | Start backend and frontend together |
 | `docker compose down` | Stop and remove all services |
+| `uv run python -m flask --app wsgi:app db upgrade head` | Apply database migrations locally |
 | `uv run python wsgi.py` | Start the local backend |
 | `uv run pytest` | Run backend tests |
 | `uv run ruff check && uv run ruff format` | Lint and format the backend |
 | `pnpm dev` | Start the frontend with hot-reload |
 | `pnpm build` | Build the frontend for production |
 | `pnpm lint` | Run Biome lint on the frontend |
+| `pnpm typecheck` | Run TypeScript type checking |
+| `pnpm test:e2e` | Run Playwright end-to-end tests |
 
 ## Environment variables
 
@@ -178,18 +188,22 @@ Backend
 
 | Variable | Description |
 |---|---|
-| `FLASK_ENV` | Flask environment (development or production) |
-| `SECRET_KEY` | Key for signing Flask session cookies |
-| `DATABASE_URL` | Database connection string |
-| `JWT_SECRET_KEY` | Key for signing login tokens |
-| `CORS_ORIGINS` | Allowed origins for cross-requests, comma-separated |
+| `FLASK_ENV` | Flask environment (`development` or `production`) |
+| `SECRET_KEY` | Key for signing Flask session cookies (required in production) |
+| `JWT_SECRET_KEY` | Key for signing login tokens (required in production) |
+| `DATABASE_URL` | Database connection string (optional in dev; defaults to local SQLite) |
+| `CORS_ORIGINS` | Allowed origins for cross-requests, comma-separated (required in production) |
+| `RATELIMIT_STORAGE_URI` | Storage backend for rate limiting, e.g. `memory://` or Redis (required in production) |
+| `PORT` | Port Gunicorn binds to in Docker (default `5000`) |
+| `MAX_CONTENT_LENGTH` | Optional max request body size in bytes (default `1048576`) |
+| `TEST_DATABASE_URL` | Optional database URL for running `pytest` against Postgres instead of in-memory SQLite |
 
 Frontend
 
 | Variable | Description |
 |---|---|
-| `VITE_API_BASE_URL` | Address of the backend API |
+| `VITE_API_BASE_URL` | Base URL for the backend API (defaults to `/api/v1`; passed as a build arg in Docker) |
 
 ## License
 
-[MIT](LICENSE)
+[All Rights Reserved](LICENSE)
