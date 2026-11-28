@@ -10,6 +10,7 @@ services:
       SECRET_KEY: ${SECRET_KEY}
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
       CORS_ORIGINS: ${CORS_ORIGINS}
+      RATELIMIT_STORAGE_URI: ${RATELIMIT_STORAGE_URI:-memory://}
     extra_hosts:
       - "host.docker.internal:host-gateway"
     ports:
@@ -24,11 +25,11 @@ services:
   frontend:
     build:
       context: ./frontend
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-/api/v1}
     restart: unless-stopped
     ports:
       - "127.0.0.1:3000:80"
-    environment:
-      - VITE_API_BASE_URL=${VITE_API_BASE_URL}
     depends_on:
       api:
         condition: service_healthy

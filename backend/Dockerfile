@@ -23,6 +23,6 @@ COPY wsgi.py start.sh ./
 
 RUN chmod +x start.sh
 
-EXPOSE 8000
+EXPOSE 5000
 
 CMD ["./start.sh"]

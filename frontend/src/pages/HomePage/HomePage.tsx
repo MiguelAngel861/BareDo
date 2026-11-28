@@ -74,10 +74,12 @@ export function HomePage() {
   };
 
   useEffect(() => {
-    loadTasks();
-    fetchPriorities();
-    fetchTags();
-    fetchTrashCount();
+    if (authSignal.value.user) {
+      loadTasks();
+      fetchPriorities();
+      fetchTags();
+      fetchTrashCount();
+    }
 
     const handleServerReady = () => {
       loadTasks();

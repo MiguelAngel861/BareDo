@@ -1,10 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { toastsSignal } from '@/shared/ui/Toast/toast.state.ts';
 import { tasksApi } from './tasks.api.ts';
 import {
   addSubtaskAction,
   deleteSubtaskAction,
   deletingTaskSignal,
   executeDeleteTask,
+  isLoadingTasksSignal,
+  loadTasks,
   paginationSignal,
   requestDeleteTask,
   tasksSignal,
@@ -329,5 +332,19 @@ describe('tasks.state optimistic updates & rollback', () => {
       expect(tasksSignal.value[0]?.subtasks).toHaveLength(0);
       expect(viewingTaskSignal.value?.subtasks).toHaveLength(0);
     });
+  });
+
+  it('loadTasks shows a toast and keeps previous tasks when the API fails', async () => {
+    const before = toastsSignal.value.length;
+    vi.spyOn(tasksApi, 'list').mockRejectedValue(new Error('Failed to fetch'));
+
+    await loadTasks();
+
+    expect(isLoadingTasksSignal.value).toBe(false);
+    // Las tareas previas se mantienen
+    expect(tasksSignal.value).toHaveLength(1);
+    const toasts = toastsSignal.value.slice(before);
+    expect(toasts.length).toBe(1);
+    expect(toasts[0]?.type).toBe('error');
   });
 });

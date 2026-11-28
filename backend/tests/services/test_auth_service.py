@@ -1,9 +1,10 @@
 import uuid
 
 import pytest
+from werkzeug.security import check_password_hash
 
 from app.errors.exceptions import ConflictError
-from app.services.auth_service import AuthService
+from app.services.auth_service import _DUMMY_HASH, AuthService
 
 
 @pytest.fixture
@@ -58,3 +59,19 @@ def test_get_user_by_id_returns_user(auth_service):
 
 def test_get_user_by_id_unknown_returns_none(auth_service):
     assert auth_service.get_user_by_id(99999) is None
+
+
+def test_dummy_hash_is_scrypt_not_pbkdf2():
+    assert _DUMMY_HASH.startswith("scrypt:"), _DUMMY_HASH
+    assert "pbkdf2" not in _DUMMY_HASH
+
+
+def test_dummy_hash_always_returns_false():
+    # El hash ficticio nunca debe coincidir, cualquiera que sea la contraseña.
+    # No toca la BD: es una comprobación pura de werkzeug.
+    assert check_password_hash(_DUMMY_HASH, "cualquier-contrasena") is False
+    assert check_password_hash(_DUMMY_HASH, "") is False
+
+
+def test_login_unknown_user_never_matches_dummy(auth_service):
+    assert auth_service.login(f"ghost_{uuid.uuid4().hex[:8]}", "password123") is None

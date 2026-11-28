@@ -13,6 +13,7 @@
     "format": "biome format --write .",
     "test": "vitest",
     "test:run": "vitest run",
+    "test:e2e": "playwright test",
     "typecheck": "tsc --noEmit",
     "approve-builds": "pnpm approve-builds"
   },
@@ -25,6 +26,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.6.6",
+    "@playwright/test": "^1.65.1",
     "@preact/preset-vite": "^2.10.6",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/preact": "^3.2.6",
