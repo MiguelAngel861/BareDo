@@ -76,23 +76,16 @@ export function InputField({
 
   return (
     <div class={rootClasses}>
-      {(label || hint) && (
+      {label && (
         <div class="app-input-field__header">
-          {label && (
-            <label for={id} class="app-input-field__label">
-              <span>{label}</span>
-              {showAsterisk && (
-                <span class="required" aria-hidden="true">
-                  *
-                </span>
-              )}
-            </label>
-          )}
-          {hint && (
-            <span id={hintId} class="app-input-field__hint">
-              {hint}
-            </span>
-          )}
+          <label for={id} class="app-input-field__label">
+            <span>{label}</span>
+            {showAsterisk && (
+              <span class="required" aria-hidden="true">
+                *
+              </span>
+            )}
+          </label>
         </div>
       )}
 
@@ -134,6 +127,12 @@ export function InputField({
         />
         {endAdornment && <div class="app-input-field__end-adornment">{endAdornment}</div>}
       </div>
+
+      {hint && (
+        <span id={hintId} class="app-input-field__hint">
+          {hint}
+        </span>
+      )}
 
       {hasError && (
         <span id={errorId} class="error-message" role="alert">
