@@ -1,6 +1,6 @@
 import type { JSX } from 'preact';
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
-import { Badge, Button, Checkbox, TagChip } from '@/shared/ui/index.ts';
+import { Badge, Button, CloseIcon, TagChip } from '@/shared/ui/index.ts';
 
 export interface DemoTask {
   id: number;
@@ -13,23 +13,23 @@ export interface DemoTask {
 const INITIAL_TASKS: DemoTask[] = [
   {
     id: 1,
-    title: 'Refactor auth middleware to zero-allocation pipeline',
+    title: 'Refactor auth middleware',
     priority: 'HIGH',
     tag: 'backend',
     completed: false,
   },
   {
     id: 2,
-    title: 'Review pull request: optimistic rollback engine',
+    title: 'Review optimistic rollback PR',
     priority: 'NORMAL',
     tag: 'core',
     completed: false,
   },
   {
     id: 3,
-    title: 'Tune Vim navigation latency to 0ms',
+    title: 'Ship keyboard shortcuts guide',
     priority: 'URGENT',
-    tag: 'frontend',
+    tag: 'docs',
     completed: true,
   },
 ];
@@ -37,120 +37,120 @@ const INITIAL_TASKS: DemoTask[] = [
 export function InteractiveSandbox(): JSX.Element {
   const [tasks, setTasks] = useState<DemoTask[]>(INITIAL_TASKS);
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
-  const [lastAction, setLastAction] = useState<string>('QUEUE_READY');
-  const [latency, setLatency] = useState<string>('0.12');
-  const [isAutoPlaying, setIsAutoPlaying] = useState<boolean>(false);
+  const [isCreating, setIsCreating] = useState<boolean>(false);
+  const [draftTitle, setDraftTitle] = useState<string>('');
+  const nextIdRef = useRef<number>(INITIAL_TASKS.length + 1);
   const containerRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const triggerFeedback = useCallback((actionLog: string, t0: number) => {
-    const elapsed = Math.max(0.08, performance.now() - t0).toFixed(2);
-    setLatency(elapsed);
-    setLastAction(actionLog);
+  useEffect(() => {
+    if (isCreating) {
+      inputRef.current?.focus();
+    }
+  }, [isCreating]);
+
+  const toggleTask = useCallback((index: number) => {
+    setTasks((prev) =>
+      prev.map((task, i) => (i === index ? { ...task, completed: !task.completed } : task))
+    );
   }, []);
 
-  const toggleTask = useCallback(
-    (index: number) => {
-      const t0 = performance.now();
-      setTasks((prev) => {
-        const target = prev[index];
-        const next = prev.map((t, i) => (i === index ? { ...t, completed: !t.completed } : t));
-        if (target) {
-          triggerFeedback(
-            `COMMIT [${target.completed ? 'REOPENED' : 'CLEARED'}] // TASK_0${index + 1}`,
-            t0
-          );
+  const deleteTask = useCallback((index: number) => {
+    setTasks((prev) => {
+      const next = prev.filter((_, i) => i !== index);
+      setSelectedIndex((curr) => {
+        if (next.length === 0) {
+          return 0;
         }
-        return next;
+        if (index < curr) {
+          return curr - 1;
+        }
+        return Math.min(curr, next.length - 1);
       });
-    },
-    [triggerFeedback]
-  );
-
-  const moveNext = useCallback(() => {
-    const t0 = performance.now();
-    setSelectedIndex((prev) => {
-      const next = (prev + 1) % tasks.length;
-      triggerFeedback(`FOCUS TASK_0${next + 1}`, t0);
       return next;
     });
-  }, [tasks.length, triggerFeedback]);
+  }, []);
 
-  const movePrev = useCallback(() => {
-    const t0 = performance.now();
-    setSelectedIndex((prev) => {
-      const next = (prev - 1 + tasks.length) % tasks.length;
-      triggerFeedback(`FOCUS TASK_0${next + 1}`, t0);
-      return next;
-    });
-  }, [tasks.length, triggerFeedback]);
+  const openCreate = useCallback(() => {
+    setIsCreating(true);
+  }, []);
 
-  const resetDemo = () => {
-    const t0 = performance.now();
-    setTasks(INITIAL_TASKS);
-    setSelectedIndex(0);
-    setIsAutoPlaying(false);
-    triggerFeedback('QUEUE_RESTORED', t0);
-  };
+  const closeCreate = useCallback(() => {
+    setIsCreating(false);
+    setDraftTitle('');
+    containerRef.current?.focus();
+  }, []);
 
-  const addQuickTask = () => {
-    const t0 = performance.now();
-    const nextId = tasks.length + 1;
-    const newTask: DemoTask = {
-      id: nextId,
-      title: `Ship hotfix release v1.0.${nextId}`,
-      priority: 'HIGH',
-      tag: 'release',
-      completed: false,
-    };
-    setTasks((prev) => [...prev, newTask]);
-    setSelectedIndex(tasks.length);
-    triggerFeedback(`APPENDED TASK_0${nextId}`, t0);
-  };
-
-  // Keyboard handler when sandbox container is focused
-  const handleKeyDown = (e: KeyboardEvent) => {
-    const key = e.key.toLowerCase();
-
-    if (key === 'j' || e.key === 'ArrowDown') {
-      e.preventDefault();
-      moveNext();
-    } else if (key === 'k' || e.key === 'ArrowUp') {
-      e.preventDefault();
-      movePrev();
-    } else if (key === 'x' || e.key === ' ') {
-      e.preventDefault();
-      toggleTask(selectedIndex);
-    } else if (key === 'c') {
-      e.preventDefault();
-      addQuickTask();
-    } else if (key === 'r') {
-      e.preventDefault();
-      resetDemo();
-    }
-  };
-
-  // Auto-play simulation loop for mobile / observers
-  useEffect(() => {
-    if (!isAutoPlaying) {
+  const handleCreateSubmit = (e: Event) => {
+    e.preventDefault();
+    const title = draftTitle.trim();
+    if (!title) {
+      closeCreate();
       return;
     }
 
-    let step = 0;
-    const interval = setInterval(() => {
-      step = (step + 1) % 6;
-      if (step === 1 || step === 3) {
-        moveNext();
-      } else if (step === 2) {
-        toggleTask(selectedIndex);
-      } else if (step === 4) {
-        movePrev();
-      } else if (step === 5) {
-        toggleTask(0);
-      }
-    }, 700);
+    const newTask: DemoTask = {
+      id: nextIdRef.current++,
+      title,
+      priority: 'NORMAL',
+      tag: 'inbox',
+      completed: false,
+    };
 
-    return () => clearInterval(interval);
-  }, [isAutoPlaying, selectedIndex, moveNext, movePrev, toggleTask]);
+    setTasks((prev) => {
+      const next = [...prev, newTask];
+      setSelectedIndex(next.length - 1);
+      return next;
+    });
+    setDraftTitle('');
+    setIsCreating(false);
+    containerRef.current?.focus();
+  };
+
+  const restoreDemo = () => {
+    setTasks(INITIAL_TASKS);
+    setSelectedIndex(0);
+    setIsCreating(false);
+    setDraftTitle('');
+    containerRef.current?.focus();
+  };
+
+  const handleKeyDown = (e: KeyboardEvent) => {
+    const target = e.target as HTMLElement | null;
+    if (target?.tagName.toLowerCase() === 'input') {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        closeCreate();
+      }
+      return;
+    }
+
+    const key = e.key.toLowerCase();
+
+    if (key === 'c') {
+      e.preventDefault();
+      openCreate();
+      return;
+    }
+
+    if (tasks.length === 0) {
+      return;
+    }
+
+    if (key === 'j' || e.key === 'ArrowDown') {
+      e.preventDefault();
+      setSelectedIndex((prev) => (prev + 1) % tasks.length);
+    } else if (key === 'k' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      setSelectedIndex((prev) => (prev - 1 + tasks.length) % tasks.length);
+    } else if (key === 'x' || e.key === ' ') {
+      e.preventDefault();
+      toggleTask(selectedIndex);
+    } else if (key === 'd' || e.key === 'Delete') {
+      e.preventDefault();
+      deleteTask(selectedIndex);
+    }
+  };
 
   return (
     <div
@@ -159,88 +159,115 @@ export function InteractiveSandbox(): JSX.Element {
       tabIndex={0}
       onKeyDown={handleKeyDown}
       role="region"
-      aria-label="Interactive Vim Keyboard Sandbox"
+      aria-label="Interactive BareDo Task Demo"
     >
       <div class="sandbox-header">
         <div class="sandbox-title-group">
-          <span class="sandbox-signal-dot" aria-hidden="true" />
-          <span class="sandbox-title">{'QUEUE // HOME_ROW_ACTIVE'}</span>
+          <span class="sandbox-title">TASKS</span>
+          <span class="sandbox-count" aria-live="polite">
+            {tasks.length} {tasks.length === 1 ? 'task' : 'tasks'}
+          </span>
         </div>
-        <div class="sandbox-actions">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setIsAutoPlaying(!isAutoPlaying)}
-            aria-pressed={isAutoPlaying}
-          >
-            {isAutoPlaying ? 'PAUSE' : 'SIMULATE'}
-          </Button>
-          <Button variant="ghost" size="sm" onClick={resetDemo} title="Reset sandbox">
-            RESET [R]
-          </Button>
-        </div>
+        <Button
+          type="button"
+          variant="primary"
+          size="sm"
+          onClick={() => (isCreating ? closeCreate() : openCreate())}
+        >
+          {isCreating ? 'CANCEL' : '+ NEW TASK'}
+        </Button>
       </div>
 
-      <ul class="sandbox-task-list">
-        {tasks.map((task, idx) => {
-          const isSelected = idx === selectedIndex;
-          const priorityVariant =
-            task.priority === 'URGENT' ? 'danger' : task.priority === 'HIGH' ? 'solid' : 'outline';
+      {isCreating && (
+        <form class="sandbox-create-form" onSubmit={handleCreateSubmit}>
+          <input
+            ref={inputRef}
+            type="text"
+            class="sandbox-create-input"
+            value={draftTitle}
+            onInput={(e) => setDraftTitle((e.target as HTMLInputElement).value)}
+            placeholder="Write a task and press Enter..."
+            aria-label="New task title"
+            maxLength={80}
+          />
+          <Button type="submit" variant="primary" size="sm">
+            ADD
+          </Button>
+        </form>
+      )}
 
-          return (
-            <li
-              key={task.id}
-              class={`sandbox-task-row ${isSelected ? 'is-selected' : ''} ${task.completed ? 'is-completed' : ''}`}
-              onClick={(e) => {
-                const target = e.target as HTMLElement;
-                if (!target.closest('.app-checkbox')) {
+      {tasks.length === 0 ? (
+        <div class="sandbox-empty">
+          <p class="sandbox-empty-title">NO TASKS PENDING</p>
+          <p class="sandbox-empty-desc">Press C to add a task or restore the sample list.</p>
+          <Button type="button" variant="secondary" size="sm" onClick={restoreDemo}>
+            RESTORE SAMPLE
+          </Button>
+        </div>
+      ) : (
+        <ul class="sandbox-task-list">
+          {tasks.map((task, idx) => {
+            const isSelected = idx === selectedIndex;
+            const priorityVariant =
+              task.priority === 'URGENT'
+                ? 'danger'
+                : task.priority === 'HIGH'
+                  ? 'solid'
+                  : 'outline';
+
+            return (
+              <li
+                key={task.id}
+                class={`sandbox-task-row ${isSelected ? 'is-selected' : ''} ${task.completed ? 'is-completed' : ''}`}
+                onClick={() => {
                   setSelectedIndex(idx);
                   toggleTask(idx);
-                }
-              }}
-            >
-              <div class="sandbox-row-left">
-                <Checkbox
-                  checked={task.completed}
-                  onChange={(_checked, ev) => {
-                    ev.stopPropagation();
-                    setSelectedIndex(idx);
-                    toggleTask(idx);
-                  }}
-                  ariaLabel={task.title}
-                />
-                <span class="sandbox-task-title">{task.title}</span>
-              </div>
+                }}
+              >
+                <div class="sandbox-row-content">
+                  <span class="sandbox-task-title">{task.title}</span>
+                  <div class="sandbox-row-meta">
+                    <TagChip name={task.tag} variant="subtle" size="sm" />
+                    <Badge variant={priorityVariant} size="sm">
+                      {task.priority}
+                    </Badge>
+                    <Badge variant={task.completed ? 'success' : 'default'} size="sm">
+                      {task.completed ? 'Completed' : 'Pending'}
+                    </Badge>
+                  </div>
+                </div>
 
-              <div class="sandbox-row-meta">
-                <TagChip name={task.tag} size="sm" />
-                <Badge variant={priorityVariant} size="sm">
-                  {task.priority}
-                </Badge>
-              </div>
-            </li>
-          );
-        })}
-      </ul>
+                <button
+                  type="button"
+                  class="sandbox-delete-btn"
+                  aria-label={`Delete ${task.title}`}
+                  title="Delete task [D]"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    deleteTask(idx);
+                  }}
+                >
+                  <CloseIcon size={12} strokeWidth={2.25} />
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      )}
 
       <div class="sandbox-footer">
-        <div class="sandbox-hud">
-          <span class="sandbox-hud-key">[J / K] NAV</span>
-          <span class="sandbox-hud-sep">&middot;</span>
-          <span class="sandbox-hud-key">[SPACE] COMMIT</span>
-          <span class="sandbox-hud-sep">&middot;</span>
-          <span class="sandbox-hud-key">[C] NEW</span>
-        </div>
-
-        <div class="sandbox-telemetry">
-          <span class="sandbox-telemetry-item">
-            LATENCY: <strong class="telemetry-value">{latency}ms</strong>
-          </span>
-          <span class="sandbox-telemetry-sep">&middot;</span>
-          <span class="sandbox-telemetry-item">0MS_OPTIMISTIC</span>
-          <span class="sandbox-telemetry-sep">&middot;</span>
-          <span class="sandbox-log-text">{lastAction}</span>
-        </div>
+        <span class="sandbox-hint">
+          <kbd class="sandbox-key">J/K</kbd> move
+        </span>
+        <span class="sandbox-hint">
+          <kbd class="sandbox-key">SPACE</kbd> toggle
+        </span>
+        <span class="sandbox-hint">
+          <kbd class="sandbox-key">C</kbd> new
+        </span>
+        <span class="sandbox-hint">
+          <kbd class="sandbox-key">D</kbd> delete
+        </span>
       </div>
     </div>
   );
